@@ -19,6 +19,12 @@ module.exports = {
         'plugin:prettier/recommended',
     ],
     plugins: ['prettier', '@typescript-eslint'],
+    rules: {
+        'import/prefer-default-export': 0,
+        'import/extensions': 0,
+        '@typescript-eslint/explicit-module-boundary-types': 0,
+        '@typescript-eslint/no-explicit-any': 0,
+    },
     overrides: [
         {
             files: ['**/*d.ts'],
