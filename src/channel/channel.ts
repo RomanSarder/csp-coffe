@@ -1,25 +1,11 @@
-import { go } from '../go';
+import { eventLoopQueue } from '@Lib/internal';
 
-export const eventLoopQueue = () => {
-    return new Promise<void>((resolve) =>
-        setImmediate(() => {
-            resolve();
-        }),
-    );
-};
-
-export const delay = (ms: number) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
-};
-
-export function makeChannel() {
+export function makeChannel<T = unknown>() {
     return {
-        putQueue: [] as unknown[],
-        takeQueue: [] as unknown[],
+        putQueue: [] as T[],
+        takeQueue: [] as null[],
 
-        makePut(data: unknown) {
+        makePut(data: T) {
             this.putQueue.push(data);
         },
 
@@ -61,7 +47,7 @@ export function makeChannel() {
 
         // in order to put, you need to place an item into putQueue and wait for take to appear
         // after that you pop the item from putQueue
-        async put(data: unknown) {
+        async put(data: T) {
             await this.waitForPutQueueToRelease();
             this.makePut(data);
             await this.waitForIncomingTake();
@@ -78,22 +64,3 @@ export function makeChannel() {
         },
     };
 }
-
-const ch = makeChannel();
-
-go(function* () {
-    console.log('Через 4 секунды первый гопник смешно пошутит');
-    yield delay(4000);
-    yield ch.put('ЛАЛ САСИ ЧЕБУРЕЧА');
-    console.log('** ДЫААА ЭТО ТОЧНО ЕГО ЗАТРАЛЛИТ **');
-    const reply = yield ch.take();
-    console.log('ГОПНИКУ ОДИН ПРИЛЕТЕЛА ОТВЕТОЧКА', reply);
-});
-
-go(function* () {
-    console.log('** УХ ЩА В ЧАТИКЕ ПООБЩАЮСЬ **');
-    const message = yield ch.take();
-    console.log('ГОПНИКУ ДВА ПРИЛЕТЕЛО СООБЩЕНИЕ: ', message);
-    console.log('** ЧО ТЫ ТАМ БАЗАРИШЬ МЫШЬ? **');
-    yield ch.put('POSHEL NAHUI');
-});
