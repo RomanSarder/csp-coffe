@@ -11,8 +11,8 @@ module.exports = {
         '!coverage/**',
         '!node_modules/**',
     ],
-    coverageReporters: ['text', 'lcov', 'json', 'text', 'clover', 'cobertura'],
-    coveragePathIgnorePatterns: ['tests/', 'node_modules/'],
+    coverageReporters: ['json-summary'],
+    coveragePathIgnorePatterns: ['test/', 'node_modules/'],
     moduleNameMapper: {
         '^@Lib/(.*)$': '<rootDir>/src/$1',
     },
