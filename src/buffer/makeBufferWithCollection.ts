@@ -12,7 +12,15 @@ export function makeBufferWithCollection<T = unknown>(
         },
 
         release() {
-            this.collection.release();
+            return this.collection.release();
+        },
+
+        getSize() {
+            return this.collection.getSize();
+        },
+
+        getElementsArray() {
+            return this.collection.getElementsArray();
         },
     };
 }

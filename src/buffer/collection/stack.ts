@@ -28,7 +28,6 @@ export function makeStack<T = unknown>(capacity = 1) {
             if (this.size < 0) {
                 this.size = 0;
             }
-
             return value;
         },
     };
