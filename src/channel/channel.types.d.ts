@@ -1,4 +1,6 @@
+import type { Buffer } from '@Lib/buffer';
+
 export type Channel<T = unknown> = {
-    putQueue: T[];
-    takeQueue: null[];
+    putBuffer: Buffer<T>;
+    takeBuffer: Buffer<null>;
 };
