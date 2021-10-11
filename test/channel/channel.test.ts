@@ -7,8 +7,8 @@ describe('Channel', () => {
         it('should create a channel with queues', () => {
             const ch = channel.makeChannel();
 
-            expect(ch.putQueue).toEqual([]);
-            expect(ch.takeQueue).toEqual([]);
+            expect(ch.putBuffer.getElementsArray()).toEqual([]);
+            expect(ch.takeBuffer.getElementsArray()).toEqual([]);
         });
     });
 
@@ -16,7 +16,7 @@ describe('Channel', () => {
         it('should put a given value to put queue', () => {
             const ch = channel.makeChannel();
             channel.makePut(ch, 'test1');
-            expect(ch.putQueue[0]).toEqual('test1');
+            expect(ch.putBuffer.getElementsArray()[0]).toEqual('test1');
         });
     });
 
@@ -24,7 +24,7 @@ describe('Channel', () => {
         it('should put an item to take queue', () => {
             const ch = channel.makeChannel();
             channel.makeTake(ch);
-            expect(ch.takeQueue.length).toEqual(1);
+            expect(ch.takeBuffer.getSize()).toEqual(1);
         });
     });
 
@@ -33,7 +33,7 @@ describe('Channel', () => {
             const ch = channel.makeChannel();
             channel.makeTake(ch);
             channel.releaseTake(ch);
-            expect(ch.takeQueue.length).toEqual(0);
+            expect(ch.takeBuffer.getSize()).toEqual(0);
         });
     });
 
@@ -43,7 +43,7 @@ describe('Channel', () => {
             channel.makePut(ch, 'test1');
             const result = channel.releasePut(ch);
             expect(result).toEqual('test1');
-            expect(ch.putQueue.length).toEqual(0);
+            expect(ch.putBuffer.getSize()).toEqual(0);
         });
     });
 
@@ -119,7 +119,7 @@ describe('Channel', () => {
             const spy = jest.fn();
             channel.put(ch, 'test1').then(spy);
             await eventLoopQueue();
-            expect(ch.putQueue[0]).toEqual('test1');
+            expect(ch.putBuffer.getElementsArray()[0]).toEqual('test1');
             await eventLoopQueue();
             channel.makeTake(ch);
             await eventLoopQueue();
