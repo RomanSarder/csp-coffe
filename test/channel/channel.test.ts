@@ -1,5 +1,6 @@
+import { BufferType } from '@Lib/buffer';
 import * as channel from '@Lib/channel';
-import { makeChannel } from '@Lib/channel';
+import { makeChannel, makePut, releasePut } from '@Lib/channel';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('Channel', () => {
@@ -17,6 +18,34 @@ describe('Channel', () => {
             const ch = channel.makeChannel();
             channel.makePut(ch, 'test1');
             expect(ch.putBuffer.getElementsArray()[0]).toEqual('test1');
+        });
+
+        describe("when the channel's buffer size is more than 1", () => {
+            describe('when the buffer type is Dropping', () => {
+                it('should not put a given value to queue', () => {
+                    const ch = channel.makeChannel(BufferType.DROPPING, 2);
+                    channel.makePut(ch, 'test1');
+                    channel.makePut(ch, 'test2');
+                    channel.makePut(ch, 'test3');
+                    expect(ch.putBuffer.getElementsArray()).toEqual([
+                        'test1',
+                        'test2',
+                    ]);
+                });
+            });
+
+            describe('when the buffer type is Sliding', () => {
+                it('should remove first item in queue and put the given value', () => {
+                    const ch = channel.makeChannel(BufferType.SLIDING, 2);
+                    channel.makePut(ch, 'test1');
+                    channel.makePut(ch, 'test2');
+                    channel.makePut(ch, 'test3');
+                    expect(ch.putBuffer.getElementsArray()).toEqual([
+                        'test2',
+                        'test3',
+                    ]);
+                });
+            });
         });
     });
 
@@ -124,6 +153,33 @@ describe('Channel', () => {
             channel.makeTake(ch);
             await eventLoopQueue();
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        describe('when the channel buffer size is more than 1', () => {
+            describe('when there is no pending take', () => {
+                it('should not block put if no take request is there', async () => {
+                    const ch = makeChannel(BufferType.DROPPING, 2);
+                    const spy = jest.fn();
+                    channel.put(ch, 'test1').then(spy);
+                    await eventLoopQueue();
+                    expect(spy).toHaveBeenCalledTimes(1);
+                });
+
+                describe('when the buffer is full', () => {
+                    it('should block put request if buffer is full', async () => {
+                        const ch = makeChannel(BufferType.DROPPING, 2);
+                        const spy = jest.fn();
+                        makePut(ch, 'test11');
+                        makePut(ch, 'test12');
+                        channel.put(ch, 'test1').then(spy);
+                        await eventLoopQueue();
+                        expect(spy).not.toHaveBeenCalled();
+                        releasePut(ch);
+                        await eventLoopQueue();
+                        expect(spy).toHaveBeenCalledTimes(1);
+                    });
+                });
+            });
         });
     });
 });

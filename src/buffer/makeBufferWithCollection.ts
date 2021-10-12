@@ -19,8 +19,8 @@ export function makeBufferWithCollection<T = unknown>(
             return this.collection.getSize();
         },
 
-        getCapacity() {
-            return this.collection.getCapacity();
+        isFull() {
+            return this.collection.getCapacity() === this.getSize();
         },
 
         getElementsArray() {

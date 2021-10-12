@@ -31,13 +31,13 @@ export async function waitForIncomingPut<T = unknown>(ch: Channel<T>) {
 }
 
 export async function waitForPutQueueToRelease<T = unknown>(ch: Channel<T>) {
-    while (ch.putBuffer.getSize() !== 0) {
+    while (ch.putBuffer.isFull()) {
         await eventLoopQueue();
     }
 }
 
 export async function waitForTakeQueueToRelease<T = unknown>(ch: Channel<T>) {
-    while (ch.takeBuffer.getSize() !== 0) {
+    while (ch.takeBuffer.isFull()) {
         await eventLoopQueue();
     }
 }
@@ -45,6 +45,11 @@ export async function waitForTakeQueueToRelease<T = unknown>(ch: Channel<T>) {
 export async function put<T = unknown>(ch: Channel<T>, data: T) {
     await waitForPutQueueToRelease(ch);
     makePut(ch, data);
+
+    if (ch.isBuffered) {
+        return;
+    }
+
     await waitForIncomingTake(ch);
 }
 
@@ -61,7 +66,8 @@ export function makeChannel<T = unknown>(
     capacity = 1,
 ): Channel<T> {
     return {
+        isBuffered: capacity > 0,
         putBuffer: makeBuffer<T>(bufferType, capacity),
-        takeBuffer: makeBuffer(bufferType, capacity),
+        takeBuffer: makeBuffer(BufferType.DROPPING, 1),
     };
 }
