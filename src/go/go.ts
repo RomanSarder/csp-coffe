@@ -5,7 +5,6 @@ export function go(generator: () => Generator): {
 
     function nextStep(resolvedValue: unknown): any {
         const { value: nextIteratorValue, done } = iterator.next(resolvedValue);
-
         if (done) return nextIteratorValue;
 
         if (nextIteratorValue instanceof Promise) {
