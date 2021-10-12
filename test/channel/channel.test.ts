@@ -1,18 +1,9 @@
 import { BufferType } from '@Lib/buffer';
 import * as channel from '@Lib/channel';
-import { makeChannel, makePut, releasePut } from '@Lib/channel';
+import { makeChannel, makePut, put, releasePut } from '@Lib/channel';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('Channel', () => {
-    describe('makeChannel', () => {
-        it('should create a channel with queues', () => {
-            const ch = channel.makeChannel();
-
-            expect(ch.putBuffer.getElementsArray()).toEqual([]);
-            expect(ch.takeBuffer.getElementsArray()).toEqual([]);
-        });
-    });
-
     describe('makePut', () => {
         it('should put a given value to put queue', () => {
             const ch = channel.makeChannel();
@@ -140,6 +131,28 @@ describe('Channel', () => {
             await eventLoopQueue();
             expect(spy).toHaveBeenCalledWith('test1');
         });
+
+        describe('when channel is closed', () => {
+            it('should return channel closed message', async () => {
+                const ch = makeChannel();
+                channel.close(ch);
+                const result = await channel.take(ch);
+                expect(result).toEqual(channel.events.CHANNEL_CLOSED);
+            });
+        });
+
+        describe('when the channel is closed after take was put', () => {
+            it('should release take', async () => {
+                const ch = makeChannel();
+                const spy = jest.fn();
+                channel.take(ch).then(spy);
+                await eventLoopQueue();
+                channel.close(ch);
+                await eventLoopQueue();
+                expect(spy).toHaveBeenCalledWith(channel.events.CHANNEL_CLOSED);
+                expect(ch.takeBuffer.getElementsArray()).toEqual([]);
+            });
+        });
     });
 
     describe('put', () => {
@@ -153,6 +166,28 @@ describe('Channel', () => {
             channel.makeTake(ch);
             await eventLoopQueue();
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        describe('when the channel is closed', () => {
+            it('should not put anytrhing', async () => {
+                const ch = makeChannel();
+                channel.close(ch);
+
+                await put(ch, 'test1');
+
+                expect(ch.putBuffer.getElementsArray()).toEqual([]);
+            });
+        });
+
+        describe('when the channel is closed after the item is put', () => {
+            it('should release put', async () => {
+                const ch = makeChannel();
+                const spy = jest.fn();
+                put(ch, 'test1').then(spy);
+                channel.close(ch);
+                await eventLoopQueue();
+                expect(ch.putBuffer.getSize()).toEqual(0);
+            });
         });
 
         describe('when the channel buffer size is more than 1', () => {
@@ -180,6 +215,21 @@ describe('Channel', () => {
                     });
                 });
             });
+        });
+    });
+
+    describe('makeChannel', () => {
+        it('should create a channel with queues', () => {
+            const ch = channel.makeChannel();
+
+            expect(ch.putBuffer.getElementsArray()).toEqual([]);
+            expect(ch.takeBuffer.getElementsArray()).toEqual([]);
+        });
+
+        it('should close the channel', () => {
+            const ch = channel.makeChannel();
+            channel.close(ch);
+            expect(ch.isClosed).toEqual(true);
         });
     });
 });

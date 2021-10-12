@@ -1,6 +1,11 @@
 import { eventLoopQueue } from '@Lib/internal';
 import { BufferType, makeBuffer } from '@Lib/buffer';
 import type { Channel } from './channel.types';
+import { errorMessages, events } from './constants';
+
+function isChannelClosedError(e: unknown) {
+    return e instanceof Error && e.message === errorMessages.CHANNEL_CLOSED;
+}
 
 export function makePut<T = unknown>(ch: Channel<T>, data: T) {
     ch.putBuffer.add(data);
@@ -19,54 +24,131 @@ export function releaseTake<T = unknown>(ch: Channel<T>) {
 }
 
 export async function waitForIncomingTake<T = unknown>(ch: Channel<T>) {
+    if (ch.isClosed) {
+        throw new Error(errorMessages.CHANNEL_CLOSED);
+    }
+
     while (ch.takeBuffer.getSize() === 0) {
+        if (ch.isClosed) {
+            throw new Error(errorMessages.CHANNEL_CLOSED);
+        }
         await eventLoopQueue();
     }
 }
 
 export async function waitForIncomingPut<T = unknown>(ch: Channel<T>) {
+    if (ch.isClosed) {
+        throw new Error(errorMessages.CHANNEL_CLOSED);
+    }
+
     while (ch.putBuffer.getSize() === 0) {
+        if (ch.isClosed) {
+            throw new Error(errorMessages.CHANNEL_CLOSED);
+        }
         await eventLoopQueue();
     }
 }
 
 export async function waitForPutQueueToRelease<T = unknown>(ch: Channel<T>) {
+    if (ch.isClosed) {
+        throw new Error(errorMessages.CHANNEL_CLOSED);
+    }
+
     while (ch.putBuffer.isFull()) {
+        if (ch.isClosed) {
+            throw new Error(errorMessages.CHANNEL_CLOSED);
+        }
         await eventLoopQueue();
     }
 }
 
 export async function waitForTakeQueueToRelease<T = unknown>(ch: Channel<T>) {
+    if (ch.isClosed) {
+        throw new Error(errorMessages.CHANNEL_CLOSED);
+    }
+
     while (ch.takeBuffer.isFull()) {
+        if (ch.isClosed) {
+            throw new Error(errorMessages.CHANNEL_CLOSED);
+        }
+
         await eventLoopQueue();
     }
 }
 
+function resetChannel<T = unknown>(ch: Channel<T>) {
+    // eslint-disable-next-line no-param-reassign
+    ch.putBuffer = makeBuffer<T>(BufferType.CLOSED);
+    // eslint-disable-next-line no-param-reassign
+    ch.takeBuffer = makeBuffer<null>(BufferType.CLOSED);
+    // eslint-disable-next-line no-param-reassign
+    ch.isClosed = true;
+    // eslint-disable-next-line no-param-reassign
+    ch.isBuffered = false;
+}
+
 export async function put<T = unknown>(ch: Channel<T>, data: T) {
-    await waitForPutQueueToRelease(ch);
-    makePut(ch, data);
+    try {
+        await waitForPutQueueToRelease(ch);
+        makePut(ch, data);
 
-    if (ch.isBuffered) {
-        return;
+        if (!ch.isBuffered) {
+            try {
+                await waitForIncomingTake(ch);
+            } catch (e) {
+                if (isChannelClosedError(e)) {
+                    resetChannel(ch);
+                }
+
+                throw e;
+            }
+        }
+    } catch (e) {
+        if (!isChannelClosedError(e)) {
+            throw e;
+        }
     }
-
-    await waitForIncomingTake(ch);
 }
 
 export async function take<T = unknown>(ch: Channel<T>) {
-    await waitForTakeQueueToRelease(ch);
-    makeTake(ch);
-    await waitForIncomingPut(ch);
-    releaseTake(ch);
-    return releasePut(ch);
+    try {
+        await waitForTakeQueueToRelease(ch);
+        makeTake(ch);
+
+        try {
+            await waitForIncomingPut(ch);
+        } catch (e) {
+            // If channel closed, cleanup made take
+            if (isChannelClosedError(e)) {
+                resetChannel(ch);
+            }
+
+            throw e;
+        }
+
+        releaseTake(ch);
+        return releasePut(ch);
+    } catch (e) {
+        if (isChannelClosedError(e)) {
+            return events.CHANNEL_CLOSED;
+        }
+        throw e;
+    }
+}
+
+export function close<T = unknown>(ch: Channel<T>) {
+    // eslint-disable-next-line no-param-reassign
+    ch.isClosed = true;
 }
 
 export function makeChannel<T = unknown>(
-    bufferType: BufferType = BufferType.DROPPING,
+    bufferType: Exclude<BufferType, 'CLOSED'> = BufferType.DROPPING,
     capacity = 1,
 ): Channel<T> {
     return {
-        isBuffered: capacity > 0,
+        capacity,
+        isBuffered: capacity > 1,
+        isClosed: false,
         putBuffer: makeBuffer<T>(bufferType, capacity),
         takeBuffer: makeBuffer(BufferType.DROPPING, 1),
     };
