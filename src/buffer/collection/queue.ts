@@ -9,6 +9,10 @@ export function makeQueue<T = unknown>(capacity = 1) {
             return this.tail;
         },
 
+        getCapacity(): number {
+            return this.capacity;
+        },
+
         getElementsArray(): T[] {
             return Object.values(this.contents).map((val) => val);
         },

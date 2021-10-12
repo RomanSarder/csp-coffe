@@ -8,6 +8,10 @@ export function makeStack<T = unknown>(capacity = 1) {
             return this.size;
         },
 
+        getCapacity(): number {
+            return this.capacity;
+        },
+
         getElementsArray(): T[] {
             return Object.values(this.contents).map((val) => val);
         },

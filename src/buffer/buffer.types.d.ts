@@ -5,5 +5,6 @@ export type Buffer<T = unknown> = {
     add: (item: T) => void;
     release: () => void;
     getSize: () => number;
+    getCapacity: () => number;
     getElementsArray: () => T[];
 };
