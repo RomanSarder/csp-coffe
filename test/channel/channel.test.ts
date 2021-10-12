@@ -48,7 +48,7 @@ describe('Channel', () => {
     });
 
     describe('waitForIncomingTake', () => {
-        it('should return promise which resolve only after any item gets to take queue', async () => {
+        it('should return promise which resolves only after any item gets to take queue', async () => {
             const spy = jest.fn();
             const ch = channel.makeChannel();
             channel.waitForIncomingTake(ch).then(spy);
@@ -61,7 +61,7 @@ describe('Channel', () => {
     });
 
     describe('waitForIncomingPut', () => {
-        it('should return promise which resolve only after any item gets to put queue', async () => {
+        it('should return promise which resolves only after any item gets to put queue', async () => {
             const spy = jest.fn();
             const ch = channel.makeChannel();
             channel.waitForIncomingPut(ch).then(spy);
@@ -74,7 +74,7 @@ describe('Channel', () => {
     });
 
     describe('waitForPutQueueToRelease', () => {
-        it('should return promise which resolve only after put queue becomes empty', async () => {
+        it('should return promise which resolves only after put queue becomes empty', async () => {
             const spy = jest.fn();
             const ch = channel.makeChannel();
             channel.makePut(ch, 'test');
@@ -88,7 +88,7 @@ describe('Channel', () => {
     });
 
     describe('waitForTakeQueueToRelease', () => {
-        it('should return promise which resolve only after put queue becomes empty', async () => {
+        it('should return promise which resolves only after put queue becomes empty', async () => {
             const spy = jest.fn();
             const ch = channel.makeChannel();
             channel.makeTake(ch);
