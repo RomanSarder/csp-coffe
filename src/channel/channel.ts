@@ -15,7 +15,7 @@ export function makeTake<T = unknown>(ch: Channel<T>) {
     ch.takeBuffer.add(null);
 }
 
-export function releasePut<T = unknown>(ch: Channel<T>) {
+export function releasePut<T = unknown>(ch: Channel<T>): T | undefined {
     return ch.putBuffer.release();
 }
 
@@ -112,12 +112,16 @@ export async function put<T = unknown>(ch: Channel<T>, data: T) {
 
 export async function take<T = unknown>(ch: Channel<T>) {
     try {
+        console.log('waiting for take queue to release');
         await waitForTakeQueueToRelease(ch);
+        console.log('making put');
         makeTake(ch);
 
         try {
+            console.log('waiting for incoming put');
             await waitForIncomingPut(ch);
         } catch (e) {
+            console.log('got error');
             // If channel closed, cleanup made take
             if (isChannelClosedError(e)) {
                 resetChannel(ch);
@@ -125,8 +129,9 @@ export async function take<T = unknown>(ch: Channel<T>) {
 
             throw e;
         }
-
+        console.log('releasing take');
         releaseTake(ch);
+        console.log('returning put');
         return releasePut(ch);
     } catch (e) {
         if (isChannelClosedError(e)) {
@@ -151,5 +156,14 @@ export function makeChannel<T = unknown>(
         isClosed: false,
         putBuffer: makeBuffer<T>(bufferType, capacity),
         takeBuffer: makeBuffer(BufferType.DROPPING, 1),
+        async *[Symbol.asyncIterator]() {
+            while (!this.isClosed && this.putBuffer.getSize() <= capacity) {
+                const result = (await take<T>(this)) as string | T;
+                yield result;
+                await eventLoopQueue();
+            }
+
+            return events.CHANNEL_CLOSED;
+        },
     };
 }

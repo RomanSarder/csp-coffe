@@ -24,7 +24,9 @@ export function makeStack<T = unknown>(capacity = 1) {
             this.size += 1;
         },
 
-        release(): T {
+        release(): T | undefined {
+            if (this.size === 0) return undefined;
+
             const value = this.contents[this.size];
             delete this.contents[this.size];
             this.size -= 1;

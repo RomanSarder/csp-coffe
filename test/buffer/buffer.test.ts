@@ -23,11 +23,12 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release last put element from contents', () => {
-            const buffer = makeDroppingBuffer();
+        it('should release first put element from contents', () => {
+            const buffer = makeDroppingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
-            expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
+            buffer.release();
+            expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
     });
 });

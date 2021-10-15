@@ -6,7 +6,7 @@ export function makeQueue<T = unknown>(capacity = 1) {
         contents: {} as Record<number, T>,
 
         getSize(): number {
-            return this.tail;
+            return this.tail - this.head;
         },
 
         getCapacity(): number {

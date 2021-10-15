@@ -1,13 +1,5 @@
 import { go } from '@Lib/go';
-
-function fakeAsyncFunction(callback: () => void) {
-    return new Promise<void>((resolve) => {
-        setTimeout(() => {
-            callback();
-            resolve();
-        }, 100);
-    });
-}
+import { fakeAsyncFunction } from '@Lib/internal';
 
 describe('go', () => {
     it('should execute both sync and async yield statements in a correct order', async () => {

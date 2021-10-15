@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "target": "ES2018",
+    "lib": ["esnext.asynciterable"],
     "module": "commonjs",
     "declaration": true,
     "outDir": "dist",

@@ -8,4 +8,6 @@ export type Channel<T = unknown> = {
 
     putBuffer: Buffer<T>;
     takeBuffer: Buffer<null>;
+
+    [Symbol.asyncIterator](): AsyncGenerator<T | string, string, unknown>;
 };

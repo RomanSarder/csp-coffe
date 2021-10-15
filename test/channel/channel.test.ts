@@ -231,5 +231,36 @@ describe('Channel', () => {
             channel.close(ch);
             expect(ch.isClosed).toEqual(true);
         });
+
+        it('should be async iterable', async () => {
+            const ch = channel.makeChannel(BufferType.DROPPING, 10);
+
+            await channel.put(ch, 'test1');
+            await eventLoopQueue();
+            await channel.put(ch, 'test2');
+            await eventLoopQueue();
+            await channel.put(ch, 'test3');
+            await eventLoopQueue();
+
+            const iterator = ch[Symbol.asyncIterator]();
+
+            expect(await iterator.next()).toEqual({
+                value: 'test1',
+                done: false,
+            });
+            expect(await iterator.next()).toEqual({
+                value: 'test2',
+                done: false,
+            });
+            expect(await iterator.next()).toEqual({
+                value: 'test3',
+                done: false,
+            });
+            channel.close(ch);
+            expect(await iterator.next()).toEqual({
+                value: channel.events.CHANNEL_CLOSED,
+                done: true,
+            });
+        });
     });
 });
