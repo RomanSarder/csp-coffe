@@ -1,3 +1,4 @@
+// Queue that releases first element when the new element is added
 export function makeQueue<T = unknown>(capacity = 1) {
     return {
         capacity,

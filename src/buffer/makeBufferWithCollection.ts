@@ -19,12 +19,12 @@ export function makeBufferWithCollection<T = unknown>(
             return this.collection.getSize();
         },
 
-        isFull() {
-            return this.collection.getCapacity() === this.getSize();
-        },
-
         getElementsArray() {
             return this.collection.getElementsArray();
+        },
+
+        isBlocked() {
+            return false;
         },
     };
 }

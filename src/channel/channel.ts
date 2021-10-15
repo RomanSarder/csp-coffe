@@ -54,7 +54,7 @@ export async function waitForPutQueueToRelease<T = unknown>(ch: Channel<T>) {
         throw new Error(errorMessages.CHANNEL_CLOSED);
     }
 
-    while (ch.putBuffer.isFull()) {
+    while (ch.putBuffer.isBlocked()) {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
@@ -67,7 +67,7 @@ export async function waitForTakeQueueToRelease<T = unknown>(ch: Channel<T>) {
         throw new Error(errorMessages.CHANNEL_CLOSED);
     }
 
-    while (ch.takeBuffer.isFull()) {
+    while (ch.takeBuffer.isBlocked()) {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
@@ -141,7 +141,7 @@ export function close<T = unknown>(ch: Channel<T>) {
 }
 
 export function makeChannel<T = unknown>(
-    bufferType: Exclude<BufferType, 'CLOSED'> = BufferType.DROPPING,
+    bufferType: Exclude<BufferType, 'CLOSED'> = BufferType.FIXED,
     capacity = 1,
 ): Channel<T> {
     return {
@@ -149,7 +149,7 @@ export function makeChannel<T = unknown>(
         isBuffered: capacity > 1,
         isClosed: false,
         putBuffer: makeBuffer<T>(bufferType, capacity),
-        takeBuffer: makeBuffer(BufferType.DROPPING, 1),
+        takeBuffer: makeBuffer(BufferType.FIXED, 1),
         async *[Symbol.asyncIterator]() {
             while (!this.isClosed && this.putBuffer.getSize() <= capacity) {
                 const result = (await take<T>(this)) as string | T;

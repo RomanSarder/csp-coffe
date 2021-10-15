@@ -202,7 +202,7 @@ describe('Channel', () => {
 
                 describe('when the buffer is full', () => {
                     it('should block put request if buffer is full', async () => {
-                        const ch = makeChannel(BufferType.DROPPING, 2);
+                        const ch = makeChannel(BufferType.FIXED, 2);
                         const spy = jest.fn();
                         makePut(ch, 'test11');
                         makePut(ch, 'test12');

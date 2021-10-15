@@ -1,5 +1,6 @@
 import { makeQueue } from './queue';
 
+// Queue that drops an update if full
 export function makeDroppingQueue<T = unknown>(capacity = 1) {
     return {
         ...makeQueue<T>(capacity),
