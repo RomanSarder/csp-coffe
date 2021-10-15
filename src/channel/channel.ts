@@ -112,16 +112,12 @@ export async function put<T = unknown>(ch: Channel<T>, data: T) {
 
 export async function take<T = unknown>(ch: Channel<T>) {
     try {
-        console.log('waiting for take queue to release');
         await waitForTakeQueueToRelease(ch);
-        console.log('making put');
         makeTake(ch);
 
         try {
-            console.log('waiting for incoming put');
             await waitForIncomingPut(ch);
         } catch (e) {
-            console.log('got error');
             // If channel closed, cleanup made take
             if (isChannelClosedError(e)) {
                 resetChannel(ch);
@@ -129,9 +125,7 @@ export async function take<T = unknown>(ch: Channel<T>) {
 
             throw e;
         }
-        console.log('releasing take');
         releaseTake(ch);
-        console.log('returning put');
         return releasePut(ch);
     } catch (e) {
         if (isChannelClosedError(e)) {
