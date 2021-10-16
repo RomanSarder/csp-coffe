@@ -11,6 +11,13 @@ describe('Channel', () => {
             expect(ch.putBuffer.getElementsArray()[0]).toEqual('test1');
         });
 
+        it('should throw when trying to put null', () => {
+            const ch = channel.makeChannel();
+            expect(() => {
+                channel.makePut(ch, null);
+            }).toThrowError('null values are not allowed');
+        });
+
         describe("when the channel's buffer size is more than 1", () => {
             describe('when the buffer type is Dropping', () => {
                 it('should not put a given value to queue', () => {
@@ -166,6 +173,14 @@ describe('Channel', () => {
             channel.makeTake(ch);
             await eventLoopQueue();
             expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should throw error if trying to put null', async () => {
+            const ch = makeChannel();
+
+            await expect(channel.put(ch, null)).rejects.toEqual(
+                new Error('null values are not allowed'),
+            );
         });
 
         describe('when the channel is closed', () => {
