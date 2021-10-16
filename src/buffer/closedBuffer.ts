@@ -1,5 +1,9 @@
 import { makeBufferWithCollection } from './makeBufferWithCollection';
-import { makeQueue } from './collection';
+import { makeDroppingQueue } from './collection';
 
-export const makeClosedBuffer = <T = unknown>() =>
-    makeBufferWithCollection<T>(makeQueue<T>(0));
+export const makeClosedBuffer = <T = unknown>() => ({
+    ...makeBufferWithCollection<T>(makeDroppingQueue<T>(0)),
+    isBlocked() {
+        return true;
+    },
+});

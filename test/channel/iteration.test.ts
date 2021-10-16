@@ -1,6 +1,7 @@
 import { BufferType } from '@Lib/buffer';
-import { makeChannel, put, take, close } from '@Lib/channel';
+import { makeChannel } from '@Lib/channel';
 import { map, filter, reduce } from '@Lib/channel/iteration';
+import { close, put, take } from '@Lib/channel/operators';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('Channel Iteration', () => {

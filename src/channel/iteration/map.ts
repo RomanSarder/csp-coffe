@@ -1,5 +1,6 @@
-import { makeChannel, put } from '../channel';
+import { makeChannel } from '../channel';
 import { Channel } from '../channel.types';
+import { put } from '../operators';
 import { iterate } from './iterate';
 
 export function map<T = unknown, M = unknown>(
