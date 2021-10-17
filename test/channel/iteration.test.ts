@@ -29,6 +29,19 @@ describe('Channel Iteration', () => {
             await eventLoopQueue();
         });
 
+        it('should return channel with specified configuration', async () => {
+            const ch1 = makeChannel<number>();
+            const ch2 = map((a) => a + 2, [ch1], {
+                bufferType: BufferType.SLIDING,
+                capacity: 5,
+            });
+            expect(ch2.putBuffer.type).toEqual(BufferType.SLIDING);
+            expect(ch2.capacity).toEqual(5);
+            close(ch1);
+            close(ch2);
+            await eventLoopQueue();
+        });
+
         describe('when the source channels are closed', () => {
             it('should close the result channel', async () => {
                 const ch1 = makeChannel<number>();
@@ -47,6 +60,7 @@ describe('Channel Iteration', () => {
                 close(ch2);
                 await eventLoopQueue();
                 expect(ch3.isClosed).toEqual(true);
+                await eventLoopQueue();
             });
         });
     });
@@ -78,6 +92,28 @@ describe('Channel Iteration', () => {
             await eventLoopQueue();
         });
 
+        it('should return channel with specified configuration', async () => {
+            const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
+            const ch2 = filter(
+                (num) => {
+                    if (typeof num === 'string') {
+                        return parseInt(num, 10) % 2 === 0;
+                    }
+                    return num % 2 === 0;
+                },
+                [ch1],
+                {
+                    bufferType: BufferType.SLIDING,
+                    capacity: 5,
+                },
+            );
+            expect(ch2.putBuffer.type).toEqual(BufferType.SLIDING);
+            expect(ch2.capacity).toEqual(5);
+            close(ch1);
+            close(ch2);
+            await eventLoopQueue();
+        });
+
         describe('when the source channel closes', () => {
             it('should close the result channel', async () => {
                 const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
@@ -95,6 +131,7 @@ describe('Channel Iteration', () => {
                 close(ch2);
                 await eventLoopQueue();
                 expect(ch3.isClosed).toEqual(true);
+                await eventLoopQueue();
             });
         });
     });
@@ -123,6 +160,29 @@ describe('Channel Iteration', () => {
             expect(await take(ch3)).toEqual(3);
         });
 
+        it('should return channel with specified configuration', async () => {
+            const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
+            const ch2 = reduce(
+                (acc, next) => {
+                    if (typeof next === 'string') {
+                        return acc + parseInt(next, 10);
+                    }
+                    return acc + next;
+                },
+                0,
+                [ch1],
+                {
+                    bufferType: BufferType.SLIDING,
+                    capacity: 5,
+                },
+            );
+            expect(ch2.putBuffer.type).toEqual(BufferType.SLIDING);
+            expect(ch2.capacity).toEqual(5);
+            close(ch1);
+            close(ch2);
+            await eventLoopQueue();
+        });
+
         describe('when the reduced value is taken', () => {
             it('should close the result channel', async () => {
                 const ch1 = makeChannel<string>();
@@ -145,6 +205,7 @@ describe('Channel Iteration', () => {
                 await take(ch3);
                 await eventLoopQueue();
                 expect(ch2.isClosed).toEqual(true);
+                await eventLoopQueue();
             });
         });
     });

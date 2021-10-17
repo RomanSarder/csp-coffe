@@ -1,14 +1,22 @@
+import { BufferType } from '@Lib/buffer';
 import { makeChannel } from '../channel';
 import { Channel } from '../channel.types';
 import { close, put } from '../operators';
 import { iterate } from './iterate';
-import { FlattenChannels } from './iteration.types';
+import { FlattenChannels, OutputChannelConfig } from './iteration.types';
 
 export function filter<Channels extends Channel<any>[]>(
     filterFn: (data: FlattenChannels<Channels>) => boolean,
     channels: Channels,
+    { bufferType, capacity }: OutputChannelConfig = {
+        bufferType: BufferType.FIXED,
+        capacity: 1,
+    },
 ): Channel<FlattenChannels<Channels>> {
-    const filteredCh = makeChannel<FlattenChannels<Channels>>();
+    const filteredCh = makeChannel<FlattenChannels<Channels>>(
+        bufferType,
+        capacity,
+    );
 
     const promises = channels.map((ch) => {
         return iterate<FlattenChannels<Channels>>(async (data) => {
