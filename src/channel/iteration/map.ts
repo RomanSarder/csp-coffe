@@ -1,6 +1,6 @@
 import { makeChannel } from '../channel';
 import { Channel } from '../channel.types';
-import { put } from '../operators';
+import { close, put } from '../operators';
 import { iterate } from './iterate';
 
 export function map<T = unknown, M = unknown>(
@@ -11,7 +11,9 @@ export function map<T = unknown, M = unknown>(
 
     iterate<T>(async (data) => {
         await put(mappedCh, mapFn(data));
-    }, ch);
+    }, ch).then(() => {
+        close(mappedCh);
+    });
 
     return mappedCh;
 }

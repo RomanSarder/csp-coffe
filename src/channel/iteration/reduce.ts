@@ -1,6 +1,6 @@
 import { makeChannel } from '../channel';
 import { Channel } from '../channel.types';
-import { put } from '../operators';
+import { close, put } from '../operators';
 import { iterate } from './iterate';
 
 export function reduce<T = unknown, A = unknown>(
@@ -15,6 +15,7 @@ export function reduce<T = unknown, A = unknown>(
         result = reducer(result, data);
     }, ch).then(async () => {
         await put(reducedCh, result);
+        close(reducedCh);
     });
 
     return reducedCh;

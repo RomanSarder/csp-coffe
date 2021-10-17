@@ -21,6 +21,17 @@ describe('Channel Iteration', () => {
             close(ch1);
             await eventLoopQueue();
         });
+
+        describe('when the source channel is closed', () => {
+            it('should close the result channel', async () => {
+                const ch1 = makeChannel<number>();
+                const ch2 = map((num: number) => num * 10, ch1);
+
+                close(ch1);
+                await eventLoopQueue();
+                expect(ch2.isClosed).toEqual(true);
+            });
+        });
     });
 
     describe('filter', () => {
@@ -39,6 +50,17 @@ describe('Channel Iteration', () => {
             close(ch1);
             await eventLoopQueue();
         });
+
+        describe('when the source channel closes', () => {
+            it('should close the result channel', async () => {
+                const ch1 = makeChannel();
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const ch2 = filter((_: unknown) => true, ch1);
+                close(ch1);
+                await eventLoopQueue();
+                expect(ch2.isClosed).toEqual(true);
+            });
+        });
     });
 
     describe('reduce', () => {
@@ -52,11 +74,33 @@ describe('Channel Iteration', () => {
                 ch1,
             );
             await put(ch1, '1');
+            await eventLoopQueue();
             await put(ch1, '2');
+            await eventLoopQueue();
             await put(ch1, '3');
+            await eventLoopQueue();
             close(ch1);
             await eventLoopQueue();
             expect(await take(ch2)).toEqual(6);
+        });
+
+        describe('when the reduced value is taken', () => {
+            it('should close the result channel', async () => {
+                const ch1 = makeChannel<string>();
+                const ch2 = reduce(
+                    (acc, next) => {
+                        return acc + parseInt(next, 10);
+                    },
+                    0,
+                    ch1,
+                );
+                await put(ch1, '1');
+                await eventLoopQueue();
+                close(ch1);
+                await take(ch2);
+                await eventLoopQueue();
+                expect(ch2.isClosed).toEqual(true);
+            });
         });
     });
 });

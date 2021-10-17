@@ -1,9 +1,11 @@
+import { events } from '..';
 import { Channel } from '../channel.types';
 
 export function iterate<T = unknown>(
     callback: (data: T) => Promise<void>,
     ch: Channel<T>,
 ) {
+    if (ch.isClosed) return Promise.resolve(events.CHANNEL_CLOSED);
     const iterator = ch[Symbol.asyncIterator]();
 
     async function nextStep(
@@ -11,6 +13,10 @@ export function iterate<T = unknown>(
             | Promise<IteratorResult<string | T, string>>
             | IteratorResult<string | T, string>,
     ): Promise<any> {
+        if (ch.isClosed) {
+            return Promise.resolve(events.CHANNEL_CLOSED);
+        }
+
         if (res instanceof Promise) {
             return res.then(nextStep);
         }

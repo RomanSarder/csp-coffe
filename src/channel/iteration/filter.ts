@@ -1,6 +1,6 @@
 import { makeChannel } from '../channel';
 import { Channel } from '../channel.types';
-import { put } from '../operators';
+import { close, put } from '../operators';
 import { iterate } from './iterate';
 
 export function filter<T = unknown>(
@@ -13,7 +13,9 @@ export function filter<T = unknown>(
         if (filterFn(data)) {
             await put(mappedCh, data);
         }
-    }, ch);
+    }, ch).then(() => {
+        close(mappedCh);
+    });
 
     return mappedCh;
 }
