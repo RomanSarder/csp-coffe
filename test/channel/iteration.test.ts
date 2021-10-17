@@ -26,6 +26,7 @@ describe('Channel Iteration', () => {
             expect(await take(ch3)).toEqual(20);
             close(ch1);
             close(ch2);
+            close(ch3);
             await eventLoopQueue();
         });
 
@@ -89,6 +90,7 @@ describe('Channel Iteration', () => {
             await eventLoopQueue();
             close(ch1);
             close(ch2);
+            close(ch3);
             await eventLoopQueue();
         });
 
@@ -158,6 +160,8 @@ describe('Channel Iteration', () => {
             close(ch2);
             await eventLoopQueue();
             expect(await take(ch3)).toEqual(3);
+            close(ch3);
+            await eventLoopQueue();
         });
 
         it('should return channel with specified configuration', async () => {
