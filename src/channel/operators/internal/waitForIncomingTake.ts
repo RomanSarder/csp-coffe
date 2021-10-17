@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel/channel.types';
+import { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/constants';
 import { eventLoopQueue } from '@Lib/internal';
 
