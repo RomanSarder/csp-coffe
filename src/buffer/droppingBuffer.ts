@@ -1,7 +1,9 @@
-import { makeBufferWithCollection } from './makeBufferWithCollection';
+import { makeBufferMixin } from './bufferMixin';
 import { makeDroppingQueue } from './collection';
+import { BufferType } from './buffer.enum';
 import { Buffer } from './buffer.types';
 
 export const makeDroppingBuffer = <T = unknown>(capacity = 1): Buffer<T> => ({
-    ...makeBufferWithCollection<T>(makeDroppingQueue<T>(capacity)),
+    type: BufferType.DROPPING,
+    ...makeBufferMixin<T>(makeDroppingQueue<T>(capacity)),
 });

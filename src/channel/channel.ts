@@ -1,11 +1,12 @@
 import { eventLoopQueue } from '@Lib/internal';
 import { BufferType, makeBuffer } from '@Lib/buffer';
+import { CreatableBufferTypes } from '@Lib/buffer/buffer.enum';
 import type { Channel } from './channel.types';
 import { events } from './constants';
 import { take } from './operators';
 
 export function makeChannel<T = unknown>(
-    bufferType: Exclude<BufferType, 'CLOSED'> = BufferType.FIXED,
+    bufferType: CreatableBufferTypes = BufferType.FIXED,
     capacity = 1,
 ): Channel<T> {
     return {

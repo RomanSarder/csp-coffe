@@ -1,9 +1,9 @@
-import type { Buffer } from './buffer.types';
+import type { TypelessBuffer } from './buffer.types';
 import type { Collection } from './collection';
 
-export function makeBufferWithCollection<T = unknown>(
+export function makeBufferMixin<T = unknown>(
     collection: Collection<T>,
-): Buffer<T> {
+): TypelessBuffer<T> {
     return {
         collection,
 

@@ -3,5 +3,5 @@ export { BufferType } from './buffer.enum';
 
 export { makeSlidingBuffer } from './slidingBuffer';
 export { makeDroppingBuffer } from './droppingBuffer';
-export { makeUnblockingBuffer } from './makeUnblockingBuffer';
-export { makeBuffer } from './makeBuffer';
+export { makeUnblockingBuffer } from './unblockingBuffer';
+export { makeBuffer } from './buffer';

@@ -5,3 +5,5 @@ export enum BufferType {
     UNBLOCKING = 'UNBLOCKING',
     CLOSED = 'CLOSED',
 }
+
+export type CreatableBufferTypes = Exclude<BufferType, 'CLOSED'>;
