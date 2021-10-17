@@ -1,4 +1,4 @@
-import { go } from '@Lib/go';
+import { fork, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { take } from '@Lib/operators';
 
@@ -52,5 +52,25 @@ describe('go', () => {
         const { channel } = go(testGenerator);
 
         expect(await take(channel)).toEqual('test1');
+    });
+
+    describe('when fork command is yielded', () => {
+        it('should wait until all forked processes complete before resolving', async () => {
+            let isForkCompleted = false;
+
+            function* testGenerator() {
+                const result: string = yield fakeAsyncFunction(() => 'test1');
+                yield fork(function* forkedFn() {
+                    yield fakeAsyncFunction(() => {
+                        isForkCompleted = true;
+                    });
+                });
+                return result;
+            }
+
+            const { promise } = go(testGenerator);
+            await promise;
+            expect(isForkCompleted).toEqual(true);
+        });
     });
 });
