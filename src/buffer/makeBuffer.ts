@@ -4,12 +4,14 @@ import { makeDroppingBuffer } from './droppingBuffer';
 import { makeSlidingBuffer } from './slidingBuffer';
 import { Buffer } from './buffer.types';
 import { makeFixedBuffer } from './fixedBuffer';
+import { makeUnblockingBuffer } from './makeUnblockingBuffer';
 
 const bufferTypeToMakeFn = {
     [BufferType.DROPPING]: makeDroppingBuffer,
     [BufferType.SLIDING]: makeSlidingBuffer,
     [BufferType.CLOSED]: makeClosedBuffer,
     [BufferType.FIXED]: makeFixedBuffer,
+    [BufferType.UNBLOCKING]: makeUnblockingBuffer,
 };
 
 export function makeBuffer<T = unknown>(

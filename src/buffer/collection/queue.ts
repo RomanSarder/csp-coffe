@@ -1,5 +1,5 @@
 // Queue that releases first element when the new element is added
-export function makeQueue<T = unknown>(capacity = 1) {
+export function makeQueue<T = unknown>(capacity: number | null = 1) {
     return {
         capacity,
         tail: 0,
@@ -11,6 +11,9 @@ export function makeQueue<T = unknown>(capacity = 1) {
         },
 
         getCapacity(): number {
+            if (this.capacity === null) {
+                return Infinity;
+            }
             return this.capacity;
         },
 
@@ -19,7 +22,10 @@ export function makeQueue<T = unknown>(capacity = 1) {
         },
 
         add(data: T) {
-            if (this.getSize() >= this.capacity) {
+            if (
+                capacity !== null &&
+                this.getSize() >= (this.capacity as number)
+            ) {
                 this.release();
             }
             this.contents[this.tail] = data;
