@@ -1,9 +1,9 @@
 import { BufferType } from '@Lib/buffer';
 import { makeChannel } from '../channel';
-import { Channel } from '../channel.types';
+import { Channel, FlattenChannels } from '../channel.types';
 import { close, put } from '../operators';
 import { iterate } from './iterate';
-import { FlattenChannels, OutputChannelConfig } from './iteration.types';
+import { OutputChannelConfig } from './iteration.types';
 
 export function filter<Channels extends Channel<any>[]>(
     filterFn: (data: FlattenChannels<Channels>) => boolean,
