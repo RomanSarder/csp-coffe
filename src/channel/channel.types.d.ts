@@ -3,6 +3,8 @@ import { CreatableBufferTypes } from '@Lib/buffer';
 import { Flatten } from '@Lib/shared';
 
 export type Channel<T = unknown> = {
+    id: string;
+
     isBuffered: boolean;
     isClosed: boolean;
 
@@ -10,6 +12,8 @@ export type Channel<T = unknown> = {
 
     putBuffer: Buffer<T>;
     takeBuffer: Buffer<null>;
+
+    is: (ch: Channel<any>) => boolean;
 
     [Symbol.asyncIterator](): AsyncGenerator<T | string, string, unknown>;
 };

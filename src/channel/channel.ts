@@ -1,3 +1,5 @@
+import { v4 as uuid } from 'uuid';
+
 import { eventLoopQueue } from '@Lib/internal';
 import { BufferType, makeBuffer } from '@Lib/buffer';
 import type { Channel } from './channel.types';
@@ -8,7 +10,8 @@ export function makeChannel<T = NonNullable<unknown>>(
     bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
     capacity = 1,
 ): Channel<T> {
-    return {
+    const result: Channel<T> = {
+        id: uuid(),
         capacity,
         isBuffered: capacity > 1,
         isClosed: false,
@@ -16,14 +19,25 @@ export function makeChannel<T = NonNullable<unknown>>(
         takeBuffer: makeBuffer(BufferType.FIXED, 1),
         async *[Symbol.asyncIterator]() {
             while (!this.isClosed && this.putBuffer.getSize() <= capacity) {
-                const result = (await take<T>(this)) as string | T;
-                yield result;
+                const value = (await take<T>(this)) as string | T;
+                yield value;
                 await eventLoopQueue();
             }
 
             return events.CHANNEL_CLOSED;
         },
+
+        is(ch: Channel<unknown>) {
+            return this.id === ch.id;
+        },
     };
+
+    Object.defineProperty(result, 'id', {
+        configurable: false,
+        writable: false,
+    });
+
+    return result;
 }
 
 export function makeTimeoutChannel<T = NonNullable<unknown>>(
