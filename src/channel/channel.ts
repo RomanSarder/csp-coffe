@@ -1,12 +1,11 @@
 import { eventLoopQueue } from '@Lib/internal';
 import { BufferType, makeBuffer } from '@Lib/buffer';
-import { CreatableBufferTypes } from '@Lib/buffer/buffer.enum';
 import type { Channel } from './channel.types';
-import { events } from './constants';
+import { DEFAULT_CHANNEL_CONFIG, events } from './constants';
 import { close, take } from '../operators';
 
 export function makeChannel<T = NonNullable<unknown>>(
-    bufferType: CreatableBufferTypes = BufferType.FIXED,
+    bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
     capacity = 1,
 ): Channel<T> {
     return {
@@ -29,7 +28,7 @@ export function makeChannel<T = NonNullable<unknown>>(
 
 export function makeTimeoutChannel<T = NonNullable<unknown>>(
     ms: number,
-    bufferType: CreatableBufferTypes = BufferType.FIXED,
+    bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
     capacity = 1,
 ) {
     const ch = makeChannel<T>(bufferType, capacity);

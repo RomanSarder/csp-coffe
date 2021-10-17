@@ -1,18 +1,18 @@
-import { BufferType } from '@Lib/buffer';
-import { makeChannel } from '../../channel/channel';
-import { Channel, FlattenChannels } from '../../channel/channel.types';
+import {
+    makeChannel,
+    Channel,
+    FlattenChannels,
+    ChannelConfiguration,
+} from '@Lib/channel';
+import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/constants';
 import { close, put } from '..';
 import { iterate } from './iterate';
-import { OutputChannelConfig } from './iteration.types';
 
 export function reduce<Channels extends Channel<any>[], A = unknown>(
     reducer: (acc: A, data: FlattenChannels<Channels>) => A,
     acc: A,
     channels: Channels,
-    { bufferType, capacity }: OutputChannelConfig = {
-        bufferType: BufferType.FIXED,
-        capacity: 1,
-    },
+    { bufferType, capacity }: ChannelConfiguration = DEFAULT_CHANNEL_CONFIG,
 ): Channel<A> {
     const reducedCh = makeChannel<A>(bufferType, capacity);
     let result = acc;

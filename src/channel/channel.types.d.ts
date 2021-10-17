@@ -1,4 +1,5 @@
 import type { Buffer } from '@Lib/buffer';
+import { CreatableBufferTypes } from '@Lib/buffer';
 
 export type Channel<T = unknown> = {
     isBuffered: boolean;
@@ -10,6 +11,11 @@ export type Channel<T = unknown> = {
     takeBuffer: Buffer<null>;
 
     [Symbol.asyncIterator](): AsyncGenerator<T | string, string, unknown>;
+};
+
+export type ChannelConfiguration = {
+    bufferType: CreatableBufferTypes;
+    capacity: number;
 };
 
 export type Flatten<Type> = Type extends Array<infer Item> ? Item : Type;
