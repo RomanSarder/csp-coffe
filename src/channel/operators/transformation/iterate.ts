@@ -1,5 +1,5 @@
-import { events } from '..';
-import { Channel } from '../channel.types';
+import { events } from '../..';
+import { Channel } from '../../channel.types';
 
 export function iterate<T = unknown>(
     callback: (data: T) => Promise<void>,

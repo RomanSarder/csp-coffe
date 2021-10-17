@@ -1,7 +1,7 @@
 import { BufferType } from '@Lib/buffer';
-import { makeChannel } from '../channel';
-import { Channel, FlattenChannels } from '../channel.types';
-import { close, put } from '../operators';
+import { makeChannel } from '../../channel';
+import { Channel, FlattenChannels } from '../../channel.types';
+import { close, put } from '..';
 import { iterate } from './iterate';
 import { OutputChannelConfig } from './iteration.types';
 
