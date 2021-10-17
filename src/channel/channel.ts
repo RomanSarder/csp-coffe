@@ -3,7 +3,7 @@ import { BufferType, makeBuffer } from '@Lib/buffer';
 import { CreatableBufferTypes } from '@Lib/buffer/buffer.enum';
 import type { Channel } from './channel.types';
 import { events } from './constants';
-import { close, take } from './operators';
+import { close, take } from '../operators';
 
 export function makeChannel<T = NonNullable<unknown>>(
     bufferType: CreatableBufferTypes = BufferType.FIXED,
