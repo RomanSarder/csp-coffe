@@ -3,9 +3,9 @@ import { BufferType, makeBuffer } from '@Lib/buffer';
 import { CreatableBufferTypes } from '@Lib/buffer/buffer.enum';
 import type { Channel } from './channel.types';
 import { events } from './constants';
-import { take } from './operators';
+import { close, take } from './operators';
 
-export function makeChannel<T = unknown>(
+export function makeChannel<T = NonNullable<unknown>>(
     bufferType: CreatableBufferTypes = BufferType.FIXED,
     capacity = 1,
 ): Channel<T> {
@@ -25,4 +25,19 @@ export function makeChannel<T = unknown>(
             return events.CHANNEL_CLOSED;
         },
     };
+}
+
+export function makeTimeoutChannel<T = NonNullable<unknown>>(
+    ms: number,
+    bufferType: CreatableBufferTypes = BufferType.FIXED,
+    capacity = 1,
+) {
+    const ch = makeChannel<T>(bufferType, capacity);
+
+    const timeout = setTimeout(() => {
+        close(ch);
+        clearTimeout(timeout);
+    }, ms);
+
+    return ch;
 }
