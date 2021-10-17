@@ -2,20 +2,25 @@ import { makeChannel } from '../channel';
 import { Channel } from '../channel.types';
 import { close, put } from '../operators';
 import { iterate } from './iterate';
+import { FlattenChannels } from './iteration.types';
 
-export function filter<T = unknown>(
-    filterFn: (data: T) => boolean,
-    ch: Channel<T>,
-): Channel<T> {
-    const mappedCh = makeChannel<T>();
+export function filter<Channels extends Channel<any>[]>(
+    filterFn: (data: FlattenChannels<Channels>) => boolean,
+    channels: Channels,
+): Channel<FlattenChannels<Channels>> {
+    const filteredCh = makeChannel<FlattenChannels<Channels>>();
 
-    iterate<T>(async (data) => {
-        if (filterFn(data)) {
-            await put(mappedCh, data);
-        }
-    }, ch).then(() => {
-        close(mappedCh);
+    const promises = channels.map((ch) => {
+        return iterate<FlattenChannels<Channels>>(async (data) => {
+            if (filterFn(data)) {
+                await put(filteredCh, data);
+            }
+        }, ch);
     });
 
-    return mappedCh;
+    Promise.all(promises).finally(() => {
+        close(filteredCh);
+    });
+
+    return filteredCh;
 }
