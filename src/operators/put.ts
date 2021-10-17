@@ -7,7 +7,10 @@ import {
     waitForPutQueueToRelease,
 } from './internal';
 
-export async function put<T = unknown>(ch: Channel<T>, data: T) {
+export async function put<T = unknown>(
+    ch: Channel<T>,
+    data: T,
+): Promise<boolean> {
     if (data === null) {
         throw new Error('null values are not allowed');
     }
@@ -32,4 +35,6 @@ export async function put<T = unknown>(ch: Channel<T>, data: T) {
             throw e;
         }
     }
+
+    return true;
 }
