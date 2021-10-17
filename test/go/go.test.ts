@@ -1,5 +1,6 @@
 import { go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
+import { take } from '@Lib/operators';
 
 describe('go', () => {
     it('should execute both sync and async yield statements in a correct order', async () => {
@@ -29,5 +30,27 @@ describe('go', () => {
         const result = await promise;
 
         expect(result).toEqual('test');
+    });
+
+    it('should return channel which contains returned value', async () => {
+        function* testGenerator() {
+            const result: string = yield fakeAsyncFunction(() => 'test1');
+            return result;
+        }
+
+        const { channel } = go(testGenerator);
+
+        expect(await take(channel)).toEqual('test1');
+    });
+
+    it('should return channel which closes after taking a value', async () => {
+        function* testGenerator() {
+            const result: string = yield fakeAsyncFunction(() => 'test1');
+            return result;
+        }
+
+        const { channel } = go(testGenerator);
+
+        expect(await take(channel)).toEqual('test1');
     });
 });

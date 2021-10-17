@@ -1,5 +1,6 @@
 import type { Buffer } from '@Lib/buffer';
 import { CreatableBufferTypes } from '@Lib/buffer';
+import { Flatten } from '@Lib/shared';
 
 export type Channel<T = unknown> = {
     isBuffered: boolean;
@@ -18,7 +19,6 @@ export type ChannelConfiguration = {
     capacity: number;
 };
 
-export type Flatten<Type> = Type extends Array<infer Item> ? Item : Type;
 export type FlattenChannel<Type> = Type extends Channel<infer Item>
     ? Item
     : unknown;

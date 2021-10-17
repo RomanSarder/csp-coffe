@@ -1,6 +1,6 @@
 import { BufferType } from '@Lib/buffer';
 import { makeChannel, Channel } from '@Lib/channel';
-import { closeOnEmptyBufferProxy } from '@Lib/channel/proxy/closeOnEmptyBufferProxy';
+import { closeOnEmptyBuffer } from '@Lib/channel/proxy';
 import { Flatten } from '@Lib/shared';
 import { makePut } from '../internal';
 
@@ -11,5 +11,5 @@ export function fromArray<Arr extends any[]>(arr: Arr): Channel<Flatten<Arr>> {
         makePut(ch, element);
     });
 
-    return closeOnEmptyBufferProxy(ch);
+    return closeOnEmptyBuffer(ch);
 }

@@ -1,12 +1,8 @@
 import { close } from '@Lib/operators';
 import { Channel } from '../channel.types';
+import { hasKey } from './utils';
 
-const hasKey = <T extends Record<string, any>>(
-    obj: T,
-    k: keyof any,
-): k is keyof T => k in obj;
-
-export function closeOnEmptyBufferProxy<C extends Channel<any>>(ch: C) {
+export function closeOnEmptyBuffer<C extends Channel<any>>(ch: C) {
     return new Proxy(ch, {
         get(target, name, receiver) {
             if (name === 'isClosed') {
