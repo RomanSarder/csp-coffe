@@ -1,4 +1,3 @@
-import { BufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal';
 
