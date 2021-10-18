@@ -7,3 +7,4 @@ export { put } from './put';
 export { take } from './take';
 export { poll } from './poll';
 export { pipe } from './pipe';
+export { alts } from './alts';
