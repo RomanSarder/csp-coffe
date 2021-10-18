@@ -7,13 +7,13 @@ import { makeFixedBuffer } from '@Lib/buffer/fixedBuffer';
 
 describe('Buffer', () => {
     describe('makeFixedBuffer', () => {
-        it('should add elements to contents array', () => {
+        it('should add an item', () => {
             const buffer = makeFixedBuffer();
             buffer.add('sasagi');
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put element from contents', () => {
+        it('should release first put item', () => {
             const buffer = makeFixedBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -22,7 +22,7 @@ describe('Buffer', () => {
         });
 
         describe('when full', () => {
-            it('should not add', () => {
+            it('should not add an item', () => {
                 const buffer = makeFixedBuffer(1);
                 buffer.add('sasagi');
                 buffer.add('sasagi 2');
@@ -40,13 +40,13 @@ describe('Buffer', () => {
     });
 
     describe('makeSlidingBuffer', () => {
-        it('should add elements to contents array', () => {
+        it('should add item', () => {
             const buffer = makeSlidingBuffer();
             buffer.add('sasagi');
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put element from contents', () => {
+        it('should release first put item', () => {
             const buffer = makeSlidingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -62,7 +62,7 @@ describe('Buffer', () => {
             });
 
             describe('when adding an element', () => {
-                it('should release first put element', () => {
+                it('should release first put item', () => {
                     const buffer = makeSlidingBuffer(2);
                     buffer.add('sasagi');
                     buffer.add('sasagi 2');
@@ -77,13 +77,13 @@ describe('Buffer', () => {
     });
 
     describe('makeDroppingBuffer', () => {
-        it('should add elements to contents array', () => {
+        it('should add item', () => {
             const buffer = makeDroppingBuffer();
             buffer.add('sasagi');
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put element from contents', () => {
+        it('should release first put item', () => {
             const buffer = makeDroppingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -99,8 +99,8 @@ describe('Buffer', () => {
                 expect(buffer.isBlocked()).toEqual(false);
             });
 
-            describe('when adding an element', () => {
-                it('should drop the latest put element from contents', () => {
+            describe('when adding an item', () => {
+                it('should drop the last put item', () => {
                     const buffer = makeDroppingBuffer(2);
                     buffer.add('sasagi');
                     buffer.add('sasagi 2');
@@ -115,13 +115,13 @@ describe('Buffer', () => {
     });
 
     describe('makeUnblockingBuffer', () => {
-        it('should add elements to contents array', () => {
+        it('should add item', () => {
             const buffer = makeUnblockingBuffer();
             buffer.add('sasagi');
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put element from contents', () => {
+        it('should release first put item', () => {
             const buffer = makeUnblockingBuffer();
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -138,7 +138,7 @@ describe('Buffer', () => {
             });
 
             describe('when adding an element', () => {
-                it('should not drop element', () => {
+                it('should add item', () => {
                     const buffer = makeUnblockingBuffer();
                     buffer.add('sasagi');
                     buffer.add('sasagi 2');
