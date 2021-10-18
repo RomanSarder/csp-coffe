@@ -1,5 +1,6 @@
 import { Channel, makeChannel } from '@Lib/channel';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
+import { eventLoopQueue } from '@Lib/internal';
 import { makePut } from '@Lib/operators/internal';
 import { ForkCommand, Commands } from './commands';
 import { isCommand } from './commands/utils/isCommand';
@@ -23,7 +24,11 @@ export function go<G extends Generator<unknown, unknown, unknown>>(
 
         if (done) {
             makePut(ch, nextIteratorValue as GeneratorReturn<G>);
-            return Promise.all(forkedProcesses).then(() => nextIteratorValue);
+            return eventLoopQueue()
+                .then(() => {
+                    return Promise.all(forkedProcesses);
+                })
+                .then(() => nextIteratorValue);
         }
 
         if (isCommand(nextIteratorValue)) {
@@ -34,7 +39,11 @@ export function go<G extends Generator<unknown, unknown, unknown>>(
         }
 
         if (nextIteratorValue instanceof Promise) {
-            return nextIteratorValue.then(nextStep);
+            return eventLoopQueue()
+                .then(() => {
+                    return Promise.resolve(nextIteratorValue);
+                })
+                .then(nextStep);
         }
 
         return Promise.resolve(nextIteratorValue).then(nextStep);
