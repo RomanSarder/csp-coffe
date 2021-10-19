@@ -6,14 +6,14 @@ export function raceToSuccess<P extends Promise<any>[]>(
     return Promise.all(
         promises.map((promise) => {
             return promise
-                .then((res) => {
-                    throw new Error(res);
-                })
                 .catch((e) => {
-                    return e;
+                    return Promise.resolve(e);
+                })
+                .then((res) => {
+                    return Promise.reject(res);
                 });
         }),
     ).catch((res) => {
-        return res;
-    });
+        return Promise.resolve(res);
+    }) as Promise<PromisesType<P>>;
 }
