@@ -29,16 +29,20 @@ type OperationResponse<C extends NonNullable<any>> = {
 function isPutDefinition<C extends Channel<any>>(
     def: C | PutDefinition<C>,
 ): def is PutDefinition<C> {
-    if (def instanceof Array && typeof def[1] === 'object') {
+    if (def instanceof Array && typeof def[0] === 'object') {
         return true;
     }
     return false;
 }
 
 export async function alts<
+    DefaultValueType,
     Definitions extends ArrayOfDefinitions<Channel<any>>,
     InnerType = DefinitionType<Definitions>,
->(defs: Definitions): Promise<OperationResponse<InnerType>> {
+    ReturnType = DefaultValueType extends NonNullable<any>
+        ? OperationResponse<InnerType> | DefaultValueType
+        : OperationResponse<InnerType>,
+>(defs: Definitions, defaultValue?: DefaultValueType): Promise<ReturnType> {
     const successes: OperationResponse<InnerType>[] = [];
 
     defs.forEach((def) => {
@@ -67,11 +71,12 @@ export async function alts<
         async (def) => {
             if (isPutDefinition(def)) {
                 const [ch, data] = def;
-                return put(ch, data);
+                return put(ch, data).then((result) => {
+                    return { value: result, channel: ch };
+                });
             }
             return take(def);
         },
     );
-
     return raceToSuccess(promises);
 }
