@@ -21,9 +21,14 @@ type DefinitionType<A extends any[], C = Flatten<A>> = C extends
     ? FlattenChannel<U> | null
     : unknown;
 
-type OperationResponse<C extends NonNullable<any>> = {
+type OperationResponse<C extends any> = {
     value: C | true;
-    channel: Channel<any>;
+    channel: Channel<NonNullable<C>>;
+};
+
+type OperationResponseWithDefaultValue<C extends any> = {
+    value: C | true;
+    channel: Channel<NonNullable<C>> | null;
 };
 
 function isPutDefinition<C extends Channel<any>>(
@@ -35,14 +40,28 @@ function isPutDefinition<C extends Channel<any>>(
     return false;
 }
 
-export async function alts<
-    DefaultValueType,
+export function alts<
     Definitions extends ArrayOfDefinitions<Channel<any>>,
     InnerType = DefinitionType<Definitions>,
-    ReturnType = DefaultValueType extends NonNullable<any>
-        ? OperationResponse<InnerType> | DefaultValueType
-        : OperationResponse<InnerType>,
->(defs: Definitions, defaultValue?: DefaultValueType): Promise<ReturnType> {
+>(defs: Definitions): Promise<OperationResponse<InnerType>>;
+
+export function alts<
+    Definitions extends ArrayOfDefinitions<Channel<any>>,
+    InnerType = DefinitionType<Definitions>,
+>(
+    defs: Definitions,
+    defaultValue: InnerType,
+): Promise<OperationResponseWithDefaultValue<InnerType | null>>;
+
+export async function alts<
+    Definitions extends ArrayOfDefinitions<Channel<any>>,
+    InnerType = DefinitionType<Definitions>,
+>(
+    defs: Definitions,
+    defaultValue?: InnerType,
+): Promise<
+    OperationResponse<InnerType> | OperationResponseWithDefaultValue<InnerType>
+> {
     const successes: OperationResponse<InnerType>[] = [];
 
     defs.forEach((def) => {
@@ -65,6 +84,10 @@ export async function alts<
 
     if (successes.length > 0) {
         return successes[0];
+    }
+
+    if (defaultValue) {
+        return { channel: null, value: defaultValue };
     }
 
     const promises: Promise<OperationResponse<InnerType>>[] = defs.map(
