@@ -47,11 +47,12 @@ export function alts<
 
 export function alts<
     Definitions extends ArrayOfDefinitions<Channel<any>>,
+    DefaultValue extends DefinitionType<Definitions>,
     InnerType = DefinitionType<Definitions>,
 >(
     defs: Definitions,
-    defaultValue: InnerType,
-): Promise<OperationResponseWithDefaultValue<InnerType | null>>;
+    defaultValue: DefaultValue,
+): Promise<OperationResponseWithDefaultValue<NonNullable<InnerType>>>;
 
 export async function alts<
     Definitions extends ArrayOfDefinitions<Channel<any>>,
@@ -98,7 +99,9 @@ export async function alts<
                     return { value: result, channel: ch };
                 });
             }
-            return take(def);
+            return take(def).then((result) => {
+                return { value: result, channel: def };
+            });
         },
     );
     return raceToSuccess(promises);

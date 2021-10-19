@@ -6,7 +6,7 @@ import { makePut, releasePut } from '@Lib/operators/internal';
 
 describe('alts', () => {
     describe('when given only channels', () => {
-        describe('when any channel has value available', () => {
+        describe('when any channel has value available immediately', () => {
             it('should return value from first channel with available value', async () => {
                 const ch1 = makeChannel<string>();
                 const ch2 = makeChannel<number>();
@@ -15,6 +15,44 @@ describe('alts', () => {
                 const result = await alts([ch1, ch2]);
                 expect(result.value).toEqual(10);
                 expect(result.channel.is(ch2)).toEqual(true);
+            });
+        });
+
+        describe('when no channel has value available immediately', () => {
+            it('should for value to be available', async () => {
+                const ch1 = makeChannel<string>();
+                const ch2 = makeChannel<number>(BufferType.FIXED);
+                const spy = jest.fn();
+
+                alts([ch1, ch2]).then(spy);
+
+                await eventLoopQueue();
+
+                expect(spy).not.toHaveBeenCalled();
+
+                await eventLoopQueue();
+
+                makePut(ch1, 'test1');
+
+                await eventLoopQueue();
+
+                expect(spy).toHaveBeenCalledWith({
+                    value: 'test1',
+                    channel: ch1,
+                });
+            });
+
+            describe('when given default value', () => {
+                it('should return default value', async () => {
+                    const ch1 = makeChannel<string>();
+                    const ch2 = makeChannel<number>(BufferType.FIXED);
+
+                    const result = await alts([ch1, ch2], 'test1');
+                    expect(result).toEqual({
+                        value: 'test1',
+                        channel: null,
+                    });
+                });
             });
         });
     });
@@ -62,6 +100,28 @@ describe('alts', () => {
                 await eventLoopQueue();
 
                 expect(spy).toHaveBeenCalledWith({ value: true, channel: ch2 });
+            });
+
+            describe('when given default value', () => {
+                it('should return default value', async () => {
+                    const ch1 = makeChannel<string>();
+                    const ch2 = makeChannel<number>();
+
+                    makePut(ch1, 'filler');
+                    makePut(ch2, 100);
+
+                    const result = await alts(
+                        [
+                            [ch1, 'test1'],
+                            [ch2, 'test2'],
+                        ],
+                        'test3',
+                    );
+                    expect(result).toEqual({
+                        value: 'test3',
+                        channel: null,
+                    });
+                });
             });
         });
     });
