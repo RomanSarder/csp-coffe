@@ -7,8 +7,9 @@
 // if no default value - wait for operations, return first one to succeed
 
 import { FlattenChannel, Channel } from '@Lib/channel';
+import { eventLoopQueue } from '@Lib/internal';
 import { Flatten } from '@Lib/shared';
-import { offer, poll, put, take } from '.';
+import { offer, poll } from '.';
 import { raceToSuccess } from './shared/utils';
 
 type PutDefinition<C extends Channel<any>> = [C, FlattenChannel<C>];
@@ -90,18 +91,34 @@ export async function alts<
     if (defaultValue) {
         return { channel: null, value: defaultValue };
     }
-
+    let operationResult: OperationResponse<InnerType>;
     const promises: Promise<OperationResponse<InnerType>>[] = defs.map(
         async (def) => {
             if (isPutDefinition(def)) {
                 const [ch, data] = def;
-                return put(ch, data).then((result) => {
-                    return { value: result, channel: ch };
-                });
+                while (operationResult === undefined) {
+                    await eventLoopQueue();
+                    const maybeResult = offer(ch, data);
+                    if (maybeResult !== null) {
+                        operationResult = {
+                            value: maybeResult,
+                            channel: ch,
+                        };
+                    }
+                }
+                return operationResult;
             }
-            return take(def).then((result) => {
-                return { value: result, channel: def };
-            });
+            while (operationResult === undefined) {
+                await eventLoopQueue();
+                const maybeResult = poll(def);
+                if (maybeResult !== null) {
+                    operationResult = {
+                        value: maybeResult,
+                        channel: def,
+                    };
+                }
+            }
+            return operationResult;
         },
     );
     return raceToSuccess(promises);
