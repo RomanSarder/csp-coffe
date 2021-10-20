@@ -1,4 +1,4 @@
-import { BufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { eventLoopQueue } from '@Lib/internal';
 import { alts } from '@Lib/operators';
@@ -21,7 +21,7 @@ describe('alts', () => {
         describe('when no channel has value available immediately', () => {
             it('should for value to be available', async () => {
                 const ch1 = makeChannel<string>();
-                const ch2 = makeChannel<number>(BufferType.FIXED);
+                const ch2 = makeChannel<number>(CreatableBufferType.FIXED);
                 const spy = jest.fn();
 
                 alts([ch1, ch2]).then(spy);
@@ -45,7 +45,7 @@ describe('alts', () => {
             describe('when given default value', () => {
                 it('should return default value', async () => {
                     const ch1 = makeChannel<string>();
-                    const ch2 = makeChannel<number>(BufferType.FIXED);
+                    const ch2 = makeChannel<number>(CreatableBufferType.FIXED);
 
                     const result = await alts([ch1, ch2], 'test1');
                     expect(result).toEqual({
@@ -75,7 +75,7 @@ describe('alts', () => {
         describe('when no channel as space in buffer immediately', () => {
             it('should wait until any operation succeeds', async () => {
                 const ch1 = makeChannel<string>();
-                const ch2 = makeChannel<number>(BufferType.FIXED, 2);
+                const ch2 = makeChannel<number>(CreatableBufferType.FIXED, 2);
                 const spy = jest.fn();
                 makePut(ch2, 10);
                 makePut(ch2, 30);

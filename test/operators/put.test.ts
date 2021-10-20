@@ -1,4 +1,4 @@
-import { BufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { close, put } from '@Lib/operators';
 import { makePut, makeTake, releasePut } from '@Lib/operators/internal';
@@ -50,7 +50,7 @@ describe('put', () => {
     describe('when the channel buffer size is more than 1', () => {
         describe('when there is no pending take', () => {
             it('should not block put if no take request is there', async () => {
-                const ch = makeChannel(BufferType.DROPPING, 2);
+                const ch = makeChannel(CreatableBufferType.DROPPING, 2);
                 const spy = jest.fn();
                 put(ch, 'test1').then(spy);
                 await eventLoopQueue();
@@ -59,7 +59,7 @@ describe('put', () => {
 
             describe('when the buffer is full', () => {
                 it('should block put request if buffer is full', async () => {
-                    const ch = makeChannel(BufferType.FIXED, 2);
+                    const ch = makeChannel(CreatableBufferType.FIXED, 2);
                     const spy = jest.fn();
                     makePut(ch, 'test11');
                     makePut(ch, 'test12');

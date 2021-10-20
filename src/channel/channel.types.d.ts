@@ -1,5 +1,5 @@
 import type { Buffer } from '@Lib/buffer';
-import { CreatableBufferTypes } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { Flatten } from '@Lib/shared';
 
 export type Channel<T = unknown> = {
@@ -19,8 +19,8 @@ export type Channel<T = unknown> = {
 };
 
 export type ChannelConfiguration = {
-    bufferType: CreatableBufferTypes;
-    capacity: number;
+    bufferType: CreatableBufferType;
+    capacity?: number;
 };
 
 export type FlattenChannel<Type> = Type extends Channel<infer Item>

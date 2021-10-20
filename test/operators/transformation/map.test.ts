@@ -1,4 +1,4 @@
-import { BufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { close, map, put, take } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/internal';
@@ -31,10 +31,10 @@ describe('map', () => {
     it('should return channel with specified configuration', async () => {
         const ch1 = makeChannel<number>();
         const ch2 = map((a) => a + 2, [ch1], {
-            bufferType: BufferType.SLIDING,
+            bufferType: CreatableBufferType.SLIDING,
             capacity: 5,
         });
-        expect(ch2.putBuffer.type).toEqual(BufferType.SLIDING);
+        expect(ch2.putBuffer.type).toEqual(CreatableBufferType.SLIDING);
         expect(ch2.capacity).toEqual(5);
         close(ch1);
         close(ch2);

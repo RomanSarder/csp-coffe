@@ -1,12 +1,12 @@
-import { BufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { close, filter, put, take } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('filter', () => {
     it('should return channel with filtered values from source channels', async () => {
-        const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
-        const ch2 = makeChannel<string>(BufferType.DROPPING, 2);
+        const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
+        const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
         const ch3 = filter(
             (num) => {
                 if (typeof num === 'string') {
@@ -32,7 +32,7 @@ describe('filter', () => {
     });
 
     it('should return channel with specified configuration', async () => {
-        const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
+        const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
         const ch2 = filter(
             (num) => {
                 if (typeof num === 'string') {
@@ -42,11 +42,11 @@ describe('filter', () => {
             },
             [ch1],
             {
-                bufferType: BufferType.SLIDING,
+                bufferType: CreatableBufferType.SLIDING,
                 capacity: 5,
             },
         );
-        expect(ch2.putBuffer.type).toEqual(BufferType.SLIDING);
+        expect(ch2.putBuffer.type).toEqual(CreatableBufferType.SLIDING);
         expect(ch2.capacity).toEqual(5);
         close(ch1);
         close(ch2);
@@ -55,8 +55,8 @@ describe('filter', () => {
 
     describe('when the source channel closes', () => {
         it('should close the result channel', async () => {
-            const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
-            const ch2 = makeChannel<string>(BufferType.DROPPING, 2);
+            const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
+            const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
             const ch3 = filter(
                 (num) => {
                     if (typeof num === 'string') {

@@ -1,4 +1,4 @@
-import { BufferType, CreatableBufferTypes } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 
 export const errorMessages = {
     CHANNEL_CLOSED: 'CHANNEL_CLOSED_ERROR',
@@ -10,6 +10,6 @@ export const events = {
 };
 
 export const DEFAULT_CHANNEL_CONFIG = {
-    bufferType: BufferType.FIXED as CreatableBufferTypes,
+    bufferType: CreatableBufferType.FIXED,
     capacity: 1,
 };

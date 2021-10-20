@@ -1,4 +1,4 @@
-import { BufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { close, put, reduce, take } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/internal';
@@ -30,7 +30,7 @@ describe('reduce', () => {
     });
 
     it('should return channel with specified configuration', async () => {
-        const ch1 = makeChannel<number>(BufferType.DROPPING, 2);
+        const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
         const ch2 = reduce(
             (acc, next) => {
                 if (typeof next === 'string') {
@@ -41,11 +41,11 @@ describe('reduce', () => {
             0,
             [ch1],
             {
-                bufferType: BufferType.SLIDING,
+                bufferType: CreatableBufferType.SLIDING,
                 capacity: 5,
             },
         );
-        expect(ch2.putBuffer.type).toEqual(BufferType.SLIDING);
+        expect(ch2.putBuffer.type).toEqual(CreatableBufferType.SLIDING);
         expect(ch2.capacity).toEqual(5);
         close(ch1);
         close(ch2);

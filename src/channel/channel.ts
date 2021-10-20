@@ -1,10 +1,17 @@
 import { v4 as uuid } from 'uuid';
 
 import { eventLoopQueue } from '@Lib/internal';
-import { BufferType, makeBuffer } from '@Lib/buffer';
+import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
 import type { Channel } from './channel.types';
 import { DEFAULT_CHANNEL_CONFIG, events } from './constants';
 import { close, take } from '../operators';
+
+function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
+    if (bufferType !== CreatableBufferType.UNBLOCKING && capacity > 1) {
+        return true;
+    }
+    return false;
+}
 
 export function makeChannel<T = NonNullable<unknown>>(
     bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
@@ -13,7 +20,7 @@ export function makeChannel<T = NonNullable<unknown>>(
     const result: Channel<T> = {
         id: uuid(),
         capacity,
-        isBuffered: capacity > 1,
+        isBuffered: isChannelBuffered(bufferType, capacity),
         isClosed: false,
         putBuffer: makeBuffer<T>(bufferType, capacity),
         takeBuffer: makeBuffer(BufferType.FIXED, 1),

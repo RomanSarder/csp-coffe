@@ -5,6 +5,7 @@ import { makeSlidingBuffer } from './slidingBuffer';
 import { Buffer } from './buffer.types';
 import { makeFixedBuffer } from './fixedBuffer';
 import { makeUnblockingBuffer } from './unblockingBuffer';
+import { CreatableBufferType } from '.';
 
 const bufferTypeToMakeFn = {
     [BufferType.DROPPING]: makeDroppingBuffer,
@@ -15,7 +16,7 @@ const bufferTypeToMakeFn = {
 };
 
 export function makeBuffer<T = unknown>(
-    bufferType: BufferType,
+    bufferType: BufferType | CreatableBufferType,
     capacity = 1,
 ): Buffer<T> {
     return {

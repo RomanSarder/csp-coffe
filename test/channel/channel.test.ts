@@ -1,4 +1,4 @@
-import { BufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer';
 import { events, makeChannel, makeTimeoutChannel } from '@Lib/channel';
 import { close, put } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/internal';
@@ -13,7 +13,7 @@ describe('Channel', () => {
         });
 
         it('should be async iterable', async () => {
-            const ch = makeChannel(BufferType.DROPPING, 10);
+            const ch = makeChannel(CreatableBufferType.DROPPING, 10);
 
             await put(ch, 'test1');
             await eventLoopQueue();
