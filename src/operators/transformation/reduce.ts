@@ -4,15 +4,19 @@ import {
     FlattenChannels,
     ChannelConfiguration,
 } from '@Lib/channel';
-import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/constants';
-import { close, put } from '..';
+import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
+import { put } from '..';
+import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
 import { iterate } from './iterate';
 
 export function reduce<Channels extends Channel<any>[], A = unknown>(
     reducer: (acc: A, data: FlattenChannels<Channels>) => A,
     acc: A,
     channels: Channels,
-    { bufferType, capacity }: ChannelConfiguration = DEFAULT_CHANNEL_CONFIG,
+    {
+        bufferType,
+        capacity,
+    }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
 ): Channel<A> {
     const reducedCh = makeChannel<A>(bufferType, capacity);
     let result = acc;
@@ -24,8 +28,7 @@ export function reduce<Channels extends Channel<any>[], A = unknown>(
 
     Promise.all(promises).finally(async () => {
         await put(reducedCh, result);
-        close(reducedCh);
     });
 
-    return reducedCh;
+    return closeOnAllValuesTaken(reducedCh);
 }

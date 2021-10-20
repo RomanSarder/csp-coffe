@@ -18,13 +18,16 @@ describe('filter', () => {
         );
 
         await put(ch1, 1);
+        await eventLoopQueue();
         await put(ch2, '2');
+        await eventLoopQueue();
         expect(await take(ch3)).toEqual('2');
         await eventLoopQueue();
         await put(ch2, '3');
-        await put(ch1, 4);
-        expect(await take(ch3)).toEqual(4);
         await eventLoopQueue();
+        await put(ch1, 4);
+        await eventLoopQueue();
+        expect(await take(ch3)).toEqual(4);
         close(ch1);
         close(ch2);
         close(ch3);
@@ -53,7 +56,7 @@ describe('filter', () => {
         await eventLoopQueue();
     });
 
-    describe('when the source channel closes', () => {
+    describe('when the source channels close', () => {
         it('should close the result channel', async () => {
             const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
             const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
@@ -67,6 +70,8 @@ describe('filter', () => {
                 [ch1, ch2],
             );
             close(ch1);
+            await eventLoopQueue();
+            expect(ch3.isClosed).toEqual(false);
             close(ch2);
             await eventLoopQueue();
             expect(ch3.isClosed).toEqual(true);

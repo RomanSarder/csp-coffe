@@ -18,9 +18,11 @@ describe('map', () => {
         );
 
         await put(ch1, 1);
-        expect(await take(ch3)).toEqual(10);
         await eventLoopQueue();
         await put(ch2, '2');
+        await eventLoopQueue();
+        expect(await take(ch3)).toEqual(10);
+        await eventLoopQueue();
         expect(await take(ch3)).toEqual(20);
         close(ch1);
         close(ch2);
@@ -41,7 +43,7 @@ describe('map', () => {
         await eventLoopQueue();
     });
 
-    describe('when the source channels are closed', () => {
+    describe('when the source channels close', () => {
         it('should close the result channel', async () => {
             const ch1 = makeChannel<number>();
             const ch2 = makeChannel<string>();
@@ -56,6 +58,8 @@ describe('map', () => {
             );
 
             close(ch1);
+            await eventLoopQueue();
+            expect(ch3.isClosed).toEqual(false);
             close(ch2);
             await eventLoopQueue();
             expect(ch3.isClosed).toEqual(true);
