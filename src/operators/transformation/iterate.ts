@@ -1,3 +1,4 @@
+import { eventLoopQueue } from '@Lib/internal';
 import { events } from '../../channel';
 import { Channel } from '../../channel/channel.types';
 
@@ -24,6 +25,7 @@ export function iterate<T = unknown>(
             return res.value;
         }
         await callback(res.value as T);
+        await eventLoopQueue();
         return nextStep(iterator.next());
     }
 
