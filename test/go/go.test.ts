@@ -1,5 +1,5 @@
-import { fork, go } from '@Lib/go';
-import { fakeAsyncFunction } from '@Lib/internal';
+import { EVENTS, fork, go } from '@Lib/go';
+import { eventLoopQueue, fakeAsyncFunction } from '@Lib/internal';
 import { take } from '@Lib/operators';
 
 describe('go', () => {
@@ -30,6 +30,25 @@ describe('go', () => {
         const result = await promise;
 
         expect(result).toEqual('test');
+    });
+
+    it('should cancel', async () => {
+        const spy = jest.fn();
+        const genSpy = jest.fn();
+
+        function* testGenerator() {
+            yield fakeAsyncFunction(() => 'sasi');
+            yield genSpy();
+            return 'test';
+        }
+
+        const { cancel, promise } = go(testGenerator);
+        promise.then(spy);
+        cancel();
+        await eventLoopQueue();
+        await eventLoopQueue();
+        expect(spy).toHaveBeenCalledWith(EVENTS.CANCELLED);
+        expect(genSpy).not.toHaveBeenCalled();
     });
 
     it('should return channel which contains returned value', async () => {
@@ -71,6 +90,29 @@ describe('go', () => {
             const { promise } = go(testGenerator);
             await promise;
             expect(isForkCompleted).toEqual(true);
+        });
+
+        describe('when root generator is cancelled', () => {
+            it('should cancel forked generator', async () => {
+                const forkSpy = jest.fn();
+
+                function* testGenerator() {
+                    const result: string = yield fakeAsyncFunction(
+                        () => 'test1',
+                    );
+                    yield fork(function* forkedFn() {
+                        yield fakeAsyncFunction(() => 'testval');
+                        yield forkSpy();
+                    });
+                    return result;
+                }
+
+                const { cancel } = go(testGenerator);
+                cancel();
+                await eventLoopQueue();
+                await eventLoopQueue();
+                expect(forkSpy).not.toHaveBeenCalled();
+            });
         });
     });
 });

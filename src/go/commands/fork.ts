@@ -1,14 +1,15 @@
 import { Channel } from '@Lib/channel';
 import { go } from '..';
+import { CancelledRef } from '../go.types';
 import { Commands } from './commands.constants';
 
 export type ForkCommand = [
     Commands.FORK,
-    { promise: Promise<any>; channel: Channel<any> },
+    (r: CancelledRef) => { promise: Promise<any>; channel: Channel<any> },
 ];
 
 export function fork<G extends Generator<unknown, unknown, unknown>>(
     generator: () => G,
 ): ForkCommand {
-    return [Commands.FORK, go(generator)];
+    return [Commands.FORK, (r: CancelledRef) => go(generator, r)];
 }
