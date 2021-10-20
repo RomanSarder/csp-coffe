@@ -1,71 +1,102 @@
-import { Channel, makeChannel } from '@Lib/channel';
-import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
-import { eventLoopQueue } from '@Lib/internal';
-import { makePut } from '@Lib/operators/internal';
-import { EVENTS } from '.';
-import { ForkCommand, Commands } from './commands';
-import { isCommand } from './commands/utils/isCommand';
-import { CancelledRef } from './go.types';
+import { makeChannel, Channel } from '@Lib/channel';
+import { close } from '@Lib/operators';
+import type { CancelledRef, Instruction } from './go.types';
+import { Events, Command } from './constants';
+import { isInstruction } from './utils/isInstruction';
 
-type GeneratorReturn<G> = G extends Generator<unknown, infer R, unknown>
-    ? R | 'CANCELLED'
-    : unknown | 'CANCELLED';
-
-export function go<G extends Generator<unknown, unknown, unknown>>(
+export function go<
+    T extends any | Instruction,
+    TReturn extends any | Events.CANCELLED,
+    TNext extends any | Instruction,
+    G extends Generator<T, TReturn, TNext>,
+>(
     generator: () => G,
     isCancelledRef: CancelledRef = { ref: false },
 ): {
-    promise: Promise<GeneratorReturn<G>>;
-    channel: Channel<GeneratorReturn<G>>;
+    promise: Promise<TReturn>;
+    channel: Channel<TReturn>;
     cancel: () => void;
 } {
-    const forkedProcesses: Promise<any>[] = [];
-    const ch = makeChannel<GeneratorReturn<G>>();
     const iterator = generator();
+    const channel = makeChannel<TReturn>();
 
-    function nextStep(resolvedValue: unknown): any {
-        const { value: nextIteratorValue, done } = iterator.next(resolvedValue);
+    function nextStep(
+        {
+            value: nextIteratorValue,
+            done,
+        }: IteratorResult<T | Instruction, TReturn>,
+        it: G,
+        successCallback: (value: TReturn) => void,
+        errorCallback: (value: any) => void,
+    ): void {
         if (isCancelledRef.ref) {
-            makePut(ch, EVENTS.CANCELLED);
-            return eventLoopQueue().then(() => {
-                return EVENTS.CANCELLED;
-            });
+            successCallback(Events.CANCELLED as TReturn);
+            return;
         }
-
         if (done) {
-            makePut(ch, nextIteratorValue as GeneratorReturn<G>);
-            return eventLoopQueue()
-                .then(() => {
-                    return Promise.all(forkedProcesses);
-                })
-                .then(() => nextIteratorValue);
-        }
-
-        if (isCommand(nextIteratorValue)) {
-            if (nextIteratorValue[0] === Commands.FORK) {
-                const { promise } = (nextIteratorValue as ForkCommand)[1](
-                    isCancelledRef,
-                );
-                forkedProcesses.push(promise);
+            successCallback(nextIteratorValue as TReturn);
+        } else {
+            if (isInstruction(nextIteratorValue)) {
+                if (nextIteratorValue.command === Command.PARK) {
+                    setImmediate(() => {
+                        nextStep(
+                            {
+                                value: nextIteratorValue,
+                                done: false,
+                            },
+                            it,
+                            successCallback,
+                            errorCallback,
+                        );
+                    });
+                    return;
+                }
+                if (nextIteratorValue.command === Command.CONTINUE) {
+                    setImmediate(() => {
+                        nextStep(
+                            it.next(nextIteratorValue.value as TNext),
+                            it,
+                            successCallback,
+                            errorCallback,
+                        );
+                    });
+                    return;
+                }
             }
+            if (nextIteratorValue instanceof Promise) {
+                nextIteratorValue
+                    .then((result) => {
+                        nextStep(
+                            { value: result, done: false },
+                            it,
+                            successCallback,
+                            errorCallback,
+                        );
+                    })
+                    .catch((e) => {
+                        close(channel);
+                        throw e;
+                    });
+                return;
+            }
+            setTimeout(() => {
+                nextStep(
+                    it.next(nextIteratorValue as TNext),
+                    it,
+                    successCallback,
+                    errorCallback,
+                );
+            }, 0);
         }
-
-        if (nextIteratorValue instanceof Promise) {
-            return eventLoopQueue()
-                .then(() => {
-                    return Promise.resolve(nextIteratorValue);
-                })
-                .then(nextStep);
-        }
-
-        return eventLoopQueue()
-            .then(() => Promise.resolve(nextIteratorValue))
-            .then(nextStep);
     }
 
     return {
-        promise: Promise.resolve().then(nextStep),
-        channel: closeOnAllValuesTaken(ch),
+        promise: new Promise((resolve, reject) => {
+            setImmediate(() => {
+                nextStep(iterator.next(), iterator as G, resolve, reject);
+            });
+        }),
+        channel,
         cancel: () => {
             // eslint-disable-next-line no-param-reassign
             isCancelledRef.ref = true;

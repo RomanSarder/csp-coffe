@@ -1,0 +1,1 @@
+export { isInstruction } from './isInstruction';
