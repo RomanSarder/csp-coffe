@@ -3,35 +3,35 @@ import { eventLoopQueue, fakeAsyncFunction } from '@Lib/internal';
 // import { take } from '@Lib/operators';
 
 describe('go', () => {
-    // it('should execute both sync and async yield statements in a correct order', async () => {
-    //     const executionOrder = [] as number[];
+    it('should execute both sync and async yield statements in a correct order', async () => {
+        const executionOrder = [] as number[];
 
-    //     function* testGenerator() {
-    //         yield executionOrder.push(1);
-    //         const result: number = yield fakeAsyncFunction(() => 2);
-    //         executionOrder.push(result);
-    //         yield executionOrder.push(3);
-    //     }
+        function* testGenerator() {
+            yield executionOrder.push(1);
+            const result: number = yield fakeAsyncFunction(() => 2);
+            executionOrder.push(result);
+            yield executionOrder.push(3);
+        }
 
-    //     const { promise } = go(testGenerator);
+        const { promise } = go(testGenerator);
 
-    //     await promise;
+        await promise;
 
-    //     expect(executionOrder).toEqual([1, 2, 3]);
-    // });
+        expect(executionOrder).toEqual([1, 2, 3]);
+    });
 
-    // it('should return the last yielded value', async () => {
-    //     function* testGenerator() {
-    //         yield fakeAsyncFunction(() => 'sasi');
-    //         return 'test';
-    //     }
+    it('should return the last yielded value', async () => {
+        function* testGenerator() {
+            yield fakeAsyncFunction(() => 'sasi');
+            return 'test';
+        }
 
-    //     const { promise } = go(testGenerator);
+        const { promise } = go(testGenerator);
 
-    //     const result = await promise;
+        const result = await promise;
 
-    //     expect(result).toEqual('test');
-    // });
+        expect(result).toEqual('test');
+    });
 
     it('should cancel', async () => {
         const spy = jest.fn();
@@ -40,6 +40,7 @@ describe('go', () => {
         function* testGenerator() {
             yield fakeAsyncFunction(() => 'sasi');
             yield genSpy();
+            yield true;
             return 'test';
         }
 

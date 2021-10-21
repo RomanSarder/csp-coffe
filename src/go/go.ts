@@ -1,36 +1,33 @@
 import { makeChannel, Channel } from '@Lib/channel';
 import { close } from '@Lib/operators';
-import type { CancelledRef, Instruction } from './go.types';
+import type { CancelledRef, GenReturn, GenT } from './go.types';
 import { Events, Command } from './constants';
 import { isInstruction } from './utils/isInstruction';
 
 export function go<
-    T extends any | Instruction,
-    TReturn extends any | Events.CANCELLED,
-    TNext extends any | Instruction,
-    G extends Generator<T, TReturn, TNext>,
+    GenFn extends () => Generator,
+    G extends Generator = ReturnType<GenFn>,
+    T = GenT<G>,
+    TReturn = GenReturn<G>,
 >(
-    generator: () => G,
+    generator: GenFn,
     isCancelledRef: CancelledRef = { ref: false },
 ): {
-    promise: Promise<TReturn>;
-    channel: Channel<TReturn>;
+    promise: Promise<TReturn | Events.CANCELLED>;
+    channel: Channel<TReturn | Events.CANCELLED>;
     cancel: () => void;
 } {
-    const iterator = generator();
-    const channel = makeChannel<TReturn>();
+    const iterator = generator() as G;
+    const channel = makeChannel<TReturn | Events.CANCELLED>();
 
-    function nextStep(
-        {
-            value: nextIteratorValue,
-            done,
-        }: IteratorResult<T | Instruction, TReturn>,
+    function nextStep<ItRes extends IteratorYieldResult<T | TReturn>>(
+        { value: nextIteratorValue, done }: ItRes,
         it: G,
-        successCallback: (value: TReturn) => void,
+        successCallback: (value: TReturn | Events.CANCELLED) => void,
         errorCallback: (value: any) => void,
     ): void {
         if (isCancelledRef.ref) {
-            successCallback(Events.CANCELLED as TReturn);
+            successCallback(Events.CANCELLED);
             return;
         }
         if (done) {
@@ -54,7 +51,9 @@ export function go<
                 if (nextIteratorValue.command === Command.CONTINUE) {
                     setImmediate(() => {
                         nextStep(
-                            it.next(nextIteratorValue.value as TNext),
+                            it.next(
+                                nextIteratorValue.value,
+                            ) as IteratorYieldResult<T | TReturn>,
                             it,
                             successCallback,
                             errorCallback,
@@ -81,7 +80,9 @@ export function go<
             }
             setTimeout(() => {
                 nextStep(
-                    it.next(nextIteratorValue as TNext),
+                    it.next(nextIteratorValue) as IteratorYieldResult<
+                        T | TReturn
+                    >,
                     it,
                     successCallback,
                     errorCallback,
@@ -93,7 +94,12 @@ export function go<
     return {
         promise: new Promise((resolve, reject) => {
             setImmediate(() => {
-                nextStep(iterator.next(), iterator as G, resolve, reject);
+                nextStep(
+                    iterator.next() as IteratorYieldResult<T | TReturn>,
+                    iterator,
+                    resolve,
+                    reject,
+                );
             });
         }),
         channel,
