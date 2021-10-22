@@ -2,13 +2,13 @@ import { makeChannel, Channel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal';
 import { close } from '@Lib/operators';
 import { CancelledRef, Events } from './entity';
-import { worker } from './worker';
+import { worker } from './worker/worker';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';
 
 export function go<
     GenFn extends () => Generator,
     G extends Generator = ReturnType<GenFn>,
-    TReturn = MaybeGeneratorReturnFromValue<GeneratorReturn<G>>,
+    TReturn = Exclude<MaybeGeneratorReturnFromValue<GeneratorReturn<G>>, void>,
 >(
     generator: GenFn,
     isCancelledRef: CancelledRef = { ref: false },

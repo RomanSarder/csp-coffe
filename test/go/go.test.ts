@@ -12,6 +12,7 @@ describe('go', () => {
             const result: number = yield fakeAsyncFunction(() => 2);
             executionOrder.push(result);
             yield executionOrder.push(3);
+            return 5;
         }
 
         const { promise } = go(testGenerator);
