@@ -1,2 +1,2 @@
 export * from './utils';
-export * from './shared.types';
+export { Flatten } from './shared.types';

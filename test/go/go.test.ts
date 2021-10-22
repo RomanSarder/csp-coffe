@@ -1,5 +1,6 @@
 import { Events, go } from '@Lib/go';
 import { eventLoopQueue, fakeAsyncFunction } from '@Lib/internal';
+import { delay } from '@Lib/shared';
 // import { take } from '@Lib/operators';
 
 describe('go', () => {
@@ -18,6 +19,31 @@ describe('go', () => {
         await promise;
 
         expect(executionOrder).toEqual([1, 2, 3]);
+    });
+
+    it('should execute generator yields', async () => {
+        const executionOrder = [] as number[];
+
+        function* testInnerGenerator() {
+            executionOrder.push(4);
+            yield delay(500);
+            executionOrder.push(5);
+            return 6;
+        }
+
+        function* testGenerator() {
+            yield executionOrder.push(1);
+            const result: number = yield fakeAsyncFunction(() => 2);
+            executionOrder.push(result);
+            yield executionOrder.push(3);
+            return testInnerGenerator();
+        }
+
+        const { promise } = go(testGenerator);
+
+        await promise;
+
+        expect(executionOrder).toEqual([1, 2, 3, 4, 5]);
     });
 
     it('should return the last yielded value', async () => {

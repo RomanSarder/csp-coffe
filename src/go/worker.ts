@@ -1,11 +1,23 @@
-import type { CancelledRef, GenReturn, GenT } from './go.types';
-import { Events, Command } from './constants';
+import { Events, Command, CancelledRef } from './entity';
 import { isInstruction } from './utils/isInstruction';
+import {
+    GeneratorReturn,
+    GeneratorT,
+    MaybeGeneratorReturnFromValue,
+} from './utils';
+
+function isGenerator(value: any | Generator): value is Generator {
+    return (
+        typeof value === 'object' &&
+        value !== null &&
+        typeof value[Symbol.iterator] === 'function'
+    );
+}
 
 export function worker<
     G extends Generator,
-    T = GenT<G>,
-    TReturn = GenReturn<G>,
+    T = GeneratorT<G>,
+    TReturn = MaybeGeneratorReturnFromValue<GeneratorReturn<G>>,
 >(
     iterator: G,
     isCancelledRef: CancelledRef = { ref: false },
@@ -16,14 +28,30 @@ export function worker<
         successCallback: (value: TReturn | Events.CANCELLED) => void,
         errorCallback: (value: any) => void,
     ): void {
+        console.log('nextValue', nextIteratorValue, done);
         if (isCancelledRef.ref) {
             successCallback(Events.CANCELLED);
             return;
         }
-        if (done) {
+
+        if (isGenerator(nextIteratorValue)) {
+            console.log('is generator', nextIteratorValue.next);
+            setImmediate(() => {
+                nextStep(
+                    {
+                        done: false,
+                        value: worker(nextIteratorValue, isCancelledRef),
+                    } as unknown as IteratorYieldResult<T | TReturn>,
+                    it,
+                    successCallback,
+                    errorCallback,
+                );
+            });
+        } else if (done) {
             successCallback(nextIteratorValue as TReturn);
         } else {
             if (isInstruction(nextIteratorValue)) {
+                console.log('is instruction');
                 if (nextIteratorValue.command === Command.PARK) {
                     setImmediate(() => {
                         nextStep(
@@ -51,6 +79,24 @@ export function worker<
                     });
                     return;
                 }
+
+                if (nextIteratorValue.command === Command.EXECUTE) {
+                    const nextIterator = nextIteratorValue.value as Extract<
+                        T,
+                        Generator
+                    >;
+
+                    setImmediate(() => {
+                        nextStep(
+                            it.next(
+                                worker(nextIterator, isCancelledRef),
+                            ) as IteratorYieldResult<T | TReturn>,
+                            it,
+                            successCallback,
+                            errorCallback,
+                        );
+                    });
+                }
             }
             if (nextIteratorValue instanceof Promise) {
                 nextIteratorValue
@@ -67,6 +113,7 @@ export function worker<
                     });
                 return;
             }
+
             setTimeout(() => {
                 nextStep(
                     it.next(nextIteratorValue) as IteratorYieldResult<
