@@ -1,6 +1,6 @@
 import { Channel } from '@Lib/channel';
 import { go } from '..';
-import { CancelledRef } from '../go.types';
+import { CancelledRef } from '../entity';
 import { Commands } from './commands.constants';
 
 export type ForkCommand = [
