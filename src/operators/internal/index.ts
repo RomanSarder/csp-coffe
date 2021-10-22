@@ -7,3 +7,4 @@ export { waitForIncomingPut } from './waitForIncomingPut';
 export { waitForIncomingTake } from './waitForIncomingTake';
 export { waitForPutQueueToRelease } from './waitForPutQueueToRelease';
 export { waitForTakeQueueToRelease } from './waitForTakeQueueToRelease';
+export { waitForTakeQueueToReleaseAsync } from './waitForTakeQueueToReleaseAsync';

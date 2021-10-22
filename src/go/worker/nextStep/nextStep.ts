@@ -26,7 +26,6 @@ export function nextStep<
         successCallback,
         errorCallback,
     } = config;
-
     if (isCancelledRef.ref) {
         successCallback(Events.CANCELLED);
         return;

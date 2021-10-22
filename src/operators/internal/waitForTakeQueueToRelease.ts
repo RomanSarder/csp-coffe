@@ -1,17 +1,13 @@
 import { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/constants';
-import { eventLoopQueue } from '@Lib/internal';
+import { makeParkCommand } from '@Lib/go/utils';
 
-export async function waitForTakeQueueToRelease<T = unknown>(ch: Channel<T>) {
-    if (ch.isClosed) {
-        throw new Error(errorMessages.CHANNEL_CLOSED);
-    }
-
-    while (ch.takeBuffer.isBlocked()) {
+export function* waitForTakeQueueToRelease<C extends Channel<any>>(ch: C) {
+    while ((yield ch.takeBuffer.isBlocked()) as boolean) {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
-
-        await eventLoopQueue();
+        yield makeParkCommand();
     }
+    return 50;
 }

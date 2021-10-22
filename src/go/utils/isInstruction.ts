@@ -1,9 +1,8 @@
-import { Instruction } from '@Lib/go/go.types';
-import { Command } from '../entity';
+import { Command, Instruction } from '../entity';
 
 export function isInstruction<T extends Instruction>(
     data: any | T,
-): data is Instruction<T extends Instruction<infer U> ? U : unknown> {
+): data is Instruction<T extends Instruction<infer U> ? U : any> {
     if (
         (data?.command && data?.command === Command.CONTINUE) ||
         data?.command === Command.PARK

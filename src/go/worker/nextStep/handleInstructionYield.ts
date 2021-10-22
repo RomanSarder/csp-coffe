@@ -21,10 +21,9 @@ export function handleInstructionYield<
     if (nextIteratorValue.command === Command.PARK) {
         setImmediate(() => {
             nextStep({
-                nextIteratorResult: {
-                    value: nextIteratorValue,
-                    done: false,
-                },
+                nextIteratorResult: iterator.next() as IteratorYieldResult<
+                    GeneratorReturn<G> | TReturn
+                >,
                 iterator,
                 isCancelledRef,
                 successCallback,
