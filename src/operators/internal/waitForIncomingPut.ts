@@ -1,16 +1,22 @@
 import { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/constants';
-import { eventLoopQueue } from '@Lib/internal';
+import { Instruction } from '@Lib/go/entity';
+import { makeParkCommand } from '@Lib/go/utils';
 
-export async function waitForIncomingPut<T = unknown>(ch: Channel<T>) {
+export function* waitForIncomingPut<T = unknown>(
+    ch: Channel<T>,
+): Generator<Instruction> {
+    console.log('is closed');
     if (ch.isClosed) {
         throw new Error(errorMessages.CHANNEL_CLOSED);
     }
 
     while (ch.putBuffer.getSize() === 0) {
+        console.log('inside while');
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
-        await eventLoopQueue();
+        console.log('park');
+        yield makeParkCommand();
     }
 }

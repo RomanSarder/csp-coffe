@@ -1,7 +1,7 @@
 import { close } from '@Lib/operators';
 import {
-    waitForIncomingPut,
-    waitForPutQueueToRelease,
+    waitForIncomingPutAsync,
+    waitForPutQueueToReleaseAsync,
 } from '@Lib/operators/internal';
 import { Channel } from '../channel.types';
 import { isChannelClosedError } from '../utils';
@@ -14,9 +14,9 @@ export function closeOnAllValuesTaken<C extends Channel<any>>(ch: C) {
         get(target, name, receiver) {
             if (!waitingPromise) {
                 waitingPromise = new Promise((resolve) => {
-                    waitForIncomingPut(target)
+                    waitForIncomingPutAsync(target)
                         .then(() => {
-                            return waitForPutQueueToRelease(target);
+                            return waitForPutQueueToReleaseAsync(target);
                         })
                         .then(() => {
                             close(target);

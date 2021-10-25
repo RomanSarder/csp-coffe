@@ -1,8 +1,11 @@
 import { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/constants';
-import { eventLoopQueue } from '@Lib/internal';
+import { Instruction } from '@Lib/go/entity';
+import { makeParkCommand } from '@Lib/go/utils';
 
-export async function waitForPutQueueToRelease<T = unknown>(ch: Channel<T>) {
+export function* waitForPutQueueToRelease<T = unknown>(
+    ch: Channel<T>,
+): Generator<Instruction<unknown>> {
     if (ch.isClosed) {
         throw new Error(errorMessages.CHANNEL_CLOSED);
     }
@@ -11,6 +14,6 @@ export async function waitForPutQueueToRelease<T = unknown>(ch: Channel<T>) {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
-        await eventLoopQueue();
+        yield makeParkCommand();
     }
 }
