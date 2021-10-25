@@ -1,17 +1,10 @@
 import { Events } from '../../entity';
 import { isInstruction } from '../../utils';
+import { isGenerator } from '../shared';
 import { handleGeneratorYield } from './handleGeneratorYield';
 import { handleInstructionYield } from './handleInstructionYield';
 import { handlePromiseYield } from './handlePromiseYield';
 import { NextStepConfig } from './nextStep.types';
-
-export function isGenerator(value: any | Generator): value is Generator {
-    return (
-        typeof value === 'object' &&
-        value !== null &&
-        typeof value[Symbol.iterator] === 'function'
-    );
-}
 
 export function nextStep<
     G extends Generator,

@@ -4,5 +4,3 @@ export type { OnlyGeneratorReturnFromValue } from './OnlyGeneratorReturnFromValu
 export type { GeneratorT } from './GeneratorT';
 export type { GeneratorNext } from './GeneratorNext';
 export type { GeneratorReturn } from './GeneratorReturn';
-
-export * from './makeInstruction';

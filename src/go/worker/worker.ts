@@ -15,16 +15,14 @@ export function worker<
     isCancelledRef: CancelledRef = { ref: false },
 ): Promise<TReturn | Events.CANCELLED> {
     return new Promise((resolve, reject) => {
-        setImmediate(() => {
-            nextStep({
-                nextIteratorResult: iterator.next() as IteratorYieldResult<
-                    T | TReturn
-                >,
-                iterator,
-                isCancelledRef,
-                successCallback: resolve,
-                errorCallback: reject,
-            });
+        nextStep({
+            nextIteratorResult: iterator.next() as IteratorYieldResult<
+                T | TReturn
+            >,
+            iterator,
+            isCancelledRef,
+            successCallback: resolve,
+            errorCallback: reject,
         });
     });
 }
