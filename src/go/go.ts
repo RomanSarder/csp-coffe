@@ -27,7 +27,6 @@ export function go<
                 return res;
             })
             .catch((e) => {
-                console.log(e);
                 close(channel);
                 throw e;
             }),

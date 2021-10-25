@@ -38,7 +38,6 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                         nextIteratorValue.value.value as Generator,
                     );
                     nextIteratorValue = innerIterator.next();
-                    console.log('inner value', nextIteratorValue);
 
                     while (!nextIteratorValue.done) {
                         yield nextIteratorValue.value;
@@ -46,7 +45,6 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                         nextIteratorValue = innerIterator.next();
                     }
                 } catch (e) {
-                    console.log('inner err', innerIterator?.next());
                     nextIteratorValue = innerIterator?.throw(e);
                 }
             }

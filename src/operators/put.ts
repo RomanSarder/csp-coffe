@@ -16,25 +16,20 @@ export function* put<T = unknown>(ch: Channel<T>, data: T) {
     }
 
     try {
-        console.log('waiting for put queue to release');
         yield makeExecuteInstruction(
             WAIT_FOR_PUT_QUEUE_TO_RELEASE,
             waitForPutQueueToRelease(ch),
         );
-        console.log('make put');
         makePut(ch, data);
 
         if (!ch.isBuffered) {
-            console.log('wait for take');
             yield makeExecuteInstruction(
                 WAIT_FOR_INCOMING_TAKE,
                 waitForIncomingTake(ch),
             );
         }
     } catch (e) {
-        console.log('put error', e);
         if (!isChannelClosedError(e)) {
-            console.log('is channel closed error');
             throw e;
         }
         resetChannel(ch);

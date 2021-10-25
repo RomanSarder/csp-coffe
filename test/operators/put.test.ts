@@ -1,6 +1,8 @@
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
 import { syncWorker } from '@Lib/go/worker';
 import { close, put } from '@Lib/operators';
+import { makePut, releasePut } from '@Lib/operators/internal';
 
 describe('put', () => {
     it('should put a value to channel', async () => {
@@ -45,30 +47,33 @@ describe('put', () => {
         });
     });
 
-    // describe('when the channel buffer size is more than 1', () => {
-    //     describe('when there is no pending take', () => {
-    //         it('should not block put if no take request is there', async () => {
-    //             const ch = makeChannel(CreatableBufferType.DROPPING, 2);
-    //             const spy = jest.fn();
-    //             put(ch, 'test1').then(spy);
-    //             await eventLoopQueue();
-    //             expect(spy).toHaveBeenCalledTimes(1);
-    //         });
+    describe('when the channel buffer size is more than 1', () => {
+        describe('when there is no pending take', () => {
+            it('should not block put if no take request is there', async () => {
+                const ch = makeChannel(CreatableBufferType.DROPPING, 2);
+                const iterator = syncWorker(put(ch, 'test1'));
+                iterator.next();
+                iterator.next();
+                expect(iterator.next().done).toEqual(true);
+            });
 
-    //         describe('when the buffer is full', () => {
-    //             it('should block put request if buffer is full', async () => {
-    //                 const ch = makeChannel(CreatableBufferType.FIXED, 2);
-    //                 const spy = jest.fn();
-    //                 makePut(ch, 'test11');
-    //                 makePut(ch, 'test12');
-    //                 put(ch, 'test1').then(spy);
-    //                 await eventLoopQueue();
-    //                 expect(spy).not.toHaveBeenCalled();
-    //                 releasePut(ch);
-    //                 await eventLoopQueue();
-    //                 expect(spy).toHaveBeenCalledTimes(1);
-    //             });
-    //         });
-    //     });
-    // });
+            describe('when the buffer is full', () => {
+                it('should block put request if buffer is full', async () => {
+                    const ch = makeChannel(CreatableBufferType.FIXED, 2);
+                    const iterator = syncWorker(put(ch, 'test1'));
+                    makePut(ch, 'test11');
+                    makePut(ch, 'test12');
+                    iterator.next();
+                    iterator.next();
+                    expect(iterator.next().value).toEqual({ command: 'PARK' });
+                    releasePut(ch);
+                    expect(iterator.next().done).toEqual(true);
+                    expect(ch.putBuffer.getElementsArray()).toEqual([
+                        'test12',
+                        'test1',
+                    ]);
+                });
+            });
+        });
+    });
 });
