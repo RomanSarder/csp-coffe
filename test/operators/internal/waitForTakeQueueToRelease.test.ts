@@ -1,23 +1,29 @@
 import { makeChannel } from '@Lib/channel';
-import { eventLoopQueue } from '@Lib/internal';
+import { makeParkCommand } from '@Lib/go';
+import { syncWorker } from '@Lib/go/worker';
 import {
     makeTake,
     releaseTake,
-    waitForTakeQueueToReleaseAsync,
+    waitForTakeQueueToRelease,
 } from '@Lib/operators/internal';
 
 describe('waitForTakeQueueToRelease', () => {
-    it('should return promise which resolves only after put queue becomes empty', async () => {
-        const spy = jest.fn();
-        const ch = makeChannel();
-        makeTake(ch);
-        const promise = waitForTakeQueueToReleaseAsync(ch).then(spy);
-        await eventLoopQueue();
-        expect(spy).not.toHaveBeenCalled();
-        releaseTake(ch);
+    describe('when take buffer is blocked', () => {
+        it('should complete which resolves only after put buffer becomes empty', () => {
+            const ch = makeChannel();
+            makeTake(ch);
+            const iterator = syncWorker(waitForTakeQueueToRelease(ch));
+            expect(iterator.next().value).toEqual(makeParkCommand());
+            releaseTake(ch);
+            expect(iterator.next().done).toEqual(true);
+        });
+    });
 
-        await promise;
-
-        expect(spy).toHaveBeenCalledTimes(1);
+    describe('when take buffer is unblocked', () => {
+        it('should complete immediately', () => {
+            const ch = makeChannel();
+            const iterator = syncWorker(waitForTakeQueueToRelease(ch));
+            expect(iterator.next().done).toEqual(true);
+        });
     });
 });

@@ -1,16 +1,26 @@
 import { makeChannel } from '@Lib/channel';
-import { makePut, waitForIncomingPutAsync } from '@Lib/operators/internal';
-import { eventLoopQueue } from '@Lib/internal';
+import { makePut, waitForIncomingPut } from '@Lib/operators/internal';
+import { syncWorker } from '@Lib/go/worker';
+import { makeParkCommand } from '@Lib/go';
 
 describe('waitForIncomingPut', () => {
-    it('should return promise which resolves only after any item gets to put queue', async () => {
-        const spy = jest.fn();
-        const ch = makeChannel();
-        const promise = waitForIncomingPutAsync(ch).then(spy);
-        await eventLoopQueue();
-        expect(spy).not.toHaveBeenCalled();
-        makePut(ch, 'test');
-        await promise;
-        expect(spy).toHaveBeenCalledTimes(1);
+    describe('when there is no items in put buffer', () => {
+        it('should complete only after any item gets to put buffer', () => {
+            const ch = makeChannel();
+            const iterator = syncWorker(waitForIncomingPut(ch));
+            expect(iterator.next().value).toEqual(makeParkCommand());
+            makePut(ch, 'test1');
+            expect(iterator.next().done).toEqual(true);
+        });
+    });
+
+    describe('when there is already an item in put buffer', () => {
+        it('should complete immediately', () => {
+            const ch = makeChannel();
+            makePut(ch, 'test1');
+            const iterator = syncWorker(waitForIncomingPut(ch));
+
+            expect(iterator.next().done).toEqual(true);
+        });
     });
 });

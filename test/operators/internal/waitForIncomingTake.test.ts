@@ -1,16 +1,23 @@
 import { makeChannel } from '@Lib/channel';
-import { makeTake, waitForIncomingTakeAsync } from '@Lib/operators/internal';
-import { eventLoopQueue } from '@Lib/internal';
+import { makeTake, waitForIncomingTake } from '@Lib/operators/internal';
+import { syncWorker } from '@Lib/go/worker';
+import { makeParkCommand } from '@Lib/go';
 
 describe('waitForIncomingTake', () => {
-    it('should return promise which resolves only after any item gets to take queue', async () => {
-        const spy = jest.fn();
+    describe('when there is no items in take buffer', () => {
+        it('should complete only after any item gets to take buffer', async () => {
+            const ch = makeChannel();
+            const iterator = syncWorker(waitForIncomingTake(ch));
+            expect(iterator.next().value).toEqual(makeParkCommand());
+            makeTake(ch);
+            expect(iterator.next().done).toEqual(true);
+        });
+    });
+
+    describe('when there is already an item in take buffer', () => {
         const ch = makeChannel();
-        const promise = waitForIncomingTakeAsync(ch).then(spy);
-        await eventLoopQueue();
-        expect(spy).not.toHaveBeenCalled();
         makeTake(ch);
-        await promise;
-        expect(spy).toHaveBeenCalledTimes(1);
+        const iterator = syncWorker(waitForIncomingTake(ch));
+        expect(iterator.next().done).toEqual(true);
     });
 });
