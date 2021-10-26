@@ -5,7 +5,7 @@ import { close, put } from '@Lib/operators';
 import { makePut, releasePut } from '@Lib/operators/internal';
 
 describe('put', () => {
-    it('should put a value to channel', async () => {
+    it('should put a value to channel', () => {
         const ch = makeChannel();
         const iterator = syncWorker(put(ch, 'test1'));
         iterator.next();
@@ -14,7 +14,7 @@ describe('put', () => {
         expect(ch.putBuffer.getElementsArray()).toEqual(['test1']);
     });
 
-    it('should throw error if trying to put null', async () => {
+    it('should throw error if trying to put null', () => {
         const ch = makeChannel();
         const iterator = syncWorker(put(ch, null));
         expect(() => {
@@ -24,7 +24,7 @@ describe('put', () => {
     });
 
     describe('when the channel is closed', () => {
-        it('should not put anything and reset the channel', async () => {
+        it('should not put anything and reset the channel', () => {
             const ch = makeChannel();
             close(ch);
             const iterator = syncWorker(put(ch, 'test1'));
@@ -35,7 +35,7 @@ describe('put', () => {
     });
 
     describe('when the channel is closed after the item is put', () => {
-        it('should release put', async () => {
+        it('should release put', () => {
             const ch = makeChannel();
             const iterator = syncWorker(put(ch, 'test1'));
             iterator.next();
@@ -49,7 +49,7 @@ describe('put', () => {
 
     describe('when the channel buffer size is more than 1', () => {
         describe('when there is no pending take', () => {
-            it('should not block put if no take request is there', async () => {
+            it('should not block put if no take request is there', () => {
                 const ch = makeChannel(CreatableBufferType.DROPPING, 2);
                 const iterator = syncWorker(put(ch, 'test1'));
                 iterator.next();
@@ -58,7 +58,7 @@ describe('put', () => {
             });
 
             describe('when the buffer is full', () => {
-                it('should block put request if buffer is full', async () => {
+                it('should block put request if buffer is full', () => {
                     const ch = makeChannel(CreatableBufferType.FIXED, 2);
                     const iterator = syncWorker(put(ch, 'test1'));
                     makePut(ch, 'test11');
