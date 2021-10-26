@@ -7,8 +7,11 @@ import {
     waitForIncomingTake,
     waitForPutQueueToRelease,
 } from './internal';
+import { Operator } from './operator.types';
 
-export function* put<T = unknown>(ch: Channel<T>, data: T) {
+export const PUT = 'PUT';
+
+export function* putGenerator<T = unknown>(ch: Channel<T>, data: T) {
     if (data === null) {
         throw new Error('null values are not allowed');
     }
@@ -28,4 +31,14 @@ export function* put<T = unknown>(ch: Channel<T>, data: T) {
     }
 
     return true;
+}
+
+export function put<T = unknown>(
+    ch: Channel<T>,
+    data: T,
+): Operator<Generator<unknown, boolean>> {
+    return {
+        name: PUT,
+        generator: putGenerator(ch, data),
+    };
 }
