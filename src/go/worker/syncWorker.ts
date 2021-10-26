@@ -54,5 +54,5 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
         }
     }
 
-    return nextIteratorValue;
+    return nextIteratorValue.value;
 }
