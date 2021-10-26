@@ -7,8 +7,6 @@ import {
     waitForIncomingTake,
     waitForPutQueueToRelease,
 } from './internal';
-import { WAIT_FOR_INCOMING_TAKE } from './internal/waitForIncomingTake';
-import { WAIT_FOR_PUT_QUEUE_TO_RELEASE } from './internal/waitForPutQueueToRelease';
 
 export function* put<T = unknown>(ch: Channel<T>, data: T) {
     if (data === null) {
@@ -16,17 +14,11 @@ export function* put<T = unknown>(ch: Channel<T>, data: T) {
     }
 
     try {
-        yield makeExecuteInstruction(
-            WAIT_FOR_PUT_QUEUE_TO_RELEASE,
-            waitForPutQueueToRelease(ch),
-        );
+        yield makeExecuteInstruction(waitForPutQueueToRelease(ch));
         makePut(ch, data);
 
         if (!ch.isBuffered) {
-            yield makeExecuteInstruction(
-                WAIT_FOR_INCOMING_TAKE,
-                waitForIncomingTake(ch),
-            );
+            yield makeExecuteInstruction(waitForIncomingTake(ch));
         }
     } catch (e) {
         if (!isChannelClosedError(e)) {

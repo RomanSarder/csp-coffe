@@ -4,7 +4,7 @@ import { syncWorker } from '@Lib/go/worker';
 import {
     makeTake,
     releaseTake,
-    waitForTakeQueueToRelease,
+    waitForTakeQueueToReleaseGenerator,
 } from '@Lib/operators/internal';
 
 describe('waitForTakeQueueToRelease', () => {
@@ -12,7 +12,7 @@ describe('waitForTakeQueueToRelease', () => {
         it('should complete which resolves only after put buffer becomes empty', () => {
             const ch = makeChannel();
             makeTake(ch);
-            const iterator = syncWorker(waitForTakeQueueToRelease(ch));
+            const iterator = syncWorker(waitForTakeQueueToReleaseGenerator(ch));
             expect(iterator.next().value).toEqual(makeParkCommand());
             releaseTake(ch);
             expect(iterator.next().done).toEqual(true);
@@ -22,7 +22,7 @@ describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is unblocked', () => {
         it('should complete immediately', () => {
             const ch = makeChannel();
-            const iterator = syncWorker(waitForTakeQueueToRelease(ch));
+            const iterator = syncWorker(waitForTakeQueueToReleaseGenerator(ch));
             expect(iterator.next().done).toEqual(true);
         });
     });

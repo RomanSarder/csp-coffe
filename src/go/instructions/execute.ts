@@ -1,14 +1,15 @@
+import { Operator } from '@Lib/operators/operator.types';
 import { Command, Instruction } from '../entity';
 
-export function makeExecuteInstruction<T extends Generator>(
-    name: string,
-    val: T,
-): Instruction<T> {
+export function makeExecuteInstruction<
+    O extends Operator<any>,
+    G = O extends Operator<infer T> ? T : unknown,
+>(operator: O): Instruction<G> {
     return {
         command: Command.EXECUTE,
-        value: val,
+        value: operator.generator,
         meta: {
-            name,
+            name: operator.name,
         },
     };
 }

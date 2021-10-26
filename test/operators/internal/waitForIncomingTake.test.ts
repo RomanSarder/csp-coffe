@@ -1,5 +1,8 @@
 import { makeChannel } from '@Lib/channel';
-import { makeTake, waitForIncomingTake } from '@Lib/operators/internal';
+import {
+    makeTake,
+    waitForIncomingTakeGenerator,
+} from '@Lib/operators/internal';
 import { syncWorker } from '@Lib/go/worker';
 import { makeParkCommand } from '@Lib/go';
 
@@ -7,7 +10,7 @@ describe('waitForIncomingTake', () => {
     describe('when there is no items in take buffer', () => {
         it('should complete only after any item gets to take buffer', async () => {
             const ch = makeChannel();
-            const iterator = syncWorker(waitForIncomingTake(ch));
+            const iterator = syncWorker(waitForIncomingTakeGenerator(ch));
             expect(iterator.next().value).toEqual(makeParkCommand());
             makeTake(ch);
             expect(iterator.next().done).toEqual(true);
@@ -17,7 +20,7 @@ describe('waitForIncomingTake', () => {
     describe('when there is already an item in take buffer', () => {
         const ch = makeChannel();
         makeTake(ch);
-        const iterator = syncWorker(waitForIncomingTake(ch));
+        const iterator = syncWorker(waitForIncomingTakeGenerator(ch));
         expect(iterator.next().done).toEqual(true);
     });
 });
