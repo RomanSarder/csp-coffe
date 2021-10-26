@@ -1,5 +1,5 @@
 import { makeExecuteInstruction } from '@Lib/go';
-import { Channel } from '../channel/channel.types';
+import { Channel, FlattenChannel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
 import {
     makePut,
@@ -11,17 +11,20 @@ import { Operator } from './operator.types';
 
 export const PUT = 'PUT';
 
-export function* putGenerator<T = unknown>(ch: Channel<T>, data: T) {
+export function* putGenerator<C extends Channel<NonNullable<any>>>(
+    ch: C,
+    data: FlattenChannel<C>,
+) {
     if (data === null) {
         throw new Error('null values are not allowed');
     }
 
     try {
-        yield makeExecuteInstruction(waitForPutQueueToRelease(ch));
+        yield makeExecuteInstruction(waitForPutQueueToRelease, ch);
         makePut(ch, data);
 
         if (!ch.isBuffered) {
-            yield makeExecuteInstruction(waitForIncomingTake(ch));
+            yield makeExecuteInstruction(waitForIncomingTake, ch);
         }
     } catch (e) {
         if (!isChannelClosedError(e)) {
@@ -33,9 +36,9 @@ export function* putGenerator<T = unknown>(ch: Channel<T>, data: T) {
     return true;
 }
 
-export function put<T = unknown>(
-    ch: Channel<T>,
-    data: T,
+export function put<C extends Channel<any>>(
+    ch: C,
+    data: FlattenChannel<C>,
 ): Operator<Generator<unknown, boolean>> {
     return {
         name: PUT,
