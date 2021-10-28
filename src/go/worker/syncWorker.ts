@@ -18,7 +18,9 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                 let innerIterator;
                 try {
                     innerIterator = syncWorker(nextIteratorValue.value);
-                    let innerNextIteratorValue = innerIterator.next();
+                    let innerNextIteratorValue = innerIterator.next(
+                        nextIteratorValue.value,
+                    );
 
                     while (!innerNextIteratorValue.done) {
                         yield innerNextIteratorValue.value;
@@ -29,6 +31,7 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                     innerIterator?.throw(e);
                 }
             } else if (
+                nextIteratorValue.value &&
                 isInstruction(nextIteratorValue.value) &&
                 nextIteratorValue.value.command === Command.EXECUTE
             ) {
@@ -48,7 +51,7 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                     nextIteratorValue = innerIterator?.throw(e);
                 }
             }
-            nextIteratorValue = iterator.next();
+            nextIteratorValue = iterator.next(nextIteratorValue?.value);
         } catch (e) {
             nextIteratorValue = iterator.throw(e);
         }

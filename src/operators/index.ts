@@ -9,4 +9,3 @@ export * from './take';
 export * from './takeAsync';
 export * from './poll';
 export * from './pipe';
-export * from './alts';

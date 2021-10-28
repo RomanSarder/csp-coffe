@@ -1,5 +1,7 @@
-import { Channel } from '@Lib/channel';
+import { Channel, FlattenChannel } from '@Lib/channel';
 
-export function releasePut<T = unknown>(ch: Channel<T>): T | undefined {
+export function releasePut<C extends Channel<any>>(
+    ch: C,
+): FlattenChannel<C> | undefined {
     return ch.putBuffer.release();
 }
