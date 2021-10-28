@@ -1,7 +1,12 @@
-import { Channel } from '../channel/channel.types';
+import { Channel, FlattenChannel } from '@Lib/channel';
+import { makeExecuteInstruction } from '@Lib/go';
 import { makePut } from './internal';
 
-export function offer<T = unknown>(ch: Channel<T>, data: T): true | null {
+const OFFER = 'OFFER';
+export function offerFn<C extends Channel<any>>(
+    ch: C,
+    data: FlattenChannel<C>,
+): true | null {
     if (data === null) {
         throw new Error('null values are not allowed');
     }
@@ -11,4 +16,14 @@ export function offer<T = unknown>(ch: Channel<T>, data: T): true | null {
     }
     makePut(ch, data);
     return true;
+}
+
+export function offer<C extends Channel<any>>(ch: C, data: FlattenChannel<C>) {
+    return makeExecuteInstruction(
+        {
+            name: OFFER,
+            function: offerFn,
+        },
+        [ch, data],
+    );
 }
