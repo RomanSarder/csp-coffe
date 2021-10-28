@@ -5,9 +5,9 @@ export const errorMessages = {
     UNEXPECTED_ERROR: 'UNEXPECTED_ERROR',
 };
 
-export const events = {
-    CHANNEL_CLOSED: 'CHANNEL_CLOSED',
-};
+export enum Events {
+    CHANNEL_CLOSED = 'CHANNEL_CLOSED',
+}
 
 export const DEFAULT_CHANNEL_CONFIG = {
     bufferType: CreatableBufferType.FIXED,
