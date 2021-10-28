@@ -4,7 +4,7 @@ import { eventLoopQueue } from '@Lib/internal';
 import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
 import { takeAsync } from '@Lib/operators/takeAsync';
 import type { Channel } from './channel.types';
-import { DEFAULT_CHANNEL_CONFIG, events } from './constants';
+import { DEFAULT_CHANNEL_CONFIG, Events } from './constants';
 import { close } from '../operators';
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
@@ -14,7 +14,7 @@ function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
     return false;
 }
 
-export function makeChannel<T = NonNullable<unknown>>(
+export function makeChannel<T = NonNullable<any>>(
     bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
     capacity = 1,
 ): Channel<T> {
@@ -32,7 +32,7 @@ export function makeChannel<T = NonNullable<unknown>>(
                 await eventLoopQueue();
             }
 
-            return events.CHANNEL_CLOSED;
+            return Events.CHANNEL_CLOSED;
         },
 
         is(ch: Channel<unknown>) {
