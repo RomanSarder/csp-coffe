@@ -1,8 +1,7 @@
 import { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/constants';
 import { Instruction } from '@Lib/go/entity';
-import { makeParkCommand } from '@Lib/go';
-import { Operator } from '../operator.types';
+import { makeExecuteInstruction, makeParkCommand } from '@Lib/go';
 
 export const WAIT_FOR_TAKE_QUEUE_TO_RELEASE = 'WAIT_FOR_TAKE_QUEUE_TO_RELEASE';
 
@@ -19,9 +18,12 @@ export function* waitForTakeQueueToReleaseGenerator<C extends Channel<any>>(
 
 export function waitForTakeQueueToRelease<C extends Channel<any>>(
     ch: C,
-): Operator<Generator<Instruction<unknown>>> {
-    return {
-        name: WAIT_FOR_TAKE_QUEUE_TO_RELEASE,
-        generator: waitForTakeQueueToReleaseGenerator(ch),
-    };
+): Instruction<Generator> {
+    return makeExecuteInstruction(
+        {
+            name: WAIT_FOR_TAKE_QUEUE_TO_RELEASE,
+            function: waitForTakeQueueToReleaseGenerator,
+        },
+        [ch],
+    );
 }

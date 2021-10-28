@@ -1,4 +1,5 @@
 import { makeExecuteInstruction } from '@Lib/go';
+import { Instruction } from '@Lib/go/entity';
 import { Channel, FlattenChannel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
 import {
@@ -7,7 +8,6 @@ import {
     waitForIncomingTake,
     waitForPutQueueToRelease,
 } from './internal';
-import { Operator } from './operator.types';
 
 export const PUT = 'PUT';
 
@@ -20,11 +20,11 @@ export function* putGenerator<C extends Channel<NonNullable<any>>>(
     }
 
     try {
-        yield makeExecuteInstruction(waitForPutQueueToRelease, ch);
+        yield waitForPutQueueToRelease(ch);
         makePut(ch, data);
 
         if (!ch.isBuffered) {
-            yield makeExecuteInstruction(waitForIncomingTake, ch);
+            yield waitForIncomingTake(ch);
         }
     } catch (e) {
         if (!isChannelClosedError(e)) {
@@ -39,9 +39,12 @@ export function* putGenerator<C extends Channel<NonNullable<any>>>(
 export function put<C extends Channel<any>>(
     ch: C,
     data: FlattenChannel<C>,
-): Operator<Generator<unknown, boolean>> {
-    return {
-        name: PUT,
-        generator: putGenerator(ch, data),
-    };
+): Instruction<Generator> {
+    return makeExecuteInstruction(
+        {
+            name: PUT,
+            function: putGenerator,
+        },
+        [ch, data],
+    );
 }

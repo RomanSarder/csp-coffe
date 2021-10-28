@@ -1,4 +1,4 @@
-export type Operator<G extends Generator> = {
+export type Operator<F extends (...args: readonly any[]) => any> = {
     name: string;
-    generator: G;
+    function: F;
 };

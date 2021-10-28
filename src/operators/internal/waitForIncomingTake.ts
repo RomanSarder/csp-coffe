@@ -1,12 +1,11 @@
 import { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/constants';
 import { Instruction } from '@Lib/go/entity';
-import { makeParkCommand } from '@Lib/go';
-import { Operator } from '../operator.types';
+import { makeExecuteInstruction, makeParkCommand } from '@Lib/go';
 
 export const WAIT_FOR_INCOMING_TAKE = 'WAIT_FOR_INCOMING_TAKE';
-export function* waitForIncomingTakeGenerator<T = unknown>(
-    ch: Channel<T>,
+export function* waitForIncomingTakeGenerator<C extends Channel<any>>(
+    ch: C,
 ): Generator<Instruction<unknown>> {
     if (ch.isClosed) {
         throw new Error(errorMessages.CHANNEL_CLOSED);
@@ -20,11 +19,14 @@ export function* waitForIncomingTakeGenerator<T = unknown>(
     }
 }
 
-export function waitForIncomingTake<T = unknown>(
-    ch: Channel<T>,
-): Operator<Generator<Instruction<unknown>>> {
-    return {
-        name: WAIT_FOR_INCOMING_TAKE,
-        generator: waitForIncomingTakeGenerator(ch),
-    };
+export function waitForIncomingTake<C extends Channel<any>>(
+    ch: C,
+): Instruction<Generator> {
+    return makeExecuteInstruction(
+        {
+            name: WAIT_FOR_INCOMING_TAKE,
+            function: waitForIncomingTakeGenerator,
+        },
+        [ch],
+    );
 }

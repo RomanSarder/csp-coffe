@@ -2,12 +2,12 @@ import { Operator } from '@Lib/operators/operator.types';
 import { Command, Instruction } from '../entity';
 
 export function makeExecuteInstruction<
-    O extends (...a: readonly any[]) => Operator<Generator>,
->(makeOperator: O, ...args: Parameters<O>): Instruction<Generator> {
-    const operator = makeOperator(...args);
+    O extends (...a1: readonly any[]) => any,
+    Params extends Parameters<O>,
+>(operator: Operator<O>, args: Params): Instruction<ReturnType<O>> {
     return {
         command: Command.EXECUTE,
-        value: operator.generator,
+        value: operator.function(...args),
         meta: {
             name: operator.name,
             args,
