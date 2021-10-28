@@ -1,5 +1,5 @@
 export * from './channel';
-export { events } from './constants';
+export { Events } from './constants';
 export {
     Channel,
     FlattenChannels,

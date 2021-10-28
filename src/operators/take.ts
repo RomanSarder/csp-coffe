@@ -1,6 +1,6 @@
 import { makeExecuteInstruction } from '@Lib/go';
 import { Instruction } from '@Lib/go/entity';
-import { errorMessages, events } from '../channel/constants';
+import { errorMessages, Events } from '../channel/constants';
 import { Channel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
 import {
@@ -37,7 +37,7 @@ export function* takeGenerator<C extends Channel<NonNullable<any>>>(ch: C) {
         return releasePut(ch);
     } catch (e) {
         if (isChannelClosedError(e)) {
-            return events.CHANNEL_CLOSED;
+            return Events.CHANNEL_CLOSED;
         }
         throw e;
     }

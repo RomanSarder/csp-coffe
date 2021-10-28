@@ -1,4 +1,4 @@
-import { events, makeChannel } from '@Lib/channel';
+import { Events, makeChannel } from '@Lib/channel';
 import { close, takeGenerator } from '@Lib/operators';
 import { syncWorker } from '@Lib/go/worker';
 import { makePut } from '@Lib/operators/internal';
@@ -18,7 +18,7 @@ describe('take', () => {
             const ch = makeChannel();
             const iterator = syncWorker(takeGenerator(ch));
             close(ch);
-            expect(iterator.next().value).toEqual(events.CHANNEL_CLOSED);
+            expect(iterator.next().value).toEqual(Events.CHANNEL_CLOSED);
         });
     });
 
@@ -30,7 +30,7 @@ describe('take', () => {
             iterator.next();
             iterator.next();
             close(ch);
-            expect(iterator.next().value).toEqual(events.CHANNEL_CLOSED);
+            expect(iterator.next().value).toEqual(Events.CHANNEL_CLOSED);
             expect(ch.putBuffer.getElementsArray()).toEqual([]);
             expect(ch.takeBuffer.getElementsArray()).toEqual([]);
         });
