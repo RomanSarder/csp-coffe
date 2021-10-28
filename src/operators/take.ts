@@ -1,4 +1,6 @@
-import { events } from '../channel/constants';
+import { Events, makeExecuteInstruction } from '@Lib/go';
+import { FlattenChannel } from '@Lib/channel';
+import { errorMessages, events } from '../channel/constants';
 import { Channel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
 import {
@@ -9,14 +11,21 @@ import {
     waitForIncomingPut,
     waitForTakeQueueToRelease,
 } from './internal';
+import { Operator } from './operator.types';
 
-export async function take<T = unknown>(ch: Channel<T>) {
+export const TAKE = 'TAKE';
+
+export function* takeGenerator<C extends Channel<NonNullable<any>>>(ch: C) {
     try {
-        await waitForTakeQueueToRelease(ch);
+        if (ch.isClosed) {
+            throw new Error(errorMessages.CHANNEL_CLOSED);
+        }
+
+        yield makeExecuteInstruction(waitForTakeQueueToRelease, ch);
         makeTake(ch);
 
         try {
-            await waitForIncomingPut(ch);
+            yield makeExecuteInstruction(waitForIncomingPut, ch);
         } catch (e) {
             // If channel closed, cleanup made take
             if (isChannelClosedError(e)) {
@@ -33,4 +42,13 @@ export async function take<T = unknown>(ch: Channel<T>) {
         }
         throw e;
     }
+}
+
+export function take<C extends Channel<any>>(
+    ch: C,
+): Operator<Generator<unknown, FlattenChannel<C> | Events.CANCELLED>> {
+    return {
+        name: TAKE,
+        generator: takeGenerator(ch),
+    };
 }
