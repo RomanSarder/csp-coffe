@@ -9,25 +9,25 @@ import { makeParkCommand } from '@Lib/go';
 
 describe('waitForPutQueueToReleaseAsync', () => {
     describe('when put buffer is blocked', () => {
-        it('should complete only after put buffer becomes empty', () => {
+        it('should complete only after put buffer becomes empty', async () => {
             const ch = makeChannel();
             makePut(ch, 'test');
             const iterator = asyncGeneratorProxy(
                 waitForPutQueueToReleaseGenerator(ch),
             );
-            expect(iterator.next().value).toEqual(makeParkCommand());
+            expect((await iterator.next()).value).toEqual(makeParkCommand());
             releasePut(ch);
-            expect(iterator.next().done).toEqual(true);
+            expect((await iterator.next()).done).toEqual(true);
         });
     });
 
     describe('when put buffer is not blocked', () => {
-        it('should complete immediately', () => {
+        it('should complete immediately', async () => {
             const ch = makeChannel();
             const iterator = asyncGeneratorProxy(
                 waitForPutQueueToReleaseGenerator(ch),
             );
-            expect(iterator.next().done).toEqual(true);
+            expect((await iterator.next()).done).toEqual(true);
         });
     });
 });

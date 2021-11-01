@@ -9,25 +9,25 @@ import {
 
 describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is blocked', () => {
-        it('should complete which resolves only after put buffer becomes empty', () => {
+        it('should complete which resolves only after put buffer becomes empty', async () => {
             const ch = makeChannel();
             makeTake(ch);
             const iterator = asyncGeneratorProxy(
                 waitForTakeQueueToReleaseGenerator(ch),
             );
-            expect(iterator.next().value).toEqual(makeParkCommand());
+            expect((await iterator.next()).value).toEqual(makeParkCommand());
             releaseTake(ch);
-            expect(iterator.next().done).toEqual(true);
+            expect((await iterator.next()).done).toEqual(true);
         });
     });
 
     describe('when take buffer is unblocked', () => {
-        it('should complete immediately', () => {
+        it('should complete immediately', async () => {
             const ch = makeChannel();
             const iterator = asyncGeneratorProxy(
                 waitForTakeQueueToReleaseGenerator(ch),
             );
-            expect(iterator.next().done).toEqual(true);
+            expect((await iterator.next()).done).toEqual(true);
         });
     });
 });

@@ -29,6 +29,7 @@ export async function* asyncGeneratorProxy<G extends Generator>(
                     nextIteratorResult = await innerIterator.next();
                     while (!nextIteratorResult.done) {
                         nextIteratorValue = await nextIteratorResult.value;
+                        console.log('inner result', nextIteratorValue);
                         yield nextIteratorValue;
 
                         nextIteratorResult = await innerIterator.next(
@@ -51,6 +52,9 @@ export async function* asyncGeneratorProxy<G extends Generator>(
                             nextIteratorResult = await innerIterator.next();
 
                             while (!nextIteratorResult.done) {
+                                nextIteratorValue =
+                                    await nextIteratorResult.value;
+
                                 yield nextIteratorValue;
 
                                 nextIteratorResult = await innerIterator.next(

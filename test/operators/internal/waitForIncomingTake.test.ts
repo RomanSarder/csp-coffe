@@ -13,16 +13,20 @@ describe('waitForIncomingTake', () => {
             const iterator = asyncGeneratorProxy(
                 waitForIncomingTakeGenerator(ch),
             );
-            expect(iterator.next().value).toEqual(makeParkCommand());
+            expect((await iterator.next()).value).toEqual(makeParkCommand());
             makeTake(ch);
-            expect(iterator.next().done).toEqual(true);
+            expect((await iterator.next()).done).toEqual(true);
         });
     });
 
     describe('when there is already an item in take buffer', () => {
-        const ch = makeChannel();
-        makeTake(ch);
-        const iterator = asyncGeneratorProxy(waitForIncomingTakeGenerator(ch));
-        expect(iterator.next().done).toEqual(true);
+        it('should return immediately', async () => {
+            const ch = makeChannel();
+            makeTake(ch);
+            const iterator = asyncGeneratorProxy(
+                waitForIncomingTakeGenerator(ch),
+            );
+            expect((await iterator.next()).done).toEqual(true);
+        });
     });
 });
