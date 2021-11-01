@@ -1,5 +1,5 @@
-import { Events } from '@Lib/go';
-import { GeneratorReturn, MaybeGeneratorReturnFromValue } from '@Lib/go/utils';
+import { GeneratorReturn, MaybeGeneratorReturnFromValue } from '../utils';
+import { Events } from '../entity';
 import { worker } from './worker';
 
 export function wrapIntoWorker<

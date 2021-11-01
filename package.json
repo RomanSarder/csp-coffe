@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:clear": "jest --clearCache",
     "test:watch": "jest --watchAll",
     "build": "tsc --build",
     "dev": "yarn build --watch --preserveWatchOutput"
