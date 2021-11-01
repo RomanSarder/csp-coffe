@@ -8,7 +8,7 @@ import { DEFAULT_CHANNEL_CONFIG, Events } from './constants';
 import { close } from '../operators';
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
-    if (bufferType !== CreatableBufferType.UNBLOCKING && capacity > 1) {
+    if (bufferType === CreatableBufferType.UNBLOCKING || capacity > 1) {
         return true;
     }
     return false;
