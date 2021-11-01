@@ -114,14 +114,14 @@ describe('go', () => {
 
     it('should run execute instructions', async () => {
         function* testGenerator(ch: Channel<any>) {
-            yield put(ch, 'test1');
+            const res: boolean = yield put(ch, 'test1');
+            return res;
         }
         const ch = makeChannel(CreatableBufferType.UNBLOCKING);
 
         const { promise } = go(testGenerator, ch);
 
         await promise;
-
         expect(ch.putBuffer.getElementsArray()).toEqual(['test1']);
     });
 

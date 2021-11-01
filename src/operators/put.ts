@@ -31,6 +31,7 @@ export function* putGenerator<C extends Channel<NonNullable<any>>>(
             throw e;
         }
         resetChannel(ch);
+        return false;
     }
 
     return true;

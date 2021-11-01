@@ -29,18 +29,29 @@ export async function* asyncGeneratorProxy<G extends Generator>(
                     nextIteratorResult = await innerIterator.next();
                     while (!nextIteratorResult.done) {
                         nextIteratorValue = await nextIteratorResult.value;
-                        console.log('inner result', nextIteratorValue);
                         yield nextIteratorValue;
 
                         nextIteratorResult = await innerIterator.next(
                             nextIteratorValue,
                         );
                     }
+
+                    nextIteratorValue = await nextIteratorResult.value;
+                    nextIteratorResult = {
+                        value: nextIteratorValue,
+                        done: false,
+                    };
+                    yield nextIteratorValue;
                 } catch (e) {
-                    await innerIterator?.throw(e);
+                    const errorIteratorResult = await innerIterator?.throw(e);
+                    nextIteratorResult = {
+                        value: errorIteratorResult?.value,
+                        done: false,
+                    };
                 }
             } else if (isInstruction(nextIteratorValue)) {
                 switch (nextIteratorValue.command) {
+                    /* TODO: Find a way to avoid duplication */
                     case Command.EXECUTE: {
                         const assertedValue =
                             nextIteratorValue as ExecuteInstruction;
@@ -61,8 +72,19 @@ export async function* asyncGeneratorProxy<G extends Generator>(
                                     nextIteratorValue,
                                 );
                             }
+                            nextIteratorValue = await nextIteratorResult.value;
+                            nextIteratorResult = {
+                                value: nextIteratorValue,
+                                done: false,
+                            };
+                            yield nextIteratorValue;
                         } catch (e) {
-                            nextIteratorResult = await innerIterator?.throw(e);
+                            const errorIteratorResult =
+                                await innerIterator?.throw(e);
+                            nextIteratorResult = {
+                                value: errorIteratorResult?.value,
+                                done: false,
+                            };
                         }
                         break;
                     }
@@ -70,9 +92,12 @@ export async function* asyncGeneratorProxy<G extends Generator>(
                         const assertedValue =
                             nextIteratorValue as CallInstruction;
 
-                        nextIteratorResult = assertedValue.function(
-                            ...assertedValue.args,
-                        );
+                        nextIteratorResult = {
+                            value: assertedValue.function(
+                                ...assertedValue.args,
+                            ),
+                            done: false,
+                        };
                         break;
                     }
                     default: {
@@ -86,6 +111,5 @@ export async function* asyncGeneratorProxy<G extends Generator>(
             nextIteratorResult = iterator.throw(e);
         }
     }
-
     return nextIteratorResult.value;
 }

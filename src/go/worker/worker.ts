@@ -35,6 +35,7 @@ export function worker<
             await eventLoopQueue();
             let nextIteratorResult = await asyncIterator.next();
             while (!nextIteratorResult.done) {
+                /* Find the way to pass results of execute operations instead of instructions */
                 const result = await asyncIterator.next(
                     nextIteratorResult.value,
                 );
@@ -45,6 +46,7 @@ export function worker<
 
                 nextIteratorResult = result;
             }
+
             return nextIteratorResult.value;
         })(),
     };
