@@ -1,39 +1,41 @@
 import { makeChannel, Channel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal';
 import { close } from '@Lib/operators';
-import { CancelledRef, Events } from './entity';
+import { Events } from './entity';
 import { worker } from './worker/worker';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';
 
 export function go<
-    GenFn extends () => Generator,
+    GenFn extends (...args1: readonly any[]) => Generator,
+    Args extends Parameters<GenFn>,
     G extends Generator = ReturnType<GenFn>,
     TReturn = Exclude<MaybeGeneratorReturnFromValue<GeneratorReturn<G>>, void>,
 >(
     generator: GenFn,
-    isCancelledRef: CancelledRef = { ref: false },
+    ...args: Args
 ): {
     promise: Promise<TReturn | Events.CANCELLED>;
     channel: Channel<TReturn | Events.CANCELLED>;
-    cancel: () => void;
+    cancel: () => Promise<void>;
 } {
-    const iterator = generator() as G;
     const channel = makeChannel<TReturn | Events.CANCELLED>();
+    const { promise, iterator } = worker(generator, ...args);
+
+    promise
+        .then((res) => {
+            makePut(channel, res);
+            return res;
+        })
+        .catch((e) => {
+            close(channel);
+            throw e;
+        });
 
     return {
-        promise: worker(iterator, isCancelledRef)
-            .then((res) => {
-                makePut(channel, res);
-                return res;
-            })
-            .catch((e) => {
-                close(channel);
-                throw e;
-            }),
+        promise,
         channel,
-        cancel: () => {
-            // eslint-disable-next-line no-param-reassign
-            isCancelledRef.ref = true;
+        cancel: async () => {
+            await iterator.return(Events.CANCELLED);
         },
     };
 }

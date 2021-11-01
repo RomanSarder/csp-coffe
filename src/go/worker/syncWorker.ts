@@ -1,61 +1,70 @@
 import { ExecuteInstruction, CallInstruction } from '../instructions';
-import { Command } from '../entity';
+import { Command, Events } from '../entity';
 import { isInstruction } from '../utils';
 import { isGenerator } from './shared';
 
 // eslint-disable-next-line consistent-return
-export function* syncWorker<G extends Generator>(iterator: G): Generator {
-    let nextIteratorValue;
+export async function* syncWorker<G extends Generator>(
+    iterator: G,
+): AsyncGenerator {
+    let nextIteratorResult;
     try {
-        nextIteratorValue = iterator.next();
+        nextIteratorResult = iterator.next();
     } catch (e) {
         return iterator.throw(e);
     }
+    while (!nextIteratorResult.done) {
+        let nextIteratorValue = await nextIteratorResult.value;
 
-    while (!nextIteratorValue.done) {
-        yield nextIteratorValue.value;
+        if (nextIteratorValue === Events.CANCELLED) {
+            return nextIteratorValue;
+        }
+
+        yield nextIteratorValue;
         try {
-            if (isGenerator(nextIteratorValue.value)) {
+            if (isGenerator(nextIteratorValue)) {
                 let innerIterator;
                 try {
-                    innerIterator = syncWorker(nextIteratorValue.value);
-                    nextIteratorValue = innerIterator.next(
-                        nextIteratorValue.value,
-                    );
+                    innerIterator = syncWorker(nextIteratorValue);
+                    nextIteratorResult = await innerIterator.next();
+                    while (!nextIteratorResult.done) {
+                        nextIteratorValue = await nextIteratorResult.value;
+                        yield nextIteratorValue;
 
-                    while (!nextIteratorValue.done) {
-                        yield nextIteratorValue.value;
-
-                        nextIteratorValue = innerIterator.next();
+                        nextIteratorResult = await innerIterator.next(
+                            nextIteratorValue,
+                        );
                     }
                 } catch (e) {
-                    innerIterator?.throw(e);
+                    await innerIterator?.throw(e);
                 }
-            } else if (isInstruction(nextIteratorValue.value)) {
-                switch (nextIteratorValue.value.command) {
+            } else if (isInstruction(nextIteratorValue)) {
+                switch (nextIteratorValue.command) {
                     case Command.EXECUTE: {
                         const assertedValue =
-                            nextIteratorValue.value as ExecuteInstruction;
+                            nextIteratorValue as ExecuteInstruction;
                         let innerIterator;
                         try {
                             innerIterator = syncWorker(assertedValue.generator);
-                            nextIteratorValue = innerIterator.next();
+                            nextIteratorResult = await innerIterator.next();
 
-                            while (!nextIteratorValue.done) {
-                                yield nextIteratorValue.value;
+                            while (!nextIteratorResult.done) {
+                                yield nextIteratorValue;
 
-                                nextIteratorValue = innerIterator.next();
+                                nextIteratorResult = await innerIterator.next(
+                                    nextIteratorValue,
+                                );
                             }
                         } catch (e) {
-                            nextIteratorValue = innerIterator?.throw(e);
+                            nextIteratorResult = await innerIterator?.throw(e);
                         }
                         break;
                     }
                     case Command.CALL: {
                         const assertedValue =
-                            nextIteratorValue.value as CallInstruction;
+                            nextIteratorValue as CallInstruction;
 
-                        nextIteratorValue = assertedValue.function(
+                        nextIteratorResult = assertedValue.function(
                             ...assertedValue.args,
                         );
                         break;
@@ -66,11 +75,11 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                 }
             }
 
-            nextIteratorValue = iterator.next(nextIteratorValue?.value);
+            nextIteratorResult = iterator.next(nextIteratorValue);
         } catch (e) {
-            nextIteratorValue = iterator.throw(e);
+            nextIteratorResult = iterator.throw(e);
         }
     }
 
-    return nextIteratorValue.value;
+    return nextIteratorResult.value;
 }

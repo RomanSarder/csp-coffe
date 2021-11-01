@@ -1,6 +1,12 @@
+import { CreatableBufferType } from '@Lib/buffer';
+import { Channel, makeChannel } from '@Lib/channel';
 import { Events, go } from '@Lib/go';
-import { eventLoopQueue, fakeAsyncFunction } from '@Lib/internal';
+import { fakeAsyncFunction } from '@Lib/internal';
+import { put } from '@Lib/operators';
 import { delay } from '@Lib/shared';
+// import { eventLoopQueue, fakeAsyncFunction } from '@Lib/internal';
+
+// import { delay } from '@Lib/shared';
 // import { take } from '@Lib/operators';
 
 describe('go', () => {
@@ -37,7 +43,7 @@ describe('go', () => {
             const result: number = yield fakeAsyncFunction(() => 2);
             executionOrder.push(result);
             yield executionOrder.push(3);
-            return testInnerGenerator();
+            yield testInnerGenerator();
         }
 
         const { promise } = go(testGenerator);
@@ -60,8 +66,7 @@ describe('go', () => {
         expect(result).toEqual('test');
     });
 
-    it('should cancel', async () => {
-        const spy = jest.fn();
+    it('should cancel from outside', async () => {
         const genSpy = jest.fn();
 
         function* testGenerator() {
@@ -72,23 +77,53 @@ describe('go', () => {
         }
 
         const { cancel, promise } = go(testGenerator);
-        promise.then(spy);
-        cancel();
-        await eventLoopQueue();
-        expect(spy).toHaveBeenCalledWith(Events.CANCELLED);
+        await cancel();
+        await promise;
         expect(genSpy).not.toHaveBeenCalled();
     });
 
-    // it('should return channel which contains returned value', async () => {
-    //     function* testGenerator() {
-    //         const result: string = yield fakeAsyncFunction(() => 'test1');
-    //         return result;
-    //     }
+    it('should cancel from inside', async () => {
+        const genSpy = jest.fn();
 
-    //     const { channel } = go(testGenerator);
+        function* testGenerator() {
+            yield fakeAsyncFunction(() => 'sasi');
+            yield Events.CANCELLED;
+            yield genSpy();
+            yield true;
+            return 'test';
+        }
 
-    //     expect(channel.putBuffer.getElementsArray()).toEqual(['test1']);
-    // });
+        const { promise } = go(testGenerator);
+        const result = await promise;
+        expect(result).toEqual(Events.CANCELLED);
+        expect(genSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return channel which contains returned value', async () => {
+        function* testGenerator() {
+            const result: string = yield fakeAsyncFunction(() => 'test1');
+            return result;
+        }
+
+        const { channel, promise } = go(testGenerator);
+
+        await promise;
+
+        expect(channel.putBuffer.getElementsArray()).toEqual(['test1']);
+    });
+
+    it('should run execute instructions', async () => {
+        function* testGenerator(ch: Channel<any>) {
+            yield put(ch, 'test1');
+        }
+        const ch = makeChannel(CreatableBufferType.UNBLOCKING);
+
+        const { promise } = go(testGenerator, ch);
+
+        await promise;
+
+        expect(ch.putBuffer.getElementsArray()).toEqual(['test1']);
+    });
 
     // it('should return channel which closes after taking a value', async () => {
     //     function* testGenerator() {

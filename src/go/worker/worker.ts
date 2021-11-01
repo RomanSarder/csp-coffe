@@ -1,28 +1,51 @@
-import { Events, CancelledRef } from '../entity';
-import { nextStep } from './nextStep';
+import { eventLoopQueue } from '@Lib/internal';
+import { Events } from '../entity';
 import {
+    GeneratorNext,
     GeneratorReturn,
     GeneratorT,
     MaybeGeneratorReturnFromValue,
 } from '../utils';
+import { syncWorker } from '.';
 
 export function worker<
-    G extends Generator,
-    T = GeneratorT<G>,
+    GenFn extends (...args1: readonly any[]) => Generator,
+    G extends ReturnType<GenFn>,
     TReturn = MaybeGeneratorReturnFromValue<GeneratorReturn<G>>,
 >(
-    iterator: G,
-    isCancelledRef: CancelledRef = { ref: false },
-): Promise<TReturn | Events.CANCELLED> {
-    return new Promise((resolve, reject) => {
-        nextStep({
-            nextIteratorResult: iterator.next() as IteratorYieldResult<
-                T | TReturn
-            >,
-            iterator,
-            isCancelledRef,
-            successCallback: resolve,
-            errorCallback: reject,
-        });
-    });
+    generator: (...args2: any) => G,
+    ...args: Parameters<GenFn>
+): {
+    promise: Promise<TReturn | Events.CANCELLED>;
+    iterator: AsyncGenerator<
+        GeneratorT<G>,
+        GeneratorNext<G>,
+        GeneratorReturn<G>
+    >;
+} {
+    const asyncIterator = syncWorker(generator(...args));
+    return {
+        iterator: asyncIterator as AsyncGenerator<
+            GeneratorT<G>,
+            GeneratorNext<G>,
+            GeneratorReturn<G>
+        >,
+        promise: (async function run() {
+            /* Provide an ability to cancel immediately */
+            await eventLoopQueue();
+            let nextIteratorResult = await asyncIterator.next();
+            while (!nextIteratorResult.done) {
+                const result = await asyncIterator.next(
+                    nextIteratorResult.value,
+                );
+
+                if (result.value === Events.CANCELLED) {
+                    return result.value;
+                }
+
+                nextIteratorResult = result;
+            }
+            return nextIteratorResult.value;
+        })(),
+    };
 }
