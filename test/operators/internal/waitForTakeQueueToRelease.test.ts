@@ -1,6 +1,6 @@
 import { makeChannel } from '@Lib/channel';
 import { makeParkCommand } from '@Lib/go';
-import { syncWorker } from '@Lib/go/worker';
+import { asyncGeneratorProxy } from '@Lib/go/worker';
 import {
     makeTake,
     releaseTake,
@@ -12,7 +12,9 @@ describe('waitForTakeQueueToRelease', () => {
         it('should complete which resolves only after put buffer becomes empty', () => {
             const ch = makeChannel();
             makeTake(ch);
-            const iterator = syncWorker(waitForTakeQueueToReleaseGenerator(ch));
+            const iterator = asyncGeneratorProxy(
+                waitForTakeQueueToReleaseGenerator(ch),
+            );
             expect(iterator.next().value).toEqual(makeParkCommand());
             releaseTake(ch);
             expect(iterator.next().done).toEqual(true);
@@ -22,7 +24,9 @@ describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is unblocked', () => {
         it('should complete immediately', () => {
             const ch = makeChannel();
-            const iterator = syncWorker(waitForTakeQueueToReleaseGenerator(ch));
+            const iterator = asyncGeneratorProxy(
+                waitForTakeQueueToReleaseGenerator(ch),
+            );
             expect(iterator.next().done).toEqual(true);
         });
     });

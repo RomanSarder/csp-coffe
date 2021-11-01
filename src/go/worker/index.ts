@@ -1,2 +1,2 @@
 export * from './worker';
-export * from './syncWorker';
+export * from './asyncGeneratorProxy';

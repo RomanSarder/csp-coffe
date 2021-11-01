@@ -1,12 +1,12 @@
 import { Events, makeChannel } from '@Lib/channel';
 import { close, takeGenerator } from '@Lib/operators';
-import { syncWorker } from '@Lib/go/worker';
+import { asyncGeneratorProxy } from '@Lib/go/worker';
 import { makePut } from '@Lib/operators/internal';
 
 describe('take', () => {
     it('should take a put value from channel', () => {
         const ch = makeChannel();
-        const iterator = syncWorker(takeGenerator(ch));
+        const iterator = asyncGeneratorProxy(takeGenerator(ch));
         makePut(ch, 'test1');
         iterator.next();
         iterator.next();
@@ -16,7 +16,7 @@ describe('take', () => {
     describe('when channel is closed', () => {
         it('should return channel closed message', () => {
             const ch = makeChannel();
-            const iterator = syncWorker(takeGenerator(ch));
+            const iterator = asyncGeneratorProxy(takeGenerator(ch));
             close(ch);
             expect(iterator.next().value).toEqual(Events.CHANNEL_CLOSED);
         });
@@ -25,7 +25,7 @@ describe('take', () => {
     describe('when the channel is closed after take was put', () => {
         it('should release take and reset channel', () => {
             const ch = makeChannel();
-            const iterator = syncWorker(takeGenerator(ch));
+            const iterator = asyncGeneratorProxy(takeGenerator(ch));
             makePut(ch, 'test1');
             iterator.next();
             iterator.next();

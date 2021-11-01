@@ -6,7 +6,7 @@ import {
     GeneratorT,
     MaybeGeneratorReturnFromValue,
 } from '../utils';
-import { syncWorker } from '.';
+import { asyncGeneratorProxy } from './asyncGeneratorProxy';
 
 export function worker<
     GenFn extends (...args1: readonly any[]) => Generator,
@@ -23,7 +23,7 @@ export function worker<
         GeneratorReturn<G>
     >;
 } {
-    const asyncIterator = syncWorker(generator(...args));
+    const asyncIterator = asyncGeneratorProxy(generator(...args));
     return {
         iterator: asyncIterator as AsyncGenerator<
             GeneratorT<G>,

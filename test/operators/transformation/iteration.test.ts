@@ -1,6 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { Events, makeChannel } from '@Lib/channel';
-import { syncWorker } from '@Lib/go/worker';
+import { asyncGeneratorProxy } from '@Lib/go/worker';
 import { close, newIterate } from '@Lib/operators';
 import { makePut } from '@Lib/operators/internal';
 
@@ -10,7 +10,7 @@ describe('iterate', () => {
         const spy = jest.fn();
         makePut(ch, 'test1');
         makePut(ch, 'test2');
-        const iterator = syncWorker(newIterate(spy, ch));
+        const iterator = asyncGeneratorProxy(newIterate(spy, ch));
         iterator.next();
         iterator.next();
         expect(spy).toHaveBeenCalledWith('test1');
