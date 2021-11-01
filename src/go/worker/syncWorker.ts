@@ -1,3 +1,4 @@
+import { ExecuteInstruction, CallInstruction } from '../instructions';
 import { Command } from '../entity';
 import { isInstruction } from '../utils';
 import { isGenerator } from './shared';
@@ -18,29 +19,9 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                 let innerIterator;
                 try {
                     innerIterator = syncWorker(nextIteratorValue.value);
-                    let innerNextIteratorValue = innerIterator.next(
+                    nextIteratorValue = innerIterator.next(
                         nextIteratorValue.value,
                     );
-
-                    while (!innerNextIteratorValue.done) {
-                        yield innerNextIteratorValue.value;
-
-                        innerNextIteratorValue = innerIterator.next();
-                    }
-                } catch (e) {
-                    innerIterator?.throw(e);
-                }
-            } else if (
-                nextIteratorValue.value &&
-                isInstruction(nextIteratorValue.value) &&
-                nextIteratorValue.value.command === Command.EXECUTE
-            ) {
-                let innerIterator;
-                try {
-                    innerIterator = syncWorker(
-                        nextIteratorValue.value.value as Generator,
-                    );
-                    nextIteratorValue = innerIterator.next();
 
                     while (!nextIteratorValue.done) {
                         yield nextIteratorValue.value;
@@ -48,9 +29,43 @@ export function* syncWorker<G extends Generator>(iterator: G): Generator {
                         nextIteratorValue = innerIterator.next();
                     }
                 } catch (e) {
-                    nextIteratorValue = innerIterator?.throw(e);
+                    innerIterator?.throw(e);
+                }
+            } else if (isInstruction(nextIteratorValue.value)) {
+                switch (nextIteratorValue.value.command) {
+                    case Command.EXECUTE: {
+                        const assertedValue =
+                            nextIteratorValue.value as ExecuteInstruction;
+                        let innerIterator;
+                        try {
+                            innerIterator = syncWorker(assertedValue.generator);
+                            nextIteratorValue = innerIterator.next();
+
+                            while (!nextIteratorValue.done) {
+                                yield nextIteratorValue.value;
+
+                                nextIteratorValue = innerIterator.next();
+                            }
+                        } catch (e) {
+                            nextIteratorValue = innerIterator?.throw(e);
+                        }
+                        break;
+                    }
+                    case Command.CALL: {
+                        const assertedValue =
+                            nextIteratorValue.value as CallInstruction;
+
+                        nextIteratorValue = assertedValue.function(
+                            ...assertedValue.args,
+                        );
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
                 }
             }
+
             nextIteratorValue = iterator.next(nextIteratorValue?.value);
         } catch (e) {
             nextIteratorValue = iterator.throw(e);
