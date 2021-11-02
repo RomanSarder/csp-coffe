@@ -1,8 +1,7 @@
 import { Channel, FlattenChannel } from '@Lib/channel';
-import { makeCallInstruction } from '@Lib/go';
+import { call } from '@Lib/go';
 import { makePut } from './internal';
 
-const OFFER = 'OFFER';
 export function offerFn<C extends Channel<any>>(
     ch: C,
     data: FlattenChannel<C>,
@@ -19,11 +18,5 @@ export function offerFn<C extends Channel<any>>(
 }
 
 export function offer<C extends Channel<any>>(ch: C, data: FlattenChannel<C>) {
-    return makeCallInstruction(
-        {
-            name: OFFER,
-            function: offerFn,
-        },
-        [ch, data],
-    );
+    return call(offerFn, ch, data);
 }

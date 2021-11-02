@@ -1,6 +1,6 @@
 export enum Command {
     PARK = 'PARK',
     CONTINUE = 'CONTINUE',
-    EXECUTE = 'EXECUTE',
+    TASK = 'TASK',
     CALL = 'CALL',
 }

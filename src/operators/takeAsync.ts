@@ -1,4 +1,4 @@
 import { wrapIntoWorker } from '@Lib/go/worker';
-import { takeGenerator } from './take';
+import { take } from './take';
 
-export const takeAsync = wrapIntoWorker(takeGenerator);
+export const takeAsync = wrapIntoWorker(take);

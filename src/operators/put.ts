@@ -1,5 +1,3 @@
-import { makeExecuteInstruction } from '@Lib/go';
-import { Instruction } from '@Lib/go/entity';
 import { Channel, FlattenChannel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
 import {
@@ -11,7 +9,7 @@ import {
 
 export const PUT = 'PUT';
 
-export function* putGenerator<C extends Channel<NonNullable<any>>>(
+export function* put<C extends Channel<NonNullable<any>>>(
     ch: C,
     data: FlattenChannel<C>,
 ) {
@@ -35,17 +33,4 @@ export function* putGenerator<C extends Channel<NonNullable<any>>>(
     }
 
     return true;
-}
-
-export function put<C extends Channel<any>>(
-    ch: C,
-    data: FlattenChannel<C>,
-): Instruction<Generator> {
-    return makeExecuteInstruction(
-        {
-            name: PUT,
-            function: putGenerator,
-        },
-        [ch, data],
-    );
 }

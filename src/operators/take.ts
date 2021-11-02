@@ -1,5 +1,3 @@
-import { makeExecuteInstruction } from '@Lib/go';
-import { Instruction } from '@Lib/go/entity';
 import { errorMessages, Events } from '../channel/constants';
 import { Channel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
@@ -14,7 +12,7 @@ import {
 
 export const TAKE = 'TAKE';
 
-export function* takeGenerator<C extends Channel<NonNullable<any>>>(ch: C) {
+export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
     try {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
@@ -41,14 +39,4 @@ export function* takeGenerator<C extends Channel<NonNullable<any>>>(ch: C) {
         }
         throw e;
     }
-}
-
-export function take<C extends Channel<any>>(ch: C): Instruction<Generator> {
-    return makeExecuteInstruction(
-        {
-            name: TAKE,
-            function: takeGenerator,
-        },
-        [ch],
-    );
 }

@@ -1,4 +1,4 @@
 import { wrapIntoWorker } from '@Lib/go/worker';
-import { putGenerator } from './put';
+import { put } from './put';
 
-export const putAsync = wrapIntoWorker(putGenerator);
+export const putAsync = wrapIntoWorker(put);

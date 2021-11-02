@@ -1,6 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { Channel, makeChannel } from '@Lib/channel';
-import { Events, go } from '@Lib/go';
+import { call, Events, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { put } from '@Lib/operators';
 import { delay } from '@Lib/shared';
@@ -112,9 +112,13 @@ describe('go', () => {
         expect(channel.putBuffer.getElementsArray()).toEqual(['test1']);
     });
 
-    it('should run execute instructions', async () => {
+    it('should run execute tasks', async () => {
         function* testGenerator(ch: Channel<any>) {
-            const res: boolean = yield put(ch, 'test1');
+            const asyncValue: string = yield call(
+                fakeAsyncFunction,
+                () => 'test1',
+            );
+            const res: boolean = yield call(put, ch, asyncValue);
             return res;
         }
         const ch = makeChannel(CreatableBufferType.UNBLOCKING);
