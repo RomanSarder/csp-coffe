@@ -1,6 +1,4 @@
 import { wrapIntoWorker } from '@Lib/go/worker';
-import { waitForIncomingPutGenerator } from './waitForIncomingPut';
+import { waitForIncomingPut } from './waitForIncomingPut';
 
-export const waitForIncomingPutAsync = wrapIntoWorker(
-    waitForIncomingPutGenerator,
-);
+export const waitForIncomingPutAsync = wrapIntoWorker(waitForIncomingPut);

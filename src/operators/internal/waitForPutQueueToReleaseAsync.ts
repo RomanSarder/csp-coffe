@@ -1,6 +1,6 @@
 import { wrapIntoWorker } from '@Lib/go/worker';
-import { waitForPutQueueToReleaseGenerator } from './waitForPutQueueToRelease';
+import { waitForPutQueueToRelease } from './waitForPutQueueToRelease';
 
 export const waitForPutQueueToReleaseAsync = wrapIntoWorker(
-    waitForPutQueueToReleaseGenerator,
+    waitForPutQueueToRelease,
 );

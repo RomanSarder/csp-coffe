@@ -1,6 +1,4 @@
 import { wrapIntoWorker } from '@Lib/go/worker';
-import { waitForIncomingTakeGenerator } from './waitForIncomingTake';
+import { waitForIncomingTake } from './waitForIncomingTake';
 
-export const waitForIncomingTakeAsync = wrapIntoWorker(
-    waitForIncomingTakeGenerator,
-);
+export const waitForIncomingTakeAsync = wrapIntoWorker(waitForIncomingTake);
