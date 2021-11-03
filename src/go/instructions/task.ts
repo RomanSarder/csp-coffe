@@ -8,7 +8,7 @@ export function isTask(maybeTask: any | Task): maybeTask is Task {
 
 export function makeTaskCommand<GenFn extends (...a1: readonly any[]) => any>(
     genFn: GenFn,
-    isFork: boolean,
+    isFork = false,
     args: Parameters<GenFn>,
 ): Task<GenFn> {
     return {

@@ -6,6 +6,7 @@ import { isTask } from '../instructions/task';
 export async function* asyncGeneratorProxy<G extends Generator>(
     iterator: G,
 ): AsyncGenerator {
+    /* TODO: Resolve forked processes here before return */
     // const forkedIterators = [];
     // const forkedPromises = [];
 
