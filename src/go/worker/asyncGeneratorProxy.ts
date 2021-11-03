@@ -1,6 +1,7 @@
-import { Events } from '../entity';
+import { Events, InstructionType } from '../entity';
 import { isGenerator } from './shared';
-import { isCallOrTask, isTask } from '../instructions/task';
+import { isInstruction } from '../utils';
+import { makeTask } from './makeTask';
 
 // eslint-disable-next-line consistent-return
 export async function* asyncGeneratorProxy<G extends Generator>(
@@ -25,19 +26,31 @@ export async function* asyncGeneratorProxy<G extends Generator>(
         }
 
         yield currentIteratorValue;
-
-        if (isCallOrTask(currentIteratorValue)) {
+        if (isInstruction(currentIteratorValue)) {
+            const instruction = currentIteratorValue;
             const taskResult = await currentIteratorValue.function(
                 ...currentIteratorValue.args,
             );
-            if (isTask(currentIteratorValue)) {
-                /* Pass the task itself to client generator */
-                nextIteratorValue = currentIteratorValue;
-            } else {
-                /* assign the result of call to currentIteratorValue */
-                currentIteratorValue = taskResult;
-                /* pass the task result to client generator */
-                nextIteratorValue = taskResult;
+
+            switch (instruction.type) {
+                case InstructionType.CALL: {
+                    if (isGenerator(taskResult)) {
+                        currentIteratorValue = taskResult;
+                    } else {
+                        nextIteratorValue = taskResult;
+                    }
+                    break;
+                }
+                case InstructionType.SCHEDULE: {
+                    /* Pass Task to client generator */
+                    nextIteratorValue = makeTask(taskResult, false);
+                    /* Allow further generator processing */
+                    currentIteratorValue = taskResult;
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 

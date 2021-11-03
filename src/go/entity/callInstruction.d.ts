@@ -1,13 +1,8 @@
+import { Instruction } from './instruction';
 import { InstructionType } from './instructionType';
 
-export type Instruction<
+export type CallInstruction<
     Fn extends (...args: readonly any[]) => any = (
         ...args: readonly any[]
     ) => any,
-> = {
-    type: InstructionType;
-    function: Fn;
-    args: Parameters<Fn>;
-    name: string;
-    [key: string]: unknown;
-};
+> = Instruction<Fn> & { type: InstructionType.CALL };

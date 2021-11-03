@@ -1,7 +1,7 @@
 import { Channel } from '@Lib/channel';
 import { put } from './put';
 import { iterate } from './transformation';
-import { close } from '.';
+import { close } from './close';
 
 export function pipe<T = unknown>(
     destinationChannel: Channel<T>,

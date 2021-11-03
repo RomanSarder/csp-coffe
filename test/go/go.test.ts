@@ -1,7 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { Channel, makeChannel } from '@Lib/channel';
-import { call, Events, execute, go } from '@Lib/go';
-import { Task } from '@Lib/go/entity/task';
+import { call, Events, schedule, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { put } from '@Lib/operators';
 import { delay } from '@Lib/shared';
@@ -125,14 +124,10 @@ describe('go', () => {
                 () => 'test1',
             );
             const res: boolean = yield call(put, ch, asyncValue);
-            console.log('first async call', res);
             const res2: string = yield call(testInnerGenerator, 'test2');
-            console.log('result of first gen call', res2);
-            const res3: boolean = yield put(ch, res2);
-            console.log('second put', res3);
+            yield put(ch, res2);
             const res4: string = yield testInnerGenerator('test3');
-            const rest5: Task = yield execute(testInnerGenerator, 'test4');
-            console.log('SHOULD BE TASK', rest5);
+            yield schedule(testInnerGenerator, 'test4');
             yield put(ch, res4);
             return res;
         }

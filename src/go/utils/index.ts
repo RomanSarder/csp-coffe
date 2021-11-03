@@ -1,4 +1,4 @@
-export { isCommand } from './isCommand';
+export * from './isInstruction';
 export type { MaybeGeneratorReturnFromValue } from './MaybeGeneratorReturnFromValue';
 export type { OnlyGeneratorReturnFromValue } from './OnlyGeneratorReturnFromValue';
 export type { GeneratorT } from './GeneratorT';

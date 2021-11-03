@@ -1,4 +1,4 @@
-import { wrapIntoWorker } from '@Lib/go/worker';
+import { wrapIntoWorker } from '@Lib/go';
 import { put } from './put';
 
 export const putAsync = wrapIntoWorker(put);
