@@ -1,13 +1,8 @@
+import { Call } from './call';
 import { Command } from './command';
 
 export type Task<
-    GenFn extends (...args: readonly any[]) => any = (
+    GenFn extends (...args: readonly any[]) => Generator = (
         ...args: readonly any[]
-    ) => any,
-> = {
-    command: Command.TASK;
-    function: GenFn;
-    args: Parameters<GenFn>;
-    name: string;
-    isFork: boolean;
-};
+    ) => Generator,
+> = Omit<Call<GenFn>, 'command'> & { command: Command.TASK; isFork: boolean };

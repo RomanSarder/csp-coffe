@@ -1,15 +1,14 @@
 import { Command } from '../entity';
-import { Task } from '../entity/task';
+import { Call } from '../entity/call';
 
 export function call<
     O extends (...a1: readonly any[]) => any,
     Params extends Parameters<O>,
->(fn: O, ...args: Params): Task {
+>(fn: O, ...args: Params): Call {
     return {
-        command: Command.TASK,
+        command: Command.CALL,
         function: fn,
         name: fn.name,
         args,
-        isFork: false,
     };
 }

@@ -1,6 +1,6 @@
 import { Events } from '../entity';
 import { isGenerator } from './shared';
-import { isTask } from '../instructions/task';
+import { isCallOrTask, isTask } from '../instructions/task';
 
 // eslint-disable-next-line consistent-return
 export async function* asyncGeneratorProxy<G extends Generator>(
@@ -17,47 +17,53 @@ export async function* asyncGeneratorProxy<G extends Generator>(
         return iterator.throw(e);
     }
     while (!nextIteratorResult.done) {
-        let nextIteratorValue = await nextIteratorResult.value;
+        let currentIteratorValue = await nextIteratorResult.value;
+        let nextIteratorValue = currentIteratorValue;
 
-        if (nextIteratorValue === Events.CANCELLED) {
-            return nextIteratorValue;
+        if (currentIteratorValue === Events.CANCELLED) {
+            return currentIteratorValue;
         }
 
-        yield nextIteratorValue;
+        yield currentIteratorValue;
 
-        if (isTask(nextIteratorValue)) {
-            nextIteratorValue = await nextIteratorValue.function(
-                ...nextIteratorValue.args,
+        if (isCallOrTask(currentIteratorValue)) {
+            const taskResult = await currentIteratorValue.function(
+                ...currentIteratorValue.args,
             );
+            if (isTask(currentIteratorValue)) {
+                /* Pass the task itself to client generator */
+                nextIteratorValue = currentIteratorValue;
+            } else {
+                /* assign the result of call to currentIteratorValue */
+                currentIteratorValue = taskResult;
+                /* pass the task result to client generator */
+                nextIteratorValue = taskResult;
+            }
         }
+
+        /* if task = assign a function return to currentIteratorValue */
+        /* if scheduled task = yield it to generator */
 
         try {
-            if (isGenerator(nextIteratorValue)) {
+            if (isGenerator(currentIteratorValue)) {
                 let innerIterator;
                 try {
-                    innerIterator = asyncGeneratorProxy(nextIteratorValue);
+                    innerIterator = asyncGeneratorProxy(currentIteratorValue);
                     nextIteratorResult = await innerIterator.next();
                     while (!nextIteratorResult.done) {
-                        nextIteratorValue = await nextIteratorResult.value;
-                        yield nextIteratorValue;
+                        currentIteratorValue = await nextIteratorResult.value;
+                        yield currentIteratorValue;
 
                         nextIteratorResult = await innerIterator.next(
-                            nextIteratorValue,
+                            currentIteratorValue,
                         );
                     }
 
                     nextIteratorValue = await nextIteratorResult.value;
-                    nextIteratorResult = {
-                        value: nextIteratorValue,
-                        done: false,
-                    };
                     yield nextIteratorValue;
                 } catch (e) {
                     const errorIteratorResult = await innerIterator?.throw(e);
-                    nextIteratorResult = {
-                        value: errorIteratorResult?.value,
-                        done: false,
-                    };
+                    nextIteratorValue = await errorIteratorResult?.value;
                 }
             }
             nextIteratorResult = iterator.next(nextIteratorValue);
