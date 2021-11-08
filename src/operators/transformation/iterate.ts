@@ -7,7 +7,7 @@ export function iterate<T = unknown>(
     ch: Channel<T>,
 ) {
     if (ch.isClosed) return Promise.resolve(Events.CHANNEL_CLOSED);
-    const iterator = ch[Symbol.asyncIterator]();
+    const iterator = (ch as any)[Symbol.asyncIterator]() as any;
 
     async function nextStep(
         res:

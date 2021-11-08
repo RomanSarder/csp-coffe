@@ -1,4 +1,3 @@
-export * from './worker';
 export * from './asyncGeneratorProxy';
-export * from './wrapIntoWorker';
 export * from './makeTask';
+export * from './runAsyncGenerator';
