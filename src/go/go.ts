@@ -19,7 +19,9 @@ export function go<
     cancel: () => Promise<void>;
 } {
     const channel = makeChannel<TReturn | Events.CANCELLED>();
-    const cancellableTask = createCancellableTask({ fn: generator, args });
+    const cancellableTask = createCancellableTask({
+        iterator: generator(...args),
+    });
 
     cancellableTask
         .then((res) => {

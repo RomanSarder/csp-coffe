@@ -1,31 +1,50 @@
-import { CreatableBufferType } from '@Lib/buffer';
+// import { CreatableBufferType } from '@Lib/buffer';
+// import { CANCEL, CancellableTask } from '@Lib/cancellableTask';
+// import { Channel, makeChannel } from '@Lib/channel';
 import { CANCEL, CancellableTask } from '@Lib/cancellableTask';
-import { Channel, makeChannel } from '@Lib/channel';
-import { call, go, fork } from '@Lib/go';
-// import { fakeAsyncFunction } from '@Lib/internal';
-import { put } from '@Lib/operators';
+import { call, go } from '@Lib/go';
+import { fakeAsyncFunction } from '@Lib/internal';
 import { delay } from '@Lib/shared';
+// import { put } from '@Lib/operators';
+// import { delay } from '@Lib/shared';
 // // import { delay } from '@Lib/shared';
 // // import { take } from '@Lib/operators';
 
 // describe('go', () => {
-//     it('should execute both sync and async yield statements in a correct order', async () => {
-//         const executionOrder = [] as number[];
+it('should execute both sync and async yield statements in a correct order', async () => {
+    const executionOrder = [] as number[];
 
-//         function* testGenerator() {
-//             yield executionOrder.push(1);
-//             const result: number = yield fakeAsyncFunction(() => 2);
-//             executionOrder.push(result);
-//             yield executionOrder.push(3);
-//             return 5;
-//         }
+    function* innerGen() {
+        try {
+            executionOrder.push(3);
+            yield delay(1000);
+            executionOrder.push(4);
+        } catch (e) {
+            console.log('ИДИ ИГРАЙ В ВЕДЬМАКА', e);
+        }
+    }
 
-//         const { promise } = go(testGenerator);
+    function* testGenerator() {
+        try {
+            yield executionOrder.push(1);
+            yield delay(1000);
+            const result: number = yield fakeAsyncFunction(() => 2);
+            executionOrder.push(result);
+            yield call(innerGen);
+            yield executionOrder.push(3);
+            const result2: number = yield call(innerGen);
+            yield executionOrder.push(result2);
+        } catch (e) {
+            console.log('ДОРЕФАКТОРЬ И ИДИ');
+        }
+    }
 
-//         await promise;
+    const { task } = go(testGenerator);
+    await delay(1500);
+    await (task as CancellableTask<any>)[CANCEL]();
 
-//         expect(executionOrder).toEqual([1, 2, 3]);
-//     });
+    console.log(executionOrder);
+});
 
 //     it('should execute generator yields', async () => {
 //         const executionOrder = [] as number[];
@@ -111,50 +130,52 @@ import { delay } from '@Lib/shared';
 //         expect(channel.putBuffer.getElementsArray()).toEqual(['test1']);
 //     });
 
-it('should run mix of call, schedule and yield instructions', async () => {
-    // function* testInnerGenerator(returnVal: any) {
-    //     yield 5;
-    //     return returnVal;
-    // }
+// it('should run mix of call, schedule and yield instructions', async () => {
+//     // function* testInnerGenerator(returnVal: any) {
+//     //     yield 5;
+//     //     return returnVal;
+//     // }
 
-    function* testDelayedInnerGenerator(ch: Channel<any>, data: any) {
-        try {
-            yield delay(1000);
-            yield put(ch, data);
-            console.log('delayed done');
-        } catch (e) {
-            console.log('GOT YOU', e);
-        }
-    }
+//     function* testDelayedInnerGenerator(ch: Channel<any>, data: any) {
+//         console.log('GO');
+//         try {
+//             console.log('pre delay');
+//             yield delay(1000);
+//             console.log('delay');
+//             yield put(ch, data);
+//         } catch (e) {
+//             console.log('GOT YOU', e);
+//         }
+//     }
 
-    function* testGenerator(ch: Channel<any>) {
-        // const asyncValue: string = yield call(fakeAsyncFunction, () => 'test1');
-        // const res: boolean = yield call(put, ch, asyncValue);
-        try {
-            const task: CancellableTask<any> = yield fork(
-                testDelayedInnerGenerator,
-                ch,
-                'test2',
-            );
-            yield call(task[CANCEL]);
-            // const res4: string = yield testInnerGenerator('test3');
-            // yield schedule(testInnerGenerator, 'test4');
-            // yield put(ch, res4);
-        } catch (e) {
-            console.log('ERROR GOT', e);
-        }
-    }
-    const ch = makeChannel(CreatableBufferType.UNBLOCKING);
+//     function* testGenerator(ch: Channel<any>) {
+//         // const asyncValue: string = yield call(fakeAsyncFunction, () => 'test1');
+//         // const res: boolean = yield call(put, ch, asyncValue);
+//         try {
+//             const task: CancellableTask<any> = yield fork(
+//                 testDelayedInnerGenerator,
+//                 ch,
+//                 'test2',
+//             );
+//             yield call(task[CANCEL]);
+//             // const res4: string = yield testInnerGenerator('test3');
+//             // yield schedule(testInnerGenerator, 'test4');
+//             // yield put(ch, res4);
+//         } catch (e) {
+//             console.log('ERROR GOT', e);
+//         }
+//     }
+//     const ch = makeChannel(CreatableBufferType.UNBLOCKING);
 
-    try {
-        const { task } = go(testGenerator, ch);
+//     try {
+//         const { task } = go(testGenerator, ch);
 
-        await task;
-    } catch (e) {
-        console.log('CATCH');
-    }
-    expect(ch.putBuffer.getElementsArray()).toEqual([]);
-});
+//         await task;
+//     } catch (e) {
+//         console.log('CATCH');
+//     }
+//     expect(ch.putBuffer.getElementsArray()).toEqual([]);
+// });
 
 //     describe('when issued a fork instruction', () => {
 //         it('should not end root generator until forked tasks are done', async () => {
