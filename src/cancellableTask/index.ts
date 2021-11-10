@@ -34,14 +34,19 @@ export const createCancellableTask = ({
         isRunning: true,
         isCancelled: false,
     };
+    /* move this thing outside */
     let onResolve: (value: any) => void;
+    let onReject: (value: any) => void;
+    let onCancelWithError: (e: any) => void;
     let onCancel: (e: any) => void;
 
-    const resultPromise = new Promise((resolve) => {
+    const resultPromise = new Promise((resolve, reject) => {
         onResolve = resolve;
+        onReject = reject;
     });
-    const cancelled = new Promise((resolve) => {
+    const cancelled = new Promise((resolve, reject) => {
         onCancel = resolve;
+        onCancelWithError = reject;
     });
     // eslint-disable-next-line no-use-before-define
     const { result, cancel } = runner(iterator);
@@ -58,7 +63,7 @@ export const createCancellableTask = ({
                 state.isCancelled = true;
                 await cancel();
             } catch (e) {
-                console.log('FAILED TO CANCEL', e);
+                onCancelWithError(e);
             } finally {
                 onCancel(message);
             }
@@ -66,11 +71,19 @@ export const createCancellableTask = ({
     };
 
     const createPromise = async () => {
-        const completion = await Promise.race([result, cancelled]);
-        state.isRunning = false;
-        onResolve(completion);
+        let completionResult;
+        try {
+            completionResult = await Promise.race([result, cancelled]);
+            onResolve(completionResult);
+        } catch (e) {
+            onReject(e);
+        } finally {
+            state.isRunning = false;
+        }
     };
-    createPromise();
+    createPromise().catch((e) => {
+        onReject(e);
+    });
 
     return resultPromise as CancellableTask<any>;
 };
@@ -81,6 +94,7 @@ const runner = (iterator: Generator) => {
     };
     /* Use trick with .race here */
     let onResolve: (res: any) => void;
+    let onReject: (res: any) => void;
     let onCancel: (message?: string) => void;
     /* Persist a list of dependent runners */
     /* Cancel them on cancel */
@@ -89,24 +103,35 @@ const runner = (iterator: Generator) => {
     const cancelPromise = new Promise((resolve) => {
         onCancel = resolve;
     });
-    const resultPromise = new Promise((resolve) => {
+    const resultPromise = new Promise((resolve, reject) => {
         onResolve = resolve;
+        onReject = reject;
     });
 
     const step = async (verb: 'next' | 'throw', arg?: any): Promise<any> => {
-        const result = iterator[verb](arg);
-
         if (state.isCancelled) {
             onResolve('CANCELLED');
-        }
-
-        if (result.done) {
-            const returnResult = await result.value;
-            console.log('resolving with', returnResult);
-            onResolve(returnResult);
-            return returnResult;
+            return 'CANCELLED';
         }
         try {
+            let result;
+
+            try {
+                result = iterator[verb](arg);
+            } catch (e) {
+                if (verb === 'throw') {
+                    onReject(e);
+                    return null;
+                }
+                throw e;
+            }
+
+            if (result.done) {
+                const returnResult = await result.value;
+                onResolve(returnResult);
+                return returnResult;
+            }
+
             let value = await result.value;
 
             if (value instanceof Error) {
@@ -130,9 +155,16 @@ const runner = (iterator: Generator) => {
                         return step('next', task);
                     }
                     ongoingTasks.push(task);
-                    const taskResult = await task;
+
+                    let nextActionPromise;
+                    try {
+                        const taskResult = await task;
+                        nextActionPromise = step('next', taskResult);
+                    } catch (e) {
+                        nextActionPromise = step('throw', e);
+                    }
                     ongoingTasks.pop();
-                    return step('next', taskResult);
+                    return nextActionPromise;
                 }
                 return step('next', instructionResult);
             }
@@ -153,26 +185,29 @@ const runner = (iterator: Generator) => {
         it: iterator,
         result: Promise.race([resultPromise, cancelPromise]),
         async cancel() {
-            state.isCancelled = false;
             try {
-                iterator.throw(new CancelError());
-            } catch (e) {
-                // In case generator does not have try/catch block
-                // Swallow error on purpose
-                console.log('THROWN ERRR');
-            } finally {
+                state.isCancelled = true;
                 const cancelPromises = ongoingTasks.map(async (task) => {
                     await task[CANCEL]();
                 });
+                await Promise.all([
+                    Promise.all(cancelPromises),
+                    stepperPromise,
+                ]);
                 try {
-                    await Promise.all([
-                        Promise.all(cancelPromises),
-                        stepperPromise,
-                    ]);
+                    iterator.throw(new CancelError());
+                } catch (e) {
+                    // In case generator does not have try/catch block
+                    // Swallow error on purpose
+                    if (!isCancelError(e)) {
+                        throw e;
+                    }
                 } finally {
                     console.log('cancelled');
                     onCancel();
                 }
+            } catch (e) {
+                onReject(e);
             }
         },
     };

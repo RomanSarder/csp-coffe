@@ -14,7 +14,7 @@ export function go<
     generator: GenFn,
     ...args: Args
 ): {
-    task: Promise<TReturn | Events.CANCELLED>;
+    promise: Promise<TReturn | Events.CANCELLED>;
     channel: Channel<TReturn | Events.CANCELLED>;
     cancel: () => Promise<void>;
 } {
@@ -23,18 +23,16 @@ export function go<
         iterator: generator(...args),
     });
 
-    cancellableTask
-        .then((res) => {
-            makePut(channel, res);
-            return res;
-        })
-        .catch((e) => {
-            close(channel);
-            throw e;
-        });
-
     return {
-        task: cancellableTask,
+        promise: cancellableTask
+            .then((res) => {
+                makePut(channel, res);
+                return res;
+            })
+            .catch((e) => {
+                close(channel);
+                throw e;
+            }),
         channel,
         cancel: async () => {
             return cancellableTask[CANCEL]();

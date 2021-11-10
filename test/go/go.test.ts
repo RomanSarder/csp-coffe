@@ -1,7 +1,6 @@
 // import { CreatableBufferType } from '@Lib/buffer';
 // import { CANCEL, CancellableTask } from '@Lib/cancellableTask';
 // import { Channel, makeChannel } from '@Lib/channel';
-import { CANCEL, CancellableTask } from '@Lib/cancellableTask';
 import { call, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { delay } from '@Lib/shared';
@@ -20,7 +19,7 @@ it('should execute both sync and async yield statements in a correct order', asy
             yield delay(1000);
             executionOrder.push(4);
         } catch (e) {
-            console.log('ИДИ ИГРАЙ В ВЕДЬМАКА', e);
+            console.log('Done inner', e);
         }
     }
 
@@ -35,14 +34,13 @@ it('should execute both sync and async yield statements in a correct order', asy
             const result2: number = yield call(innerGen);
             yield executionOrder.push(result2);
         } catch (e) {
-            console.log('ДОРЕФАКТОРЬ И ИДИ');
+            console.log('Done outer');
         }
     }
 
-    const { task } = go(testGenerator);
+    const { cancel } = go(testGenerator);
     await delay(1500);
-    await (task as CancellableTask<any>)[CANCEL]();
-
+    await cancel();
     console.log(executionOrder);
 });
 
