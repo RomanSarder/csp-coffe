@@ -1,3 +1,7 @@
+import {
+    CancellablePromise,
+    createCancellablePromise,
+} from '@Lib/cancellablePromise';
 import { InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/go/worker/shared';
 
@@ -24,68 +28,43 @@ export interface CancellableTask<T> extends Promise<T> {
 
 export const createCancellableTask = ({
     iterator,
-    isFork = false,
 }: {
     iterator: Generator;
     isFork?: boolean;
     parentTasks?: CancellableTask<any>[];
-}): CancellableTask<any> => {
+}): CancellablePromise<any> => {
     const state = {
         isRunning: true,
         isCancelled: false,
     };
-    /* move this thing outside */
-    let onResolve: (value: any) => void;
-    let onReject: (value: any) => void;
-    let onCancelWithError: (e: any) => void;
-    let onCancel: (e: any) => void;
-
-    const resultPromise = new Promise((resolve, reject) => {
-        onResolve = resolve;
-        onReject = reject;
-    });
-    const cancelled = new Promise((resolve, reject) => {
-        onCancel = resolve;
-        onCancelWithError = reject;
-    });
     // eslint-disable-next-line no-use-before-define
     const { result, cancel } = runner(iterator);
 
-    (resultPromise as CancellableTask<any>)[IS_FORK] = () => isFork;
-    (resultPromise as CancellableTask<any>)[IS_CANCELLED] = () =>
-        state.isCancelled;
-
-    (resultPromise as CancellableTask<any>)[CANCEL] = async (
-        message?: string,
-    ) => {
-        if (state.isRunning) {
-            try {
+    const { resolve, reject, cancellablePromise } = createCancellablePromise({
+        onCancel: async () => {
+            if (state.isRunning) {
                 state.isCancelled = true;
                 await cancel();
-            } catch (e) {
-                onCancelWithError(e);
-            } finally {
-                onCancel(message);
             }
-        }
-    };
+        },
+    });
 
     const createPromise = async () => {
         let completionResult;
         try {
-            completionResult = await Promise.race([result, cancelled]);
-            onResolve(completionResult);
+            completionResult = await Promise.race([result, cancellablePromise]);
+            resolve(completionResult);
         } catch (e) {
-            onReject(e);
+            reject(e);
         } finally {
             state.isRunning = false;
         }
     };
     createPromise().catch((e) => {
-        onReject(e);
+        reject(e);
     });
 
-    return resultPromise as CancellableTask<any>;
+    return cancellablePromise;
 };
 
 const runner = (iterator: Generator) => {
@@ -98,7 +77,7 @@ const runner = (iterator: Generator) => {
     let onCancel: (message?: string) => void;
     /* Persist a list of dependent runners */
     /* Cancel them on cancel */
-    const ongoingTasks: CancellableTask<any>[] = [];
+    const ongoingTasks: CancellablePromise<any>[] = [];
 
     const cancelPromise = new Promise((resolve) => {
         onCancel = resolve;
@@ -188,7 +167,7 @@ const runner = (iterator: Generator) => {
             try {
                 state.isCancelled = true;
                 const cancelPromises = ongoingTasks.map(async (task) => {
-                    await task[CANCEL]();
+                    await task.cancel();
                 });
                 await Promise.all([
                     Promise.all(cancelPromises),

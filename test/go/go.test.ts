@@ -38,9 +38,9 @@ it('should execute both sync and async yield statements in a correct order', asy
         }
     }
 
-    const { cancel } = go(testGenerator);
+    const { cancellablePromise } = go(testGenerator);
     await delay(1500);
-    await cancel();
+    await cancellablePromise.cancel();
     console.log(executionOrder);
 });
 

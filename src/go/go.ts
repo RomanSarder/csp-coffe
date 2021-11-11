@@ -1,7 +1,8 @@
 import { makeChannel, Channel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal';
 import { close } from '@Lib/operators';
-import { CANCEL, createCancellableTask } from '@Lib/cancellableTask';
+import { createCancellableTask } from '@Lib/cancellableTask';
+import { CancellablePromise } from '@Lib/cancellablePromise';
 import { Events } from './entity';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';
 
@@ -14,17 +15,16 @@ export function go<
     generator: GenFn,
     ...args: Args
 ): {
-    promise: Promise<TReturn | Events.CANCELLED>;
+    cancellablePromise: CancellablePromise<TReturn | Events.CANCELLED>;
     channel: Channel<TReturn | Events.CANCELLED>;
-    cancel: () => Promise<void>;
 } {
     const channel = makeChannel<TReturn | Events.CANCELLED>();
-    const cancellableTask = createCancellableTask({
+    const cancellablePromise = createCancellableTask({
         iterator: generator(...args),
     });
 
     return {
-        promise: cancellableTask
+        cancellablePromise: cancellablePromise
             .then((res) => {
                 makePut(channel, res);
                 return res;
@@ -34,8 +34,5 @@ export function go<
                 throw e;
             }),
         channel,
-        cancel: async () => {
-            return cancellableTask[CANCEL]();
-        },
     };
 }
