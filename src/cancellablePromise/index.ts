@@ -6,7 +6,7 @@ export interface CancellablePromise<T> extends Promise<T> {
     ) => CancellablePromise<any>;
 }
 
-export function createCancellablePromise({ onCancel: cancelCallback }: any) {
+export function createCancellablePromise(cancelCallback?: any) {
     /* move this thing outside */
     let onResolve: (value: any) => void;
     let onReject: (value: any) => void;
@@ -28,7 +28,9 @@ export function createCancellablePromise({ onCancel: cancelCallback }: any) {
 
     finalPromise.cancel = async function performCancellation() {
         try {
-            await cancelCallback();
+            if (cancelCallback) {
+                await cancelCallback();
+            }
         } finally {
             onCancel();
         }

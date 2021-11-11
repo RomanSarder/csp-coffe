@@ -24,18 +24,18 @@ it('should execute both sync and async yield statements in a correct order', asy
     }
 
     function* testGenerator() {
-        try {
-            yield executionOrder.push(1);
-            yield delay(1000);
-            const result: number = yield fakeAsyncFunction(() => 2);
-            executionOrder.push(result);
-            yield call(innerGen);
-            yield executionOrder.push(3);
-            const result2: number = yield call(innerGen);
-            yield executionOrder.push(result2);
-        } catch (e) {
-            console.log('Done outer');
-        }
+        // try {
+        yield executionOrder.push(1);
+        yield delay(1000);
+        const result: number = yield fakeAsyncFunction(() => 2);
+        executionOrder.push(result);
+        yield call(innerGen);
+        yield executionOrder.push(3);
+        const result2: number = yield call(innerGen);
+        yield executionOrder.push(result2);
+        // } catch (e) {
+        //     console.log('Done outer');
+        // }
     }
 
     const { cancellablePromise } = go(testGenerator);

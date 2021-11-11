@@ -38,21 +38,24 @@ export const createCancellableTask = ({
         isCancelled: false,
     };
     // eslint-disable-next-line no-use-before-define
-    const { result, cancel } = runner(iterator);
+    const { cancellablePromise: cancellableRunnerPromise } = runner(iterator);
 
-    const { resolve, reject, cancellablePromise } = createCancellablePromise({
-        onCancel: async () => {
+    const { resolve, reject, cancellablePromise } = createCancellablePromise(
+        async () => {
             if (state.isRunning) {
                 state.isCancelled = true;
-                await cancel();
+                await cancellableRunnerPromise.cancel();
             }
         },
-    });
+    );
 
     const createPromise = async () => {
         let completionResult;
         try {
-            completionResult = await Promise.race([result, cancellablePromise]);
+            completionResult = await Promise.race([
+                cancellableRunnerPromise,
+                cancellablePromise,
+            ]);
             resolve(completionResult);
         } catch (e) {
             reject(e);
@@ -71,26 +74,38 @@ const runner = (iterator: Generator) => {
     const state = {
         isCancelled: false,
     };
-    /* Use trick with .race here */
-    let onResolve: (res: any) => void;
-    let onReject: (res: any) => void;
-    let onCancel: (message?: string) => void;
     /* Persist a list of dependent runners */
     /* Cancel them on cancel */
     const ongoingTasks: CancellablePromise<any>[] = [];
 
-    const cancelPromise = new Promise((resolve) => {
-        onCancel = resolve;
-    });
-    const resultPromise = new Promise((resolve, reject) => {
-        onResolve = resolve;
-        onReject = reject;
-    });
+    const {
+        resolve: resolveStepper,
+        reject: rejectStepper,
+        cancellablePromise: stepperPromise,
+    } = createCancellablePromise();
+
+    const { resolve, reject, cancellablePromise } = createCancellablePromise(
+        async () => {
+            state.isCancelled = true;
+            const cancelPromises = ongoingTasks.map(async (task) => {
+                await task.cancel();
+            });
+            await Promise.all([stepperPromise, cancelPromises]);
+            try {
+                iterator.throw(new CancelError());
+            } catch (e) {
+                // In case generator does not have try/catch block
+                // Swallow error on purpose
+                if (!isCancelError(e)) {
+                    throw e;
+                }
+            }
+        },
+    );
 
     const step = async (verb: 'next' | 'throw', arg?: any): Promise<any> => {
         if (state.isCancelled) {
-            onResolve('CANCELLED');
-            return 'CANCELLED';
+            return null;
         }
         try {
             let result;
@@ -99,7 +114,7 @@ const runner = (iterator: Generator) => {
                 result = iterator[verb](arg);
             } catch (e) {
                 if (verb === 'throw') {
-                    onReject(e);
+                    reject(e);
                     return null;
                 }
                 throw e;
@@ -107,7 +122,7 @@ const runner = (iterator: Generator) => {
 
             if (result.done) {
                 const returnResult = await result.value;
-                onResolve(returnResult);
+                resolve(returnResult);
                 return returnResult;
             }
 
@@ -158,36 +173,10 @@ const runner = (iterator: Generator) => {
         }
     };
 
-    const stepperPromise = step('next');
+    step('next').then(resolveStepper, rejectStepper);
 
     return {
         it: iterator,
-        result: Promise.race([resultPromise, cancelPromise]),
-        async cancel() {
-            try {
-                state.isCancelled = true;
-                const cancelPromises = ongoingTasks.map(async (task) => {
-                    await task.cancel();
-                });
-                await Promise.all([
-                    Promise.all(cancelPromises),
-                    stepperPromise,
-                ]);
-                try {
-                    iterator.throw(new CancelError());
-                } catch (e) {
-                    // In case generator does not have try/catch block
-                    // Swallow error on purpose
-                    if (!isCancelError(e)) {
-                        throw e;
-                    }
-                } finally {
-                    console.log('cancelled');
-                    onCancel();
-                }
-            } catch (e) {
-                onReject(e);
-            }
-        },
+        cancellablePromise,
     };
 };
