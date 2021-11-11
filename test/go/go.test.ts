@@ -1,7 +1,7 @@
 // import { CreatableBufferType } from '@Lib/buffer';
 // import { CANCEL, CancellableTask } from '@Lib/cancellableTask';
 // import { Channel, makeChannel } from '@Lib/channel';
-import { call, go } from '@Lib/go';
+import { fork, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { delay } from '@Lib/shared';
 // import { put } from '@Lib/operators';
@@ -18,6 +18,7 @@ it('should execute both sync and async yield statements in a correct order', asy
             executionOrder.push(3);
             yield delay(1000);
             executionOrder.push(4);
+            console.log('SUB END');
         } catch (e) {
             console.log('Done inner', e);
         }
@@ -29,10 +30,12 @@ it('should execute both sync and async yield statements in a correct order', asy
         yield delay(1000);
         const result: number = yield fakeAsyncFunction(() => 2);
         executionOrder.push(result);
-        yield call(innerGen);
-        yield executionOrder.push(3);
-        const result2: number = yield call(innerGen);
-        yield executionOrder.push(result2);
+        yield fork(innerGen);
+        executionOrder.push(5);
+        // yield executionOrder.push(3);
+        // const result2: number = yield call(innerGen);
+        // yield executionOrder.push(result2);
+        console.log('END');
         // } catch (e) {
         //     console.log('Done outer');
         // }

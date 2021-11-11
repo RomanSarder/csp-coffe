@@ -70,13 +70,19 @@ export const createCancellableTask = ({
     return cancellablePromise;
 };
 
-const runner = (iterator: Generator) => {
+type Runner = {
+    it: Generator;
+    cancellablePromise: CancellablePromise<any>;
+};
+
+const runner = (iterator: Generator): Runner => {
     const state = {
         isCancelled: false,
     };
     /* Persist a list of dependent runners */
     /* Cancel them on cancel */
-    const ongoingTasks: CancellablePromise<any>[] = [];
+    let currentRunner: Runner | undefined;
+    const forkedRunners: Runner[] = [];
 
     const {
         resolve: resolveStepper,
@@ -87,10 +93,20 @@ const runner = (iterator: Generator) => {
     const { resolve, reject, cancellablePromise } = createCancellablePromise(
         async () => {
             state.isCancelled = true;
-            const cancelPromises = ongoingTasks.map(async (task) => {
-                await task.cancel();
-            });
-            await Promise.all([stepperPromise, cancelPromises]);
+            const cancelCurrentRunnerPromise = currentRunner
+                ? currentRunner.cancellablePromise.cancel()
+                : Promise.resolve();
+            const forkedRunnerCancellations = Promise.all(
+                forkedRunners.map((forkedRunner) => {
+                    return forkedRunner.cancellablePromise.cancel();
+                }),
+            );
+            try {
+                await cancelCurrentRunnerPromise;
+            } finally {
+                await forkedRunnerCancellations;
+            }
+            await stepperPromise;
             try {
                 iterator.throw(new CancelError());
             } catch (e) {
@@ -105,7 +121,7 @@ const runner = (iterator: Generator) => {
 
     const step = async (verb: 'next' | 'throw', arg?: any): Promise<any> => {
         if (state.isCancelled) {
-            return null;
+            return undefined;
         }
         try {
             let result;
@@ -122,6 +138,12 @@ const runner = (iterator: Generator) => {
 
             if (result.done) {
                 const returnResult = await result.value;
+                console.log('DONE in step');
+                const promises = forkedRunners.map((forkedRunner) => {
+                    return forkedRunner.cancellablePromise;
+                });
+                await Promise.all(promises);
+                console.log('resolving', promises);
                 resolve(returnResult);
                 return returnResult;
             }
@@ -140,24 +162,22 @@ const runner = (iterator: Generator) => {
 
                 if (isGenerator(instructionResult)) {
                     const isFork = instruction.type === InstructionType.FORK;
-                    const task = createCancellableTask({
-                        iterator: instructionResult,
-                        isFork,
-                    });
+                    const subRunner = runner(instructionResult);
 
                     if (isFork) {
-                        return step('next', task);
+                        forkedRunners.push(subRunner);
+                        return step('next', subRunner);
                     }
-                    ongoingTasks.push(task);
+                    currentRunner = subRunner;
 
                     let nextActionPromise;
                     try {
-                        const taskResult = await task;
+                        const taskResult = await subRunner.cancellablePromise;
                         nextActionPromise = step('next', taskResult);
                     } catch (e) {
                         nextActionPromise = step('throw', e);
                     }
-                    ongoingTasks.pop();
+                    currentRunner = undefined;
                     return nextActionPromise;
                 }
                 return step('next', instructionResult);
