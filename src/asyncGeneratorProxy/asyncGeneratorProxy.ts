@@ -1,5 +1,5 @@
-import { Events } from '../entity';
-import { isGenerator } from './shared';
+import { isGenerator } from '@Lib/shared';
+import { Events } from '../go/entity';
 
 // eslint-disable-next-line consistent-return
 export async function* asyncGeneratorProxy<G extends Generator>(

@@ -3,7 +3,7 @@ import {
     createCancellablePromise,
 } from '@Lib/cancellablePromise';
 import { InstructionType, isInstruction } from '@Lib/go';
-import { isGenerator } from '@Lib/go/worker/shared';
+import { isGenerator } from '@Lib/shared';
 import { CancelError, isCancelError } from './cancelError';
 
 export const createRunner = (iterator: Generator): CancellablePromise<any> => {

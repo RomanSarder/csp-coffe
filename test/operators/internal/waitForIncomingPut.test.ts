@@ -1,16 +1,13 @@
 import { makeChannel } from '@Lib/channel';
-import { makePut, waitForIncomingPutGenerator } from '@Lib/operators/internal';
-import { asyncGeneratorProxy } from '@Lib/go/worker';
-import { makeParkCommand } from '@Lib/go';
+import { makePut, waitForIncomingPut } from '@Lib/operators/internal';
+import { asyncGeneratorProxy } from '@Lib/asyncGeneratorProxy';
 
 describe('waitForIncomingPut', () => {
     describe('when there is no items in put buffer', () => {
         it('should complete only after any item gets to put buffer', async () => {
             const ch = makeChannel();
-            const iterator = asyncGeneratorProxy(
-                waitForIncomingPutGenerator(ch),
-            );
-            expect((await iterator.next()).value).toEqual(makeParkCommand());
+            const iterator = asyncGeneratorProxy(waitForIncomingPut(ch));
+            expect((await iterator.next()).done).toEqual(false);
             makePut(ch, 'test1');
             expect((await iterator.next()).done).toEqual(true);
         });
@@ -20,9 +17,7 @@ describe('waitForIncomingPut', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel();
             makePut(ch, 'test1');
-            const iterator = asyncGeneratorProxy(
-                waitForIncomingPutGenerator(ch),
-            );
+            const iterator = asyncGeneratorProxy(waitForIncomingPut(ch));
 
             expect((await iterator.next()).done).toEqual(true);
         });
