@@ -1,222 +1,152 @@
-// import { CreatableBufferType } from '@Lib/buffer';
-// import { CANCEL, CancellableTask } from '@Lib/cancellableTask';
-// import { Channel, makeChannel } from '@Lib/channel';
-import { fork, go } from '@Lib/go';
+import { call, fork, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
+import { CancelError } from '@Lib/runner';
 import { delay } from '@Lib/shared';
-// import { put } from '@Lib/operators';
-// import { delay } from '@Lib/shared';
-// // import { delay } from '@Lib/shared';
-// // import { take } from '@Lib/operators';
 
-// describe('go', () => {
-it('should execute both sync and async yield statements in a correct order', async () => {
-    const executionOrder = [] as number[];
+describe('go', () => {
+    it('should execute both sync and async yield statements in a correct order', async () => {
+        const executionOrder = [] as number[];
 
-    function* innerGen() {
-        try {
-            executionOrder.push(3);
-            yield delay(1000);
-            executionOrder.push(4);
-            console.log('SUB END');
-        } catch (e) {
-            console.log('Done inner', e);
+        function* testGenerator() {
+            const result1: number = yield fakeAsyncFunction(() => 1);
+            executionOrder.push(result1);
+            executionOrder.push(2);
         }
-    }
 
-    function* testGenerator() {
-        // try {
-        yield executionOrder.push(1);
-        yield delay(1000);
-        const result: number = yield fakeAsyncFunction(() => 2);
-        executionOrder.push(result);
-        yield fork(innerGen);
-        executionOrder.push(5);
-        // yield executionOrder.push(3);
-        // const result2: number = yield call(innerGen);
-        // yield executionOrder.push(result2);
-        console.log('END');
-        // } catch (e) {
-        //     console.log('Done outer');
-        // }
-    }
+        const { cancellablePromise } = go(testGenerator);
 
-    const { cancellablePromise } = go(testGenerator);
-    await delay(1500);
-    await cancellablePromise.cancel();
-    console.log(executionOrder);
+        await cancellablePromise;
+
+        expect(executionOrder).toEqual([1, 2]);
+    });
+
+    it('should execute yielded generators', async () => {
+        const executionOrder = [] as number[];
+
+        function* innerGenerator() {
+            executionOrder.push(2);
+            yield delay(500);
+            executionOrder.push(3);
+        }
+
+        function* testGenerator() {
+            const result1: number = yield fakeAsyncFunction(() => 1);
+            executionOrder.push(result1);
+            yield innerGenerator();
+        }
+
+        const { cancellablePromise } = go(testGenerator);
+
+        await cancellablePromise;
+
+        expect(executionOrder).toEqual([1, 2, 3]);
+    });
+
+    it('should execute call instructions', async () => {
+        const executionOrder = [] as number[];
+
+        function* innerGenerator() {
+            executionOrder.push(2);
+            yield delay(500);
+            executionOrder.push(3);
+        }
+
+        function* testGenerator() {
+            const result1: number = yield call(fakeAsyncFunction, () => 1);
+            executionOrder.push(result1);
+            yield call(innerGenerator);
+        }
+
+        const { cancellablePromise } = go(testGenerator);
+
+        await cancellablePromise;
+
+        expect(executionOrder).toEqual([1, 2, 3]);
+    });
+
+    describe('when there are forked generators', () => {
+        it('should wait for forked generators to complete', async () => {
+            const executionOrder = [] as number[];
+
+            function* innerGen() {
+                executionOrder.push(3);
+                yield delay(1000);
+                executionOrder.push(4);
+            }
+
+            function* testGenerator() {
+                yield executionOrder.push(1);
+                const result: number = yield fakeAsyncFunction(() => 2);
+                executionOrder.push(result);
+                yield fork(innerGen);
+                executionOrder.push(5);
+            }
+
+            const { cancellablePromise } = go(testGenerator);
+            await cancellablePromise;
+            expect(executionOrder).toEqual([1, 2, 3, 5, 4]);
+        });
+    });
+
+    describe('when cancelled', () => {
+        it('should throw an error inside a generator', async () => {
+            const executionOrder = [] as number[];
+            const spy = jest.fn();
+
+            function* testGenerator() {
+                try {
+                    const result1: number = yield call(
+                        fakeAsyncFunction,
+                        () => 1,
+                    );
+                    executionOrder.push(result1);
+                    yield delay(1500);
+                    executionOrder.push(2);
+                } catch (e) {
+                    spy(e);
+                }
+            }
+
+            const { cancellablePromise } = go(testGenerator);
+            await delay(1000);
+            await cancellablePromise.cancel();
+
+            expect(executionOrder).toEqual([1]);
+            expect(spy).toHaveBeenCalledWith(new CancelError());
+        });
+
+        it('should cancel all forked generators', async () => {
+            const executionOrder = [] as number[];
+            const innerSpy = jest.fn();
+            const outerSpy = jest.fn();
+
+            function* innerGen() {
+                try {
+                    executionOrder.push(3);
+                    yield delay(1500);
+                    executionOrder.push(4);
+                } catch (e) {
+                    innerSpy(e);
+                }
+            }
+
+            function* testGenerator() {
+                try {
+                    yield executionOrder.push(1);
+                    const result: number = yield fakeAsyncFunction(() => 2);
+                    executionOrder.push(result);
+                    yield fork(innerGen);
+                    executionOrder.push(5);
+                } catch (e) {
+                    outerSpy(e);
+                }
+            }
+
+            const { cancellablePromise } = go(testGenerator);
+            await delay(1500);
+            await cancellablePromise.cancel();
+            expect(executionOrder).toEqual([1, 2, 3, 5]);
+            expect(innerSpy).toHaveBeenCalledWith(new CancelError());
+        });
+    });
 });
-
-//     it('should execute generator yields', async () => {
-//         const executionOrder = [] as number[];
-
-//         function* testInnerGenerator() {
-//             executionOrder.push(4);
-//             yield delay(500);
-//             executionOrder.push(5);
-//             return 6;
-//         }
-
-//         function* testGenerator() {
-//             yield executionOrder.push(1);
-//             const result: number = yield fakeAsyncFunction(() => 2);
-//             executionOrder.push(result);
-//             yield executionOrder.push(3);
-//             yield testInnerGenerator();
-//         }
-
-//         const { promise } = go(testGenerator);
-
-//         await promise;
-
-//         expect(executionOrder).toEqual([1, 2, 3, 4, 5]);
-//     });
-
-//     it('should return the last yielded value', async () => {
-//         function* testGenerator() {
-//             yield fakeAsyncFunction(() => 'sasi');
-//             return 'test';
-//         }
-
-//         const { promise } = go(testGenerator);
-
-//         const result = await promise;
-
-//         expect(result).toEqual('test');
-//     });
-
-//     it('should cancel from outside', async () => {
-//         const genSpy = jest.fn();
-
-//         function* testGenerator() {
-//             yield fakeAsyncFunction(() => 'sasi');
-//             yield genSpy();
-//             yield true;
-//             return 'test';
-//         }
-
-//         const { cancel, task } = go(testGenerator);
-//         await cancel();
-//         await task;
-//         expect(genSpy).not.toHaveBeenCalled();
-//     });
-
-//     it('should cancel from inside', async () => {
-//         const genSpy = jest.fn();
-
-//         function* testGenerator() {
-//             yield fakeAsyncFunction(() => 'sasi');
-//             yield Events.CANCELLED;
-//             yield genSpy();
-//             yield true;
-//             return 'test';
-//         }
-
-//         const { promise } = go(testGenerator);
-//         const result = await promise;
-//         expect(result).toEqual(Events.CANCELLED);
-//         expect(genSpy).not.toHaveBeenCalled();
-//     });
-
-//     it('should return channel which contains returned value', async () => {
-//         function* testGenerator() {
-//             const result: string = yield fakeAsyncFunction(() => 'test1');
-//             return result;
-//         }
-
-//         const { channel, promise } = go(testGenerator);
-
-//         await promise;
-
-//         expect(channel.putBuffer.getElementsArray()).toEqual(['test1']);
-//     });
-
-// it('should run mix of call, schedule and yield instructions', async () => {
-//     // function* testInnerGenerator(returnVal: any) {
-//     //     yield 5;
-//     //     return returnVal;
-//     // }
-
-//     function* testDelayedInnerGenerator(ch: Channel<any>, data: any) {
-//         console.log('GO');
-//         try {
-//             console.log('pre delay');
-//             yield delay(1000);
-//             console.log('delay');
-//             yield put(ch, data);
-//         } catch (e) {
-//             console.log('GOT YOU', e);
-//         }
-//     }
-
-//     function* testGenerator(ch: Channel<any>) {
-//         // const asyncValue: string = yield call(fakeAsyncFunction, () => 'test1');
-//         // const res: boolean = yield call(put, ch, asyncValue);
-//         try {
-//             const task: CancellableTask<any> = yield fork(
-//                 testDelayedInnerGenerator,
-//                 ch,
-//                 'test2',
-//             );
-//             yield call(task[CANCEL]);
-//             // const res4: string = yield testInnerGenerator('test3');
-//             // yield schedule(testInnerGenerator, 'test4');
-//             // yield put(ch, res4);
-//         } catch (e) {
-//             console.log('ERROR GOT', e);
-//         }
-//     }
-//     const ch = makeChannel(CreatableBufferType.UNBLOCKING);
-
-//     try {
-//         const { task } = go(testGenerator, ch);
-
-//         await task;
-//     } catch (e) {
-//         console.log('CATCH');
-//     }
-//     expect(ch.putBuffer.getElementsArray()).toEqual([]);
-// });
-
-//     describe('when issued a fork instruction', () => {
-//         it('should not end root generator until forked tasks are done', async () => {
-//             const forkedExecutionOrder: number[] = [];
-
-//             function* innerGenerator() {
-//                 yield delay(1000);
-//                 yield forkedExecutionOrder.push(1);
-//                 return 20;
-//             }
-
-//             function* secondInnerGenerator() {
-//                 yield delay(1500);
-//                 yield forkedExecutionOrder.push(2);
-//                 return 20;
-//             }
-
-//             function* testGenerator() {
-//                 yield fork(innerGenerator);
-//                 yield fork(secondInnerGenerator);
-//                 forkedExecutionOrder.push(1);
-//                 return 30;
-//             }
-
-//             const { promise } = go(testGenerator);
-
-//             await promise;
-
-//             expect(forkedExecutionOrder).toEqual([1, 2, 3]);
-//         });
-//     });
-
-//     // it('should return channel which closes after taking a value', async () => {
-//     //     function* testGenerator() {
-//     //         const result: string = yield fakeAsyncFunction(() => 'test1');
-//     //         return result;
-//     //     }
-
-//     //     const { channel } = go(testGenerator);
-
-//     //     expect(await take(channel)).toEqual('test1');
-//     // });
-// });

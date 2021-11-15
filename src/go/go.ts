@@ -1,7 +1,7 @@
 import { makeChannel, Channel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal';
 import { close } from '@Lib/operators';
-import { createCancellableTask } from '@Lib/cancellableTask';
+import { createCoroutine } from '@Lib/coroutine';
 import { CancellablePromise } from '@Lib/cancellablePromise';
 import { Events } from './entity';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';
@@ -19,7 +19,7 @@ export function go<
     channel: Channel<TReturn | Events.CANCELLED>;
 } {
     const channel = makeChannel<TReturn | Events.CANCELLED>();
-    const cancellablePromise = createCancellableTask({
+    const cancellablePromise = createCoroutine({
         iterator: generator(...args),
     });
 
