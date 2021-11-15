@@ -17,7 +17,6 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
-
         yield waitForTakeQueueToRelease(ch);
         makeTake(ch);
 
