@@ -30,7 +30,6 @@ export const createCoroutine = ({
             completionResult = await Promise.race([runner, cancellablePromise]);
             resolve(completionResult);
         } catch (e) {
-            console.log('rejected in couroutine', e);
             reject(e);
         } finally {
             state.isRunning = false;

@@ -27,7 +27,6 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
             }
             onCancel();
         } catch (e) {
-            console.log('cancelling with error');
             onReject(e);
         }
     };
@@ -45,15 +44,9 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
     };
 
     finalPromise.catch = function catchProxy(onRejected) {
-        const catchResult = Promise.prototype.catch.call(
-            this,
-            onRejected,
-        ) as CancellablePromise<any>;
+        resultPromise.catch(onRejected) as CancellablePromise<any>;
 
-        catchResult.cancel = this.cancel;
-        catchResult.catch = this.catch;
-
-        return catchResult;
+        return this;
     };
 
     return {

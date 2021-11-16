@@ -86,6 +86,29 @@ describe('go', () => {
             await cancellablePromise;
             expect(executionOrder).toEqual([1, 2, 3, 5, 4]);
         });
+
+        it('should propagate error to the parent', async () => {
+            const spy = jest.fn();
+
+            function* innerGen() {
+                yield;
+                throw new Error('Custom');
+            }
+
+            function* testGenerator() {
+                try {
+                    yield fork(innerGen);
+                    yield delay(1000);
+                } catch (e) {
+                    spy(e);
+                }
+            }
+
+            const { cancellablePromise } = go(testGenerator);
+            await cancellablePromise;
+
+            expect(spy).toHaveBeenCalledWith(new Error('Custom'));
+        });
     });
 
     describe('when cancelled', () => {

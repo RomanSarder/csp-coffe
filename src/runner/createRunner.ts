@@ -1,6 +1,7 @@
 import {
     CancellablePromise,
     createCancellablePromise,
+    isCancellablePromise,
 } from '@Lib/cancellablePromise';
 import { InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared';
@@ -75,7 +76,18 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 return returnResult;
             }
 
-            let value = await result.value;
+            let value;
+
+            if (isCancellablePromise(result.value)) {
+                currentRunner = result.value;
+                const runnerResult = await currentRunner;
+                value = runnerResult;
+                currentRunner = undefined;
+            } else {
+                value = await result.value;
+            }
+
+            await result.value;
 
             if (value instanceof Error) {
                 throw value;
@@ -123,5 +135,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
 
     step('next').then(resolveStepper, rejectStepper);
 
-    return cancellablePromise;
+    return cancellablePromise.catch((e) => {
+        throw e;
+    });
 };
