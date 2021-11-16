@@ -5,20 +5,24 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
     let onResolve: (value: any) => void;
     let onReject: (value: any) => void;
     let onCancel: (e?: any) => void;
+    let onCancelWithError: (e?: any) => void;
 
-    const resultPromise = new Promise((resolve, reject) => {
+    let resultPromise = new Promise((resolve, reject) => {
         onResolve = resolve;
         onReject = reject;
     });
 
-    const cancelPromise = new Promise((resolve) => {
+    const cancelPromise = new Promise((resolve, reject) => {
         onCancel = resolve;
+        onCancelWithError = reject;
     });
 
-    const finalPromise = Promise.race([
-        resultPromise,
-        cancelPromise,
-    ]) as CancellablePromise<T>;
+    const racingPromises = [resultPromise, cancelPromise];
+
+    const finalPromise = Promise.race(racingPromises).catch((e) => {
+        console.log('race error', e);
+        // Swallow on purpose;
+    }) as CancellablePromise<T>;
 
     finalPromise.cancel = async function performCancellation() {
         try {
@@ -44,7 +48,9 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
     };
 
     finalPromise.catch = function catchProxy(onRejected) {
-        resultPromise.catch(onRejected) as CancellablePromise<any>;
+        resultPromise = resultPromise.catch(
+            onRejected,
+        ) as CancellablePromise<any>;
 
         return this;
     };
@@ -56,6 +62,7 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
         },
         reject: async (value: any) => {
             onReject(value);
+            onCancelWithError(value);
         },
     };
 }

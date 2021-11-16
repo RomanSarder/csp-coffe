@@ -64,6 +64,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
             } catch (e) {
                 if (verb === 'throw') {
                     reject(e);
+                    console.log('after rejection', cancellablePromise);
                     return null;
                 }
                 throw e;

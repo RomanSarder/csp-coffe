@@ -19,14 +19,18 @@ describe('cancellablePromise', () => {
 
         const { reject, cancellablePromise } = createCancellablePromise();
 
-        const promise = cancellablePromise.catch(spy);
+        const promise = cancellablePromise.catch((e) => {
+            console.log('catching in test', e);
+            console.log('promise end', promise);
+            spy(e);
+        });
 
-        // try {
-        reject(new Error('test1'));
-        await promise;
-        // } catch (e) {
-        //     console.log('What?', e);
-        // }
+        try {
+            reject(new Error('test1'));
+            await promise;
+        } catch (e) {
+            console.log('What?', e);
+        }
 
         expect(spy).toHaveBeenCalledWith(new Error('test1'));
     });
