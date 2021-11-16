@@ -57,6 +57,7 @@ describe('all', () => {
 
     it('should propagate error to parent generator', async () => {
         const executionOrder: number[] = [];
+        const spy = jest.fn();
 
         function* innerGenerator1() {
             yield delay(1000);
@@ -73,17 +74,14 @@ describe('all', () => {
                 yield all(call(innerGenerator1), call(innerGenerator2));
                 executionOrder.push(3);
             } catch (e) {
-                console.log('Got error');
+                spy(e);
             }
         }
 
         const { cancellablePromise } = go(outerGenerator);
-        try {
-            await cancellablePromise;
-        } catch (e) {
-            console.log('test catch', e);
-        }
+        await cancellablePromise;
 
         expect(executionOrder).toEqual([]);
+        expect(spy).toHaveBeenCalledWith(new Error('Custom error'));
     });
 });

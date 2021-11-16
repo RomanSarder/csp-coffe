@@ -64,7 +64,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
             } catch (e) {
                 if (verb === 'throw') {
                     reject(e);
-                    return null;
+                    return Promise.resolve();
                 }
                 throw e;
             }
@@ -80,12 +80,17 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
 
             if (isCancellablePromise(result.value)) {
                 currentRunner = result.value;
-                const runnerResult = await currentRunner;
-                value = runnerResult;
+                let nextAction;
+                try {
+                    const runnerResult = await currentRunner;
+                    nextAction = step('next', runnerResult);
+                } catch (e) {
+                    nextAction = step('throw', e);
+                }
                 currentRunner = undefined;
-            } else {
-                value = await result.value;
+                return nextAction;
             }
+            value = await result.value;
 
             await result.value;
 
@@ -135,7 +140,5 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
 
     step('next').then(resolveStepper, rejectStepper);
 
-    return cancellablePromise.catch((e) => {
-        throw e;
-    });
+    return cancellablePromise;
 };

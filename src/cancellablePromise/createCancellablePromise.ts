@@ -16,9 +16,13 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
 
     const finalPromise = Promise.resolve(resultPromise).catch((e) => {
         if (onRejectionCallbacks.length > 0) {
-            return onRejectionCallbacks.reduce((acc, onRejectionCallback) => {
-                return acc.catch(onRejectionCallback) as Promise<never>;
-            }, Promise.reject(e));
+            return onRejectionCallbacks
+                .reduce((acc, onRejectionCallback) => {
+                    return acc.catch(onRejectionCallback) as Promise<never>;
+                }, Promise.reject(e))
+                .catch((error) => {
+                    throw error;
+                });
         }
         throw e;
     }) as CancellablePromise<T>;
@@ -35,12 +39,10 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
     };
 
     finalPromise.then = function thenProxy(onFulfilled, onRejected) {
-        if (onRejected) {
-            onRejectionCallbacks.push(onRejected);
-        }
         const thenResult = Promise.prototype.then.call(
             this,
             onFulfilled,
+            onRejected,
         ) as CancellablePromise<any>;
 
         thenResult.cancel = this.cancel;
