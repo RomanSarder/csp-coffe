@@ -7,6 +7,9 @@ import {
 import { InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared';
 import { CancelError, isCancelError } from './cancelError';
+import { StepperVerb } from './entity';
+import { handleCancellablePromise } from './handleCancellablePromise';
+import { handleGenerator } from './handleGenerator';
 
 export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     const state = {
@@ -14,7 +17,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     };
     /* Persist a list of dependent runners */
     /* Cancel them on cancel */
-    const currentRunner: CancellablePromise<any>[] = [];
+    const currentRunners: CancellablePromise<any>[] = [];
     const forkedRunners: CancellablePromise<any>[] = [];
 
     const {
@@ -27,7 +30,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
         async () => {
             state.isCancelled = true;
             try {
-                await cancelAll(currentRunner);
+                await cancelAll(currentRunners);
             } finally {
                 await cancelAll(forkedRunners);
             }
@@ -45,7 +48,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
         },
     );
 
-    const step = async (verb: 'next' | 'throw', arg?: any): Promise<any> => {
+    const step = async (verb: StepperVerb, arg?: any): Promise<any> => {
         if (state.isCancelled) {
             return undefined;
         }
@@ -72,17 +75,11 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
             let value;
 
             if (isCancellablePromise(result.value)) {
-                const subRunner = result.value;
-                currentRunner.push(subRunner);
-                let nextAction;
-                try {
-                    const runnerResult = await subRunner;
-                    nextAction = step('next', runnerResult);
-                } catch (e) {
-                    nextAction = step('throw', e);
-                }
-                currentRunner.pop();
-                return nextAction;
+                return handleCancellablePromise({
+                    promise: result.value,
+                    currentRunners,
+                    stepFn: step,
+                });
             }
             value = await result.value;
 
@@ -99,31 +96,25 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 );
 
                 if (isGenerator(instructionResult)) {
-                    const isFork = instruction.type === InstructionType.FORK;
-                    const subRunner = createRunner(instructionResult);
-
-                    if (isFork) {
-                        forkedRunners.push(subRunner);
-                        return step('next', subRunner);
-                    }
+                    return handleGenerator({
+                        stepFn: step,
+                        currentRunners,
+                        forkedRunners,
+                        generator: instructionResult,
+                        isFork: instruction.type === InstructionType.FORK,
+                    });
                 }
                 value = instructionResult;
             }
 
             if (isGenerator(value)) {
-                const subRunner = createRunner(value);
-
-                currentRunner.push(subRunner);
-
-                let nextActionPromise;
-                try {
-                    const taskResult = await subRunner;
-                    nextActionPromise = step('next', taskResult);
-                } catch (e) {
-                    nextActionPromise = step('throw', e);
-                }
-                currentRunner.pop();
-                return nextActionPromise;
+                return handleGenerator({
+                    stepFn: step,
+                    currentRunners,
+                    forkedRunners,
+                    generator: value,
+                    isFork: false,
+                });
             }
 
             return step('next', value);
