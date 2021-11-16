@@ -8,15 +8,17 @@ export async function handleGenerator({
     generator,
     currentRunners,
     isFork,
+    cancel,
     forkedRunners,
 }: {
     stepFn: (verb: StepperVerb, arg?: any) => Promise<any>;
     generator: Generator;
     isFork: boolean;
+    cancel: (reason?: any) => Promise<void>;
     currentRunners: CancellablePromise<any>[];
     forkedRunners: CancellablePromise<any>[];
 }) {
-    const subRunner = createRunner(generator);
+    const subRunner = createRunner(generator).catch((e) => cancel(e));
 
     if (isFork) {
         forkedRunners.push(subRunner);

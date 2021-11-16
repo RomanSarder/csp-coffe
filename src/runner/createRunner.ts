@@ -6,7 +6,7 @@ import {
 } from '@Lib/cancellablePromise';
 import { InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared';
-import { CancelError, isCancelError } from './cancelError';
+import { isCancelError } from './cancelError';
 import { StepperVerb } from './entity';
 import { handleCancellablePromise } from './handleCancellablePromise';
 import { handleGenerator } from './handleGenerator';
@@ -27,7 +27,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     } = createCancellablePromise();
 
     const { resolve, reject, cancellablePromise } = createCancellablePromise(
-        async () => {
+        async (reason) => {
             state.isCancelled = true;
             try {
                 await cancelAll(currentRunners);
@@ -35,7 +35,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 await cancelAll(forkedRunners);
             }
             try {
-                iterator.throw(new CancelError());
+                iterator.throw(reason);
             } catch (e) {
                 // In case generator does not have try/catch block
                 // Swallow error on purpose
@@ -67,8 +67,13 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
 
             if (result.done) {
                 const returnResult = await result.value;
-                await Promise.all(forkedRunners);
-                resolve(returnResult);
+                try {
+                    await Promise.all(forkedRunners);
+                    resolve(returnResult);
+                } catch (e) {
+                    iterator.throw(e);
+                    reject(e);
+                }
                 return returnResult;
             }
 
@@ -100,6 +105,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                         stepFn: step,
                         currentRunners,
                         forkedRunners,
+                        cancel: cancellablePromise.cancel,
                         generator: instructionResult,
                         isFork: instruction.type === InstructionType.FORK,
                     });
@@ -112,6 +118,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                     stepFn: step,
                     currentRunners,
                     forkedRunners,
+                    cancel: cancellablePromise.cancel,
                     generator: value,
                     isFork: false,
                 });

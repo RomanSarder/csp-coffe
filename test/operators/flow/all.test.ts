@@ -34,13 +34,11 @@ describe('all', () => {
         function* innerGenerator1() {
             yield delay(1000);
             executionOrder.push(1);
-            console.log('done 1');
         }
 
         function* innerGenerator2() {
             yield delay(1200);
             executionOrder.push(2);
-            console.log('done 2');
         }
 
         function* outerGenerator() {

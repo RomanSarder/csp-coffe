@@ -1,6 +1,9 @@
+import { CancelError } from '@Lib/runner';
 import { CancellablePromise } from './entity';
 
-export function createCancellablePromise<T = any>(cancelCallback?: any) {
+export function createCancellablePromise<T = any>(
+    cancelCallback?: (reason?: any) => unknown,
+) {
     /* move this thing outside */
     let onResolve: (value?: any) => void;
     let onReject: (value: any) => void;
@@ -27,10 +30,12 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
         throw e;
     }) as CancellablePromise<T>;
 
-    finalPromise.cancel = async function performCancellation() {
+    finalPromise.cancel = async function performCancellation(
+        reason = new CancelError(),
+    ) {
         try {
             if (cancelCallback) {
-                await cancelCallback();
+                await cancelCallback(reason);
             }
             onResolve();
         } catch (e) {
