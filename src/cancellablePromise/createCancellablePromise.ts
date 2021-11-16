@@ -2,26 +2,25 @@ import { CancellablePromise } from './entity';
 
 export function createCancellablePromise<T = any>(cancelCallback?: any) {
     /* move this thing outside */
-    let onResolve: (value: any) => void;
+    let onResolve: (value?: any) => void;
     let onReject: (value: any) => void;
-    let onCancel: (e?: any) => void;
-    let onCancelWithError: (e?: any) => void;
 
-    let resultPromise = new Promise((resolve, reject) => {
+    const resultPromise = new Promise((resolve, reject) => {
         onResolve = resolve;
         onReject = reject;
     });
 
-    const cancelPromise = new Promise((resolve, reject) => {
-        onCancel = resolve;
-        onCancelWithError = reject;
-    });
+    const onRejectionCallbacks: Array<
+        ((reason: any) => unknown) | undefined | null
+    > = [];
 
-    const racingPromises = [resultPromise, cancelPromise];
-
-    const finalPromise = Promise.race(racingPromises).catch((e) => {
-        console.log('race error', e);
-        // Swallow on purpose;
+    const finalPromise = Promise.resolve(resultPromise).catch((e) => {
+        if (onRejectionCallbacks.length > 0) {
+            return onRejectionCallbacks.reduce((acc, onRejectionCallback) => {
+                return acc.catch(onRejectionCallback) as Promise<never>;
+            }, Promise.reject(e));
+        }
+        throw e;
     }) as CancellablePromise<T>;
 
     finalPromise.cancel = async function performCancellation() {
@@ -29,13 +28,16 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
             if (cancelCallback) {
                 await cancelCallback();
             }
-            onCancel();
+            onResolve();
         } catch (e) {
             onReject(e);
         }
     };
 
-    finalPromise.then = function thenProxy(onFulfilled) {
+    finalPromise.then = function thenProxy(onFulfilled, onRejected) {
+        if (onRejected) {
+            onRejectionCallbacks.push(onRejected);
+        }
         const thenResult = Promise.prototype.then.call(
             this,
             onFulfilled,
@@ -48,11 +50,9 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
     };
 
     finalPromise.catch = function catchProxy(onRejected) {
-        resultPromise = resultPromise.catch(
-            onRejected,
-        ) as CancellablePromise<any>;
+        onRejectionCallbacks.push(onRejected);
 
-        return this;
+        return finalPromise;
     };
 
     return {
@@ -62,7 +62,6 @@ export function createCancellablePromise<T = any>(cancelCallback?: any) {
         },
         reject: async (value: any) => {
             onReject(value);
-            onCancelWithError(value);
         },
     };
 }

@@ -14,7 +14,9 @@ export function all(
         const instructionResult = instruction.function(...instruction.args);
 
         if (isGenerator(instructionResult)) {
-            return createRunner(instructionResult);
+            return createRunner(instructionResult).catch((e) => {
+                throw e;
+            });
         }
 
         return Promise.resolve(instructionResult);
@@ -39,7 +41,9 @@ export function all(
             const results = await Promise.race([
                 Promise.all(runnerPromises),
                 cancellablePromise,
-            ]);
+            ]).catch((e) => {
+                throw e;
+            });
             resolve(results);
         } catch (e) {
             reject(e);
