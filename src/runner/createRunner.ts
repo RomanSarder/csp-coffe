@@ -1,4 +1,5 @@
 import {
+    cancelAll,
     CancellablePromise,
     createCancellablePromise,
     isCancellablePromise,
@@ -13,7 +14,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     };
     /* Persist a list of dependent runners */
     /* Cancel them on cancel */
-    let currentRunner: CancellablePromise<any> | undefined;
+    const currentRunner: CancellablePromise<any>[] = [];
     const forkedRunners: CancellablePromise<any>[] = [];
 
     const {
@@ -25,18 +26,10 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     const { resolve, reject, cancellablePromise } = createCancellablePromise(
         async () => {
             state.isCancelled = true;
-            const cancelCurrentRunnerPromise = currentRunner
-                ? currentRunner.cancel()
-                : Promise.resolve();
-            const forkedRunnerCancellations = Promise.all(
-                forkedRunners.map((forkedRunner) => {
-                    return forkedRunner.cancel();
-                }),
-            );
             try {
-                await cancelCurrentRunnerPromise;
+                await cancelAll(currentRunner);
             } finally {
-                await forkedRunnerCancellations;
+                await cancelAll(forkedRunners);
             }
             try {
                 iterator.throw(new CancelError());
@@ -79,15 +72,16 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
             let value;
 
             if (isCancellablePromise(result.value)) {
-                currentRunner = result.value;
+                const subRunner = result.value;
+                currentRunner.push(subRunner);
                 let nextAction;
                 try {
-                    const runnerResult = await currentRunner;
+                    const runnerResult = await subRunner;
                     nextAction = step('next', runnerResult);
                 } catch (e) {
                     nextAction = step('throw', e);
                 }
-                currentRunner = undefined;
+                currentRunner.pop();
                 return nextAction;
             }
             value = await result.value;
@@ -119,7 +113,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
             if (isGenerator(value)) {
                 const subRunner = createRunner(value);
 
-                currentRunner = subRunner;
+                currentRunner.push(subRunner);
 
                 let nextActionPromise;
                 try {
@@ -128,7 +122,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 } catch (e) {
                     nextActionPromise = step('throw', e);
                 }
-                currentRunner = undefined;
+                currentRunner.pop();
                 return nextActionPromise;
             }
 
