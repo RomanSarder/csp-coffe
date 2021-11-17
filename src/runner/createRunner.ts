@@ -8,8 +8,7 @@ import { InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared';
 import { isCancelError } from './cancelError';
 import { StepperVerb } from './entity';
-import { handleCancellablePromise } from './handleCancellablePromise';
-import { handleGenerator } from './handleGenerator';
+import { handleCancellablePromise, handleGenerator } from './utils';
 
 export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     const state = {

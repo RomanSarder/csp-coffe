@@ -1,2 +1,3 @@
-export { delay } from './delay';
+export * from './delay';
 export * from './isGenerator';
+export * from './createRunnersFromCallInstructions';
