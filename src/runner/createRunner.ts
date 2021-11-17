@@ -63,27 +63,14 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 }
                 throw e;
             }
-
-            if (result.done) {
-                const returnResult = await result.value;
-                try {
-                    await Promise.all(forkedRunners);
-                    resolve(returnResult);
-                } catch (e) {
-                    iterator.throw(e);
-                    reject(e);
-                }
-                return returnResult;
-            }
-
             let value;
 
             if (isCancellablePromise(result.value)) {
-                return handleCancellablePromise({
+                const nextStepperArgs = await handleCancellablePromise({
                     promise: result.value,
                     currentRunners,
-                    stepFn: step,
                 });
+                return step(...nextStepperArgs);
             }
             value = await result.value;
 
@@ -100,27 +87,39 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 );
 
                 if (isGenerator(instructionResult)) {
-                    return handleGenerator({
-                        stepFn: step,
+                    const nextStepperArgs = await handleGenerator({
                         currentRunners,
                         forkedRunners,
                         cancel: cancellablePromise.cancel,
                         generator: instructionResult,
                         isFork: instruction.type === InstructionType.FORK,
                     });
+                    return step(...nextStepperArgs);
                 }
                 value = instructionResult;
             }
 
             if (isGenerator(value)) {
-                return handleGenerator({
-                    stepFn: step,
+                const nextStepperArgs = await handleGenerator({
                     currentRunners,
                     forkedRunners,
                     cancel: cancellablePromise.cancel,
                     generator: value,
                     isFork: false,
                 });
+
+                return step(...nextStepperArgs);
+            }
+
+            if (result.done) {
+                try {
+                    await Promise.all(forkedRunners);
+                    resolve(value);
+                } catch (e) {
+                    iterator.throw(e);
+                    reject(e);
+                }
+                return arg;
             }
 
             return step('next', value);

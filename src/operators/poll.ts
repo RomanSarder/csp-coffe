@@ -6,7 +6,8 @@ export function pollFn<C extends Channel<any>>(
     ch: C,
 ): FlattenChannel<C> | null {
     if (!ch.isClosed && ch.putBuffer.getSize() > 0) {
-        return releasePut(ch) ?? null;
+        const maybeResult = releasePut(ch);
+        return maybeResult || null;
     }
     return null;
 }

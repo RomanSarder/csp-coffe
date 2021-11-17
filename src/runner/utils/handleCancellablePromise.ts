@@ -1,23 +1,24 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
-import { StepperVerb } from '../entity';
+import { HandlerReturn, StepperVerb } from '../entity';
 
 export async function handleCancellablePromise({
-    stepFn,
     promise,
     currentRunners,
 }: {
-    stepFn: (verb: StepperVerb, arg?: any) => Promise<any>;
     promise: CancellablePromise<any>;
     currentRunners: CancellablePromise<any>[];
-}) {
+}): Promise<HandlerReturn> {
     currentRunners.push(promise);
-    let nextAction;
+    let nextVerb: StepperVerb;
+    let nextValue;
     try {
         const runnerResult = await promise;
-        nextAction = stepFn('next', runnerResult);
+        nextVerb = 'next';
+        nextValue = runnerResult;
     } catch (e) {
-        nextAction = stepFn('throw', e);
+        nextVerb = 'throw';
+        nextValue = e;
     }
     currentRunners.pop();
-    return nextAction;
+    return [nextVerb, nextValue];
 }

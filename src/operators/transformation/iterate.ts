@@ -1,33 +1,28 @@
-import { eventLoopQueue } from '@Lib/internal';
-import { Events } from '../../channel';
-import { Channel } from '../../channel/channel.types';
+import { CancellablePromise } from '@Lib/cancellablePromise';
+import { Channel, FlattenChannel } from '@Lib/channel';
+import { call } from '@Lib/go';
+import { all } from '../flow';
+import { take } from '../take';
 
-export function iterate<T = unknown>(
-    callback: (data: T) => Promise<void>,
-    ch: Channel<T>,
+function* iterateOverSingleChannel<C extends Channel<any>>(
+    callback: (data: FlattenChannel<C>) => void,
+    ch: C,
 ) {
-    if (ch.isClosed) return Promise.resolve(Events.CHANNEL_CLOSED);
-    const iterator = (ch as any)[Symbol.asyncIterator]() as any;
-
-    async function nextStep(
-        res:
-            | Promise<IteratorResult<string | T, string>>
-            | IteratorResult<string | T, string>,
-    ): Promise<any> {
-        if (ch.isClosed) {
-            return Promise.resolve(Events.CHANNEL_CLOSED);
-        }
-
-        if (res instanceof Promise) {
-            return res.then(nextStep);
-        }
-        if (res.done) {
-            return res.value;
-        }
-        await callback(res.value as T);
-        await eventLoopQueue();
-        return nextStep(iterator.next());
+    while (!ch.isClosed) {
+        const result: FlattenChannel<C> = yield take(ch);
+        yield call(callback, result);
     }
+}
 
-    return nextStep(iterator.next());
+export function* iterate<T extends NonNullable<any>>(
+    callback: (data: T) => void,
+    ...chs: Channel<T>[]
+) {
+    const instructions = chs.map((ch) =>
+        call(iterateOverSingleChannel, callback, ch),
+    );
+
+    const task: CancellablePromise<any> = yield all(...instructions);
+
+    return task;
 }

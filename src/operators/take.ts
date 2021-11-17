@@ -1,5 +1,5 @@
+import { Channel, FlattenChannel } from '@Lib/channel';
 import { errorMessages, Events } from '../channel/constants';
-import { Channel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
 import {
     makeTake,
@@ -9,6 +9,7 @@ import {
     waitForIncomingPut,
     waitForTakeQueueToRelease,
 } from './internal';
+import { poll } from './poll';
 
 export const TAKE = 'TAKE';
 
@@ -21,6 +22,11 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
         makeTake(ch);
 
         try {
+            const maybeResult: FlattenChannel<C> | null = yield poll(ch);
+            if (maybeResult !== null) {
+                releaseTake(ch);
+                return maybeResult;
+            }
             yield waitForIncomingPut(ch);
         } catch (e) {
             // If channel closed, cleanup made take
