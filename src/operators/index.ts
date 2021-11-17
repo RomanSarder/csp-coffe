@@ -8,3 +8,6 @@ export * from './put';
 export * from './take';
 export * from './poll';
 export * from './pipe';
+
+export * from './takeAsync';
+export * from './putAsync';
