@@ -1,9 +1,10 @@
 import { v4 as uuid } from 'uuid';
 
 import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
+import { takeAsync, close } from '@Lib/operators';
+import { eventLoopQueue } from '@Lib/internal';
 import type { Channel } from './channel.types';
-import { DEFAULT_CHANNEL_CONFIG } from './constants';
-import { close } from '../operators';
+import { DEFAULT_CHANNEL_CONFIG, Events } from './constants';
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
     if (bufferType === CreatableBufferType.UNBLOCKING || capacity > 1) {
@@ -26,6 +27,15 @@ export function makeChannel<T = NonNullable<any>>(
 
         is(ch: Channel<unknown>) {
             return this.id === ch.id;
+        },
+
+        async *[Symbol.asyncIterator]() {
+            while (!this.isClosed) {
+                yield await takeAsync(this);
+                await eventLoopQueue();
+            }
+
+            return Events.CHANNEL_CLOSED;
         },
     };
 

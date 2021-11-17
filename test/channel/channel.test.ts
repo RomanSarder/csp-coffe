@@ -1,6 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { events, makeChannel, makeTimeoutChannel } from '@Lib/channel';
-import { close, put } from '@Lib/operators';
+import { Events, makeChannel, makeTimeoutChannel } from '@Lib/channel';
+import { close, putAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('Channel', () => {
@@ -15,11 +15,11 @@ describe('Channel', () => {
         it('should be async iterable', async () => {
             const ch = makeChannel(CreatableBufferType.DROPPING, 10);
 
-            await put(ch, 'test1');
+            await putAsync(ch, 'test1');
             await eventLoopQueue();
-            await put(ch, 'test2');
+            await putAsync(ch, 'test2');
             await eventLoopQueue();
-            await put(ch, 'test3');
+            await putAsync(ch, 'test3');
             await eventLoopQueue();
 
             const iterator = ch[Symbol.asyncIterator]();
@@ -38,7 +38,7 @@ describe('Channel', () => {
             });
             close(ch);
             expect(await iterator.next()).toEqual({
-                value: events.CHANNEL_CLOSED,
+                value: Events.CHANNEL_CLOSED,
                 done: true,
             });
         });

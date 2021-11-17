@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { put, pipe, take, close } from '@Lib/operators';
+import { putAsync, pipe, takeAsync, close } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('pipe', () => {
@@ -8,8 +8,8 @@ describe('pipe', () => {
         const ch2 = makeChannel();
         pipe(ch2, ch1);
 
-        await put(ch1, 'test1');
-        expect(await take(ch2)).toEqual('test1');
+        await putAsync(ch1, 'test1');
+        expect(await takeAsync(ch2)).toEqual('test1');
 
         close(ch1);
         close(ch2);

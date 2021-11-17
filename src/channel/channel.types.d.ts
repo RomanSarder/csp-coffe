@@ -15,7 +15,7 @@ export type Channel<T = unknown> = {
 
     is: (ch: Channel<any>) => boolean;
 
-    // [Symbol.asyncIterator](): AsyncGenerator<T | string, string, unknown>;
+    [Symbol.asyncIterator](): AsyncGenerator<T | string, string, unknown>;
 };
 
 export type ChannelConfiguration = {
