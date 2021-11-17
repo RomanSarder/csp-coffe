@@ -1,6 +1,6 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
-import { createRunner } from '.';
-import { StepperVerb } from './entity';
+import { createRunner } from '../createRunner';
+import { StepperVerb } from '../entity';
 import { handleCancellablePromise } from './handleCancellablePromise';
 
 export async function handleGenerator({

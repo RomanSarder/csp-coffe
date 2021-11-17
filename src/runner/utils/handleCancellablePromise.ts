@@ -1,5 +1,5 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
-import { StepperVerb } from './entity';
+import { StepperVerb } from '../entity';
 
 export async function handleCancellablePromise({
     stepFn,
