@@ -9,7 +9,6 @@ export function* waitUntilBufferEmpty<C extends Channel<any>>(ch: C) {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
-        console.log(ch.putBuffer.getSize());
         yield;
     }
 }

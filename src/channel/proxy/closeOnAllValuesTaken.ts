@@ -1,8 +1,6 @@
 import { close } from '@Lib/operators';
-import {
-    waitForIncomingPutAsync,
-    waitForPutQueueToReleaseAsync,
-} from '@Lib/operators/internal';
+import { waitForIncomingPutAsync } from '@Lib/operators/internal';
+import { waitUntilBufferIsEmptyAsync } from '@Lib/operators/internal/waitUntilBufferEmptyAsync';
 import { Channel } from '../channel.types';
 import { isChannelClosedError } from '../utils';
 import { hasKey } from './utils';
@@ -16,7 +14,7 @@ export function closeOnAllValuesTaken<C extends Channel<any>>(ch: C) {
                 waitingPromise = new Promise((resolve) => {
                     waitForIncomingPutAsync(target)
                         .then(() => {
-                            return waitForPutQueueToReleaseAsync(target);
+                            return waitUntilBufferIsEmptyAsync(target);
                         })
                         .then(() => {
                             close(target);
