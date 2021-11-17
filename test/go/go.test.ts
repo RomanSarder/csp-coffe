@@ -45,10 +45,16 @@ describe('go', () => {
     it('should execute call instructions', async () => {
         const executionOrder = [] as number[];
 
+        function* innerGenerator2() {
+            yield delay(500);
+            return 3;
+        }
+
         function* innerGenerator() {
             executionOrder.push(2);
             yield delay(500);
-            executionOrder.push(3);
+            const innerGenResult: number = yield call(innerGenerator2);
+            executionOrder.push(innerGenResult);
         }
 
         function* testGenerator() {

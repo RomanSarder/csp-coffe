@@ -24,7 +24,6 @@ describe('all', () => {
         const { cancellablePromise } = go(outerGenerator);
 
         await cancellablePromise;
-
         expect(executionOrder).toEqual([1, 2, 3]);
     });
 

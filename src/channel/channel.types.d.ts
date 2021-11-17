@@ -2,7 +2,7 @@ import type { Buffer } from '@Lib/buffer';
 import { CreatableBufferType } from '@Lib/buffer';
 import { Flatten } from '@Lib/shared';
 
-export type Channel<T = unknown> = {
+export type Channel<T = NonNullable<any>> = {
     id: string;
 
     isBuffered: boolean;

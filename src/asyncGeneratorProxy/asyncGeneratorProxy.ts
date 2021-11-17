@@ -14,7 +14,6 @@ export async function* asyncGeneratorProxy<G extends Generator>(
 
     while (!nextIteratorResult.done) {
         let currentIteratorValue;
-
         currentIteratorValue = await nextIteratorResult.value;
 
         let nextIteratorValue = currentIteratorValue;
@@ -24,9 +23,6 @@ export async function* asyncGeneratorProxy<G extends Generator>(
         }
 
         yield currentIteratorValue;
-
-        /* if task = assign a function return to currentIteratorValue */
-        /* if scheduled task = yield it to generator */
 
         try {
             if (isGenerator(currentIteratorValue)) {
