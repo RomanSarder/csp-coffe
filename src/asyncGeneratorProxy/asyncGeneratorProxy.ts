@@ -1,6 +1,8 @@
 import { isGenerator } from '@Lib/shared';
 import { Events } from '../go/entity';
 
+/* TODO: Accumulate all instructions for tests */
+/* TODO: Create test generator runner which would conveniently provide assertions */
 // eslint-disable-next-line consistent-return
 export async function* asyncGeneratorProxy<G extends Generator>(
     iterator: G,
