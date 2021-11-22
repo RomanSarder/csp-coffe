@@ -9,5 +9,6 @@ export type Instruction<
     function: Fn;
     args: Parameters<Fn>;
     name: string;
+    debug: boolean;
     [key: string]: unknown;
 };

@@ -6,8 +6,8 @@ import { handleCancellablePromise } from './handleCancellablePromise';
 export async function handleGenerator({
     generator,
     currentRunners,
-    isFork,
     cancel,
+    isFork,
     forkedRunners,
 }: {
     generator: Generator;
@@ -16,10 +16,10 @@ export async function handleGenerator({
     currentRunners: CancellablePromise<any>[];
     forkedRunners: CancellablePromise<any>[];
 }): Promise<HandlerReturn> {
-    const subRunner = createRunner(generator).catch((e) => cancel(e));
+    const subRunner = createRunner(generator);
 
     if (isFork) {
-        forkedRunners.push(subRunner);
+        forkedRunners.push(subRunner.catch((e) => cancel(e)));
         return ['next', subRunner];
     }
 

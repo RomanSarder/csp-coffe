@@ -6,11 +6,9 @@ import {
 import { CallInstruction } from '@Lib/go';
 import { createRunnersFromCallInstructions } from '@Lib/shared';
 
-export function all(
-    ...instructions: CallInstruction[]
-): CancellablePromise<any> {
-    const runnerPromises = createRunnersFromCallInstructions(...instructions);
-
+export function* all(...instructions: CallInstruction[]) {
+    const runnerPromises: CancellablePromise<any>[] =
+        yield createRunnersFromCallInstructions(...instructions);
     const { cancellablePromise, resolve, reject } = createCancellablePromise(
         async () => {
             await cancelAll(runnerPromises);
@@ -33,6 +31,5 @@ export function all(
     };
 
     workerPromise();
-
     return cancellablePromise;
 }

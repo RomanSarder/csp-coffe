@@ -59,12 +59,11 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
             } catch (e) {
                 if (verb === 'throw') {
                     reject(e);
-                    return Promise.resolve();
+                    return resolveStepper(undefined);
                 }
                 throw e;
             }
             let value;
-
             if (isCancellablePromise(result.value)) {
                 const nextStepperArgs = await handleCancellablePromise({
                     promise: result.value,
@@ -73,14 +72,13 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                 return step(...nextStepperArgs);
             }
             value = await result.value;
-
             await result.value;
 
             if (value instanceof Error) {
                 throw value;
             }
 
-            if (isInstruction(value)) {
+            if (isInstruction(value) && !value.debug) {
                 const instruction = value;
                 const instructionResult = await instruction.function(
                     ...instruction.args,
@@ -107,7 +105,6 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                     generator: value,
                     isFork: false,
                 });
-
                 return step(...nextStepperArgs);
             }
 
@@ -119,9 +116,8 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                     iterator.throw(e);
                     reject(e);
                 }
-                return arg;
+                return undefined;
             }
-
             return step('next', value);
         } catch (err) {
             return step('throw', err);

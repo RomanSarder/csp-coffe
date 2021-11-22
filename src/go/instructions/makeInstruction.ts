@@ -9,5 +9,6 @@ export function makeInstruction<
         function: fn,
         name: fn.name,
         args,
+        debug: false,
     };
 }

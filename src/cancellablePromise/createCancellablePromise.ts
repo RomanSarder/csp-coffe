@@ -64,10 +64,10 @@ export function createCancellablePromise<T = any>(
 
     return {
         cancellablePromise: finalPromise,
-        resolve: async (value: any) => {
+        resolve: (value: any) => {
             onResolve(value);
         },
-        reject: async (value: any) => {
+        reject: (value: any) => {
             onReject(value);
         },
     };

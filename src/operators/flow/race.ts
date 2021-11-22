@@ -1,9 +1,14 @@
-import { cancelAll, createCancellablePromise } from '@Lib/cancellablePromise';
+import {
+    cancelAll,
+    CancellablePromise,
+    createCancellablePromise,
+} from '@Lib/cancellablePromise';
 import { CallInstruction } from '@Lib/go';
 import { createRunnersFromCallInstructions } from '@Lib/shared';
 
-export function race(...instructions: CallInstruction[]) {
-    const runnerPromises = createRunnersFromCallInstructions(...instructions);
+export function* race(...instructions: CallInstruction[]) {
+    const runnerPromises: CancellablePromise<any>[] =
+        yield createRunnersFromCallInstructions(...instructions);
     const { cancellablePromise, resolve, reject } = createCancellablePromise(
         async () => {
             await cancelAll(runnerPromises);

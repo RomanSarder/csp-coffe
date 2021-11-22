@@ -1,17 +1,28 @@
-import { CallInstruction } from '@Lib/go';
+import { CallInstruction, markAsDebug } from '@Lib/go';
 import { createRunner } from '@Lib/runner';
 import { isGenerator } from './isGenerator';
 
-export function createRunnersFromCallInstructions(
+export function* createRunnersFromCallInstructions(
     ...callInstructions: CallInstruction[]
 ) {
-    return callInstructions.map((instruction) => {
-        const instructionResult = instruction.function(...instruction.args);
+    const promises = [];
 
-        if (isGenerator(instructionResult)) {
-            return createRunner(instructionResult);
-        }
+    for (const instruction of callInstructions) {
+        yield markAsDebug(instruction);
+        promises.push(
+            (async () => {
+                const instructionResult = instruction.function(
+                    ...instruction.args,
+                );
 
-        return Promise.resolve(instructionResult);
-    });
+                if (isGenerator(instructionResult)) {
+                    return createRunner(instructionResult);
+                }
+
+                return Promise.resolve(instructionResult);
+            })(),
+        );
+    }
+
+    return promises;
 }
