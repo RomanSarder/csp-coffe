@@ -1,12 +1,13 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    moduleDirectories: ['node_modules', 'src'],
     // testMatch: ['<rootDir>/test/**/*.test.[jt]s?(x)'],
     testMatch: ['<rootDir>/test/**/all.test.[jt]s?(x)'],
     transform: {
-        '^.+\\.[jt]s(x)?$': 'ts-jest',
+        '^.+\\.(ts|tsx)$': 'ts-jest',
+        '^.+\\.(js|jsx)$': 'babel-jest',
     },
+    transformIgnorePatterns: ['<rootDir>/node_modules/(?!lodash-es)'],
     collectCoverageFrom: [
         'src/**/*.[jt]s?(x)',
         '!coverage/**',
@@ -17,6 +18,7 @@ module.exports = {
     moduleNameMapper: {
         '^@Lib/(.*)$': '<rootDir>/src/$1',
     },
+    moduleDirectories: ['node_modules', 'src'],
     coverageDirectory: '<rootDir>/coverage/',
     coverageThreshold: {
         global: {
