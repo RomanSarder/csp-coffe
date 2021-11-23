@@ -91,7 +91,9 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                         forkedRunners,
                         cancel: cancellablePromise.cancel,
                         subRunner: createRunner(instructionResult),
-                        isFork: instruction.type === InstructionType.FORK,
+                        type: instruction.type as
+                            | InstructionType.FORK
+                            | InstructionType.SPAWN,
                     });
                     return step(...nextStepperArgs);
                 }
@@ -104,7 +106,6 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                     forkedRunners,
                     cancel: cancellablePromise.cancel,
                     subRunner: createRunner(value),
-                    isFork: false,
                 });
                 return step(...nextStepperArgs);
             }

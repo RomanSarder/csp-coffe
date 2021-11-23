@@ -1,7 +1,7 @@
-import { call, fork, go } from '@Lib/go';
+import { call, fork, go, spawn } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { CancelError } from '@Lib/runner';
-import { delay } from '@Lib/shared/utils';
+import { delay } from '@Lib/shared/utils/delay';
 
 describe('go', () => {
     it('should execute both sync and async yield statements in a correct order', async () => {
@@ -114,6 +114,48 @@ describe('go', () => {
             await cancellablePromise;
 
             expect(spy).toHaveBeenCalledWith(new Error('Custom'));
+        });
+    });
+
+    describe('when there are spawned generators', () => {
+        it('should execute them without blocking', async () => {
+            const executionOrder = [] as number[];
+
+            function* innerGen() {
+                yield delay(1000);
+                executionOrder.push(2);
+            }
+
+            function* testGenerator() {
+                yield spawn(innerGen);
+                executionOrder.push(1);
+            }
+
+            const { cancellablePromise } = go(testGenerator);
+            await delay(1500);
+            await cancellablePromise;
+            expect(executionOrder).toEqual([1, 2]);
+        });
+
+        it('should not propagate error to parent', async () => {
+            const spy = jest.fn();
+
+            function* innerGen() {
+                yield new Error('Custom');
+            }
+
+            function* testGenerator() {
+                try {
+                    yield spawn(innerGen);
+                    yield delay(1500);
+                } catch (e) {
+                    spy(e);
+                }
+            }
+
+            const { cancellablePromise } = go(testGenerator);
+            await cancellablePromise;
+            expect(spy).not.toHaveBeenCalled();
         });
     });
 
