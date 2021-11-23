@@ -4,7 +4,7 @@ import {
     createCancellablePromise,
 } from '@Lib/cancellablePromise';
 import { CallInstruction } from '@Lib/go';
-import { createRunnersFromCallInstructions } from '@Lib/shared';
+import { createRunnersFromCallInstructions } from '@Lib/shared/utils';
 
 export function* race(...instructions: CallInstruction[]) {
     const runnerPromises: CancellablePromise<any>[] =

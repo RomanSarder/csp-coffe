@@ -1,5 +1,5 @@
-import { close } from '@Lib/operators';
-import { waitForIncomingPutAsync } from '@Lib/operators/internal';
+import { close } from '@Lib/operators/close';
+import { waitForIncomingPutAsync } from '@Lib/operators/internal/waitForIncomingPutAsync';
 import { waitUntilBufferIsEmptyAsync } from '@Lib/operators/internal/waitUntilBufferEmptyAsync';
 import { Channel } from '../channel.types';
 import { isChannelClosedError } from '../utils';

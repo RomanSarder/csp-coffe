@@ -1,5 +1,5 @@
-import { isGenerator } from '@Lib/shared';
-import { Events } from '../go/entity';
+import { isGenerator } from '@Lib/shared/utils/isGenerator';
+import { Events } from '@Lib/go';
 
 /* TODO: Accumulate all instructions for tests */
 /* TODO: Create test generator runner which would conveniently provide assertions */

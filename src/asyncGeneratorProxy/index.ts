@@ -1,1 +1,1 @@
-export * from './asyncGeneratorProxy';
+export { asyncGeneratorProxy } from './asyncGeneratorProxy';

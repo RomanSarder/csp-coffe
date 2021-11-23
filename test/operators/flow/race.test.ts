@@ -1,6 +1,6 @@
 import { call, go } from '@Lib/go';
-import { race } from '@Lib/operators';
-import { delay } from '@Lib/shared';
+import { race } from '@Lib/operators/flow/race';
+import { delay } from '@Lib/shared/utils';
 
 describe('race', () => {
     it('should resolve once any of the runners is completed and cancel others', async () => {

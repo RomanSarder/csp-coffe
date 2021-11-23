@@ -1,6 +1,8 @@
-import { Channel, ChannelConfiguration, makeChannel } from '@Lib/channel';
+import { Channel, ChannelConfiguration } from '@Lib/channel/channel.types';
+import { makeChannel } from '@Lib/channel/channel';
 import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/constants';
-import { close, put } from '..';
+import { close } from '../close';
+import { put } from '../put';
 
 type PromiseResponseType<PromiseType> = PromiseType extends Promise<
     NonNullable<infer T>

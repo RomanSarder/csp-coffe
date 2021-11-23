@@ -1,14 +1,15 @@
 import {
-    cancelAll,
     CancellablePromise,
-    createCancellablePromise,
     isCancellablePromise,
 } from '@Lib/cancellablePromise';
+import { cancelAll } from '@Lib/cancellablePromise/cancelAll';
+import { createCancellablePromise } from '@Lib/cancellablePromise/createCancellablePromise';
 import { InstructionType, isInstruction } from '@Lib/go';
-import { isGenerator } from '@Lib/shared';
-import { isCancelError } from './cancelError';
+import { isGenerator } from '@Lib/shared/utils/isGenerator';
+import { isCancelError } from '../cancellablePromise/cancelError';
 import { StepperVerb } from './entity';
-import { handleCancellablePromise, handleGenerator } from './utils';
+import { handleCancellablePromise } from './utils';
+import { handleGenerator } from './utils/handleGenerator';
 
 export const createRunner = (iterator: Generator): CancellablePromise<any> => {
     const state = {
@@ -89,7 +90,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                         currentRunners,
                         forkedRunners,
                         cancel: cancellablePromise.cancel,
-                        generator: instructionResult,
+                        subRunner: createRunner(instructionResult),
                         isFork: instruction.type === InstructionType.FORK,
                     });
                     return step(...nextStepperArgs);
@@ -102,7 +103,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                     currentRunners,
                     forkedRunners,
                     cancel: cancellablePromise.cancel,
-                    generator: value,
+                    subRunner: createRunner(value),
                     isFork: false,
                 });
                 return step(...nextStepperArgs);

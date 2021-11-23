@@ -1,6 +1,7 @@
+import { asyncGeneratorProxy } from '@Lib/asyncGeneratorProxy';
 import { call, go } from '@Lib/go';
-import { all } from '@Lib/operators';
-import { delay } from '@Lib/shared';
+import { all } from '@Lib/operators/flow/all';
+import { delay } from '@Lib/shared/utils/delay';
 
 describe('all', () => {
     it('should wait for generators to finish', async () => {
@@ -25,6 +26,23 @@ describe('all', () => {
 
         await cancellablePromise;
         expect(executionOrder).toEqual([1, 2, 3]);
+    });
+
+    it('should run call instructions on provided generators', async () => {
+        function* innerGenerator1() {
+            yield delay(1000);
+        }
+
+        function* innerGenerator2() {
+            yield delay(1200);
+        }
+
+        function* outerGenerator() {
+            yield all(call(innerGenerator1), call(innerGenerator2));
+        }
+        const iterator = asyncGeneratorProxy(outerGenerator());
+
+        console.log(await iterator.next());
     });
 
     it('should cancell all generators', async () => {

@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel';
+import { Channel } from '@Lib/channel/channel.types';
 
 export function makePut<T = unknown>(ch: Channel<T>, data: T): boolean {
     if (data === null) {

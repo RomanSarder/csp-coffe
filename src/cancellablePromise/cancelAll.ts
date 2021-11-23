@@ -1,4 +1,4 @@
-import { isCancellablePromise } from '.';
+import { isCancellablePromise } from './isCancellablePromise';
 import { CancellablePromise } from './entity';
 
 export function cancelAll(

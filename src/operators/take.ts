@@ -1,14 +1,12 @@
-import { Channel, FlattenChannel } from '@Lib/channel';
-import { errorMessages, Events } from '../channel/constants';
-import { isChannelClosedError } from '../channel/utils';
-import {
-    makeTake,
-    releasePut,
-    releaseTake,
-    resetChannel,
-    waitForIncomingPut,
-    waitForTakeQueueToRelease,
-} from './internal';
+import { Channel, FlattenChannel } from '@Lib/channel/channel.types';
+import { errorMessages, Events } from '@Lib/channel/constants';
+import { isChannelClosedError } from '@Lib/channel/utils';
+import { makeTake } from './internal/makeTake';
+import { releasePut } from './internal/releasePut';
+import { releaseTake } from './internal/releaseTake';
+import { waitForIncomingPut } from './internal/waitForIncomingPut';
+import { waitForTakeQueueToRelease } from './internal/waitForTakeQueueToRelease';
+import { resetChannel } from './internal/resetChannel';
 import { poll } from './poll';
 
 export const TAKE = 'TAKE';

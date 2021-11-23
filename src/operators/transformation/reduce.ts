@@ -1,11 +1,11 @@
 import {
-    makeChannel,
     Channel,
     FlattenChannels,
     ChannelConfiguration,
-} from '@Lib/channel';
+} from '@Lib/channel/channel.types';
+import { makeChannel } from '@Lib/channel/channel';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
-import { put } from '..';
+import { put } from '../put';
 import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
 import { iterate } from './iterate';
 

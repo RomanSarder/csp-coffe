@@ -2,9 +2,11 @@ import {
     Channel,
     ChannelConfiguration,
     FlattenChannels,
-    makeChannel,
-} from '@Lib/channel';
-import { close, iterate, put } from '..';
+} from '@Lib/channel/channel.types';
+import { makeChannel } from '@Lib/channel/channel';
+import { close } from '../close';
+import { put } from '../put';
+import { iterate } from '../transformation/iterate';
 import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
 
 export function merge<

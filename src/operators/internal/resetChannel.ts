@@ -1,6 +1,6 @@
 import { BufferType, makeBuffer } from '@Lib/buffer';
-import { Channel } from '@Lib/channel';
-import { close } from '..';
+import { Channel } from '@Lib/channel/channel.types';
+import { close } from '../close';
 
 export function resetChannel<T = unknown>(ch: Channel<T>) {
     // eslint-disable-next-line no-param-reassign

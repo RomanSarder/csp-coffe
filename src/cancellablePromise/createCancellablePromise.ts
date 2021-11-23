@@ -1,4 +1,4 @@
-import { CancelError } from '@Lib/runner';
+import { CancelError } from './cancelError';
 import { CancellablePromise } from './entity';
 
 export function createCancellablePromise<T = any>(

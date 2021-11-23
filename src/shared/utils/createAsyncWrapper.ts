@@ -8,6 +8,6 @@ export function createAsyncWrapper<
     GenReturn = GeneratorReturn<ReturnType<GenFn>>,
 >(genFn: GenFn) {
     return (...args: Parameters<GenFn>): Promise<GenReturn> => {
-        return createRunner(genFn(...args)).then((value) => value);
+        return createRunner(genFn(...args));
     };
 }

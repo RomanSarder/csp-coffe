@@ -1,7 +1,7 @@
 import { call, fork, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { CancelError } from '@Lib/runner';
-import { delay } from '@Lib/shared';
+import { delay } from '@Lib/shared/utils';
 
 describe('go', () => {
     it('should execute both sync and async yield statements in a correct order', async () => {

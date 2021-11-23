@@ -1,10 +1,11 @@
 import {
-    makeChannel,
     Channel,
     FlattenChannels,
     ChannelConfiguration,
-} from '@Lib/channel';
-import { close, put } from '..';
+} from '@Lib/channel/channel.types';
+import { makeChannel } from '@Lib/channel/channel';
+import { close } from '../close';
+import { put } from '../put';
 import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
 import { iterate } from './iterate';
 

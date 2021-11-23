@@ -1,6 +1,7 @@
-import { makeChannel, Channel } from '@Lib/channel';
-import { makePut } from '@Lib/operators/internal';
-import { close } from '@Lib/operators';
+import { Channel } from '@Lib/channel/channel.types';
+import { makeChannel } from '@Lib/channel/channel';
+import { makePut } from '@Lib/operators/internal/makePut';
+import { close } from '@Lib/operators/close';
 import { createCoroutine } from '@Lib/coroutine';
 import { CancellablePromise } from '@Lib/cancellablePromise';
 import { Events } from './entity';
