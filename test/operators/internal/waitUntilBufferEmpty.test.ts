@@ -1,10 +1,8 @@
-import { makeChannel } from '@Lib/channel';
-import {
-    makePut,
-    releasePut,
-    waitUntilBufferEmpty,
-} from '@Lib/operators/internal';
-import { asyncGeneratorProxy } from '@Lib/asyncGeneratorProxy';
+import { makeChannel } from '@Lib/channel/channel';
+import { makePut } from '@Lib/operators/internal/makePut';
+import { releasePut } from '@Lib/operators/internal/releasePut';
+import { waitUntilBufferEmpty } from '@Lib/operators/internal/waitUntilBufferEmpty';
+import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { CreatableBufferType } from '@Lib/buffer';
 
 describe('waitUntilBufferEmpty', () => {
@@ -13,7 +11,7 @@ describe('waitUntilBufferEmpty', () => {
             const ch = makeChannel(CreatableBufferType.FIXED, 2);
             makePut(ch, 'test1');
             makePut(ch, 'test2');
-            const iterator = asyncGeneratorProxy(waitUntilBufferEmpty(ch));
+            const { iterator } = testGeneratorRunner(waitUntilBufferEmpty(ch));
             expect((await iterator.next()).done).toEqual(false);
             releasePut(ch);
             expect((await iterator.next()).done).toEqual(false);
@@ -25,7 +23,7 @@ describe('waitUntilBufferEmpty', () => {
     describe('when put buffer is empty', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel(CreatableBufferType.FIXED, 2);
-            const iterator = asyncGeneratorProxy(waitUntilBufferEmpty(ch));
+            const { iterator } = testGeneratorRunner(waitUntilBufferEmpty(ch));
             expect((await iterator.next()).done).toEqual(true);
         });
     });

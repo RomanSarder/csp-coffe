@@ -1,4 +1,4 @@
-import { asyncGeneratorProxy } from '@Lib/asyncGeneratorProxy';
+import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { call, go } from '@Lib/go';
 import { all } from '@Lib/operators/flow/all';
 import { delay } from '@Lib/shared/utils/delay';
@@ -40,9 +40,15 @@ describe('all', () => {
         function* outerGenerator() {
             yield all(call(innerGenerator1), call(innerGenerator2));
         }
-        const iterator = asyncGeneratorProxy(outerGenerator());
+        const { runTillEnd, createInstructionAsserter } = testGeneratorRunner(
+            outerGenerator(),
+        );
 
-        console.log(await iterator.next());
+        await runTillEnd();
+        const assert = createInstructionAsserter();
+
+        expect(assert.call(innerGenerator1)).toBeTruthy();
+        expect(assert.call(innerGenerator2)).toBeTruthy();
     });
 
     it('should cancell all generators', async () => {

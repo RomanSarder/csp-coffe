@@ -1,12 +1,14 @@
-import { Events, makeChannel } from '@Lib/channel';
-import { close, take } from '@Lib/operators';
-import { asyncGeneratorProxy } from '@Lib/asyncGeneratorProxy';
-import { makePut } from '@Lib/operators/internal';
+import { makeChannel } from '@Lib/channel/channel';
+import { Events } from '@Lib/channel/constants';
+import { take } from '@Lib/operators/take';
+import { close } from '@Lib/operators/close';
+import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
+import { makePut } from '@Lib/operators/internal/makePut';
 
 describe('take', () => {
     it('should take a put value from channel', async () => {
         const ch = makeChannel();
-        const iterator = asyncGeneratorProxy(take(ch));
+        const { iterator } = testGeneratorRunner(take(ch));
         makePut(ch, 'test1');
         await iterator.next();
         await iterator.next();
@@ -18,7 +20,7 @@ describe('take', () => {
     describe('when channel is closed', () => {
         it('should return channel closed message', async () => {
             const ch = makeChannel();
-            const iterator = asyncGeneratorProxy(take(ch));
+            const { iterator } = testGeneratorRunner(take(ch));
             close(ch);
             expect((await iterator.next()).value).toEqual(
                 Events.CHANNEL_CLOSED,
@@ -29,7 +31,7 @@ describe('take', () => {
     describe('when the channel is closed after take was put', () => {
         it('should release take and reset channel', async () => {
             const ch = makeChannel();
-            const iterator = asyncGeneratorProxy(take(ch));
+            const { iterator } = testGeneratorRunner(take(ch));
             makePut(ch, 'test1');
             await iterator.next();
             await iterator.next();

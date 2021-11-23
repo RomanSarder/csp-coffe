@@ -1,12 +1,13 @@
-import { makeChannel } from '@Lib/channel';
-import { makeTake, waitForIncomingTake } from '@Lib/operators/internal';
-import { asyncGeneratorProxy } from '@Lib/asyncGeneratorProxy';
+import { makeChannel } from '@Lib/channel/channel';
+import { makeTake } from '@Lib/operators/internal/makeTake';
+import { waitForIncomingTake } from '@Lib/operators/internal/waitForIncomingTake';
+import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
 
 describe('waitForIncomingTake', () => {
     describe('when there is no items in take buffer', () => {
         it('should complete only after any item gets to take buffer', async () => {
             const ch = makeChannel();
-            const iterator = asyncGeneratorProxy(waitForIncomingTake(ch));
+            const { iterator } = testGeneratorRunner(waitForIncomingTake(ch));
             expect((await iterator.next()).done).toEqual(false);
             makeTake(ch);
             expect((await iterator.next()).done).toEqual(true);
@@ -17,7 +18,7 @@ describe('waitForIncomingTake', () => {
         it('should return immediately', async () => {
             const ch = makeChannel();
             makeTake(ch);
-            const iterator = asyncGeneratorProxy(waitForIncomingTake(ch));
+            const { iterator } = testGeneratorRunner(waitForIncomingTake(ch));
             expect((await iterator.next()).done).toEqual(true);
         });
     });

@@ -1,11 +1,9 @@
+import { Events, Instruction, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
-import { Events } from '@Lib/go';
 
-/* TODO: Accumulate all instructions for tests */
-/* TODO: Create test generator runner which would conveniently provide assertions */
-// eslint-disable-next-line consistent-return
 export async function* asyncGeneratorProxy<G extends Generator>(
     iterator: G,
+    instructionsList: Instruction[],
 ): AsyncGenerator {
     let nextIteratorResult;
     try {
@@ -17,7 +15,6 @@ export async function* asyncGeneratorProxy<G extends Generator>(
     while (!nextIteratorResult.done) {
         let currentIteratorValue;
         currentIteratorValue = await nextIteratorResult.value;
-
         let nextIteratorValue = currentIteratorValue;
 
         if (currentIteratorValue === Events.CANCELLED) {
@@ -27,10 +24,17 @@ export async function* asyncGeneratorProxy<G extends Generator>(
         yield currentIteratorValue;
 
         try {
+            if (isInstruction(currentIteratorValue)) {
+                instructionsList.push(currentIteratorValue);
+            }
+
             if (isGenerator(currentIteratorValue)) {
                 let innerIterator;
                 try {
-                    innerIterator = asyncGeneratorProxy(currentIteratorValue);
+                    innerIterator = asyncGeneratorProxy(
+                        currentIteratorValue,
+                        instructionsList,
+                    );
                     nextIteratorResult = await innerIterator.next();
                     while (!nextIteratorResult.done) {
                         currentIteratorValue = await nextIteratorResult.value;
