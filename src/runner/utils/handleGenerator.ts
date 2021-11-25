@@ -1,32 +1,28 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
 import { InstructionType } from '@Lib/go';
 import { HandlerReturn } from '../entity';
+import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
 import { handleCancellablePromise } from './handleCancellablePromise';
 
 export async function handleGenerator({
     subRunner,
-    currentRunners,
-    cancel,
+    childrenIteratorsRunner,
     type,
-    forkedRunners,
 }: {
     subRunner: CancellablePromise<any>;
     type?: InstructionType.FORK | InstructionType.SPAWN;
-    cancel: (reason?: any) => Promise<void>;
-    currentRunners: CancellablePromise<any>[];
-    forkedRunners: CancellablePromise<any>[];
+    childrenIteratorsRunner: ChildrenIteratorsRunner;
 }): Promise<HandlerReturn> {
     if (type === InstructionType.FORK) {
-        forkedRunners.push(subRunner.catch((e) => cancel(e)));
-        return ['next', subRunner];
+        return ['next', childrenIteratorsRunner.fork(subRunner)];
     }
 
     if (type === InstructionType.SPAWN) {
-        return ['next', subRunner.catch(console.error)];
+        return ['next', childrenIteratorsRunner.spawn(subRunner)];
     }
 
     return handleCancellablePromise({
-        currentRunners,
+        childrenIteratorsRunner,
         promise: subRunner,
     });
 }

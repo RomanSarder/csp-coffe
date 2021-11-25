@@ -1,5 +1,5 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
-import { Channel, FlattenChannel } from '@Lib/channel';
+import { Channel, FlattenChannel } from '@Lib/channel/channel.types';
 import { call } from '@Lib/go';
 import { all } from '../flow';
 import { take } from '../take';

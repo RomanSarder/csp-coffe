@@ -20,7 +20,7 @@ export function closeOnAllValuesTaken<C extends Channel<any>>(ch: C) {
                             close(target);
                             resolve();
                         })
-                        .catch((e) => {
+                        .catch((e: any) => {
                             if (isChannelClosedError(e)) {
                                 close(target);
                                 resolve();

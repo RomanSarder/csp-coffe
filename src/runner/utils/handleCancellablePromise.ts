@@ -1,24 +1,13 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
-import { HandlerReturn, StepperVerb } from '../entity';
+import { HandlerReturn } from '../entity';
+import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
 
 export async function handleCancellablePromise({
     promise,
-    currentRunners,
+    childrenIteratorsRunner,
 }: {
     promise: CancellablePromise<any>;
-    currentRunners: CancellablePromise<any>[];
+    childrenIteratorsRunner: ChildrenIteratorsRunner;
 }): Promise<HandlerReturn> {
-    currentRunners.push(promise);
-    let nextVerb: StepperVerb;
-    let nextValue;
-    try {
-        const runnerResult = await promise;
-        nextVerb = 'next';
-        nextValue = runnerResult;
-    } catch (e) {
-        nextVerb = 'throw';
-        nextValue = e;
-    }
-    currentRunners.pop();
-    return [nextVerb, nextValue];
+    return ['next', await childrenIteratorsRunner.run(promise)];
 }

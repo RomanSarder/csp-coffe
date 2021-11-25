@@ -2,12 +2,12 @@ import {
     CancellablePromise,
     isCancellablePromise,
 } from '@Lib/cancellablePromise';
-import { cancelAll } from '@Lib/cancellablePromise/cancelAll';
 import { createCancellablePromise } from '@Lib/cancellablePromise/createCancellablePromise';
 import { InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
 import { isCancelError } from '../cancellablePromise/cancelError';
 import { StepperVerb } from './entity';
+import { makeChildrenIteratorsRunner } from './makeChildrenIteratorsRunner';
 import { handleCancellablePromise } from './utils';
 import { handleGenerator } from './utils/handleGenerator';
 
@@ -15,24 +15,21 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
     const state = {
         isCancelled: false,
     };
-    /* Persist a list of dependent runners */
-    /* Cancel them on cancel */
-    const currentRunners: CancellablePromise<any>[] = [];
-    const forkedRunners: CancellablePromise<any>[] = [];
 
     const {
         resolve: resolveStepper,
         reject: rejectStepper,
         cancellablePromise: stepperPromise,
     } = createCancellablePromise();
+    const childrenIteratorsRunner = makeChildrenIteratorsRunner();
 
     const { resolve, reject, cancellablePromise } = createCancellablePromise(
         async (reason) => {
             state.isCancelled = true;
             try {
-                await cancelAll(currentRunners);
+                await childrenIteratorsRunner.cancelOngoing();
             } finally {
-                await cancelAll(forkedRunners);
+                await childrenIteratorsRunner.cancelForks();
             }
             try {
                 iterator.throw(reason);
@@ -47,6 +44,8 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
             }
         },
     );
+
+    childrenIteratorsRunner.setCancelHandler(cancellablePromise.cancel);
 
     const step = async (verb: StepperVerb, arg?: any): Promise<any> => {
         if (state.isCancelled) {
@@ -68,7 +67,7 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
             if (isCancellablePromise(result.value)) {
                 const nextStepperArgs = await handleCancellablePromise({
                     promise: result.value,
-                    currentRunners,
+                    childrenIteratorsRunner,
                 });
                 return step(...nextStepperArgs);
             }
@@ -87,9 +86,7 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
 
                 if (isGenerator(instructionResult)) {
                     const nextStepperArgs = await handleGenerator({
-                        currentRunners,
-                        forkedRunners,
-                        cancel: cancellablePromise.cancel,
+                        childrenIteratorsRunner,
                         subRunner: runIterator(instructionResult),
                         type: instruction.type as
                             | InstructionType.FORK
@@ -102,9 +99,7 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
 
             if (isGenerator(value)) {
                 const nextStepperArgs = await handleGenerator({
-                    currentRunners,
-                    forkedRunners,
-                    cancel: cancellablePromise.cancel,
+                    childrenIteratorsRunner,
                     subRunner: runIterator(value),
                 });
                 return step(...nextStepperArgs);
@@ -112,7 +107,7 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
 
             if (result.done) {
                 try {
-                    await Promise.all(forkedRunners);
+                    await childrenIteratorsRunner.waitForForks();
                     resolve(value);
                 } catch (e) {
                     iterator.throw(e);
