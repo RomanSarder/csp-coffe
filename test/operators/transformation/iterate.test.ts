@@ -1,9 +1,9 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
-import { iterate } from '@Lib/operators';
-import { makePut } from '@Lib/operators/internal';
+import { makeChannel } from '@Lib/channel/channel';
+import { iterate } from '@Lib/operators/transformation/iterate';
+import { makePut } from '@Lib/operators/internal/makePut';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
-import { createRunner } from '@Lib/runner';
+import { runIterator } from '@Lib/runner';
 
 describe('iterate', () => {
     it('should call a callback with values in channel until it closes', async () => {
@@ -13,7 +13,7 @@ describe('iterate', () => {
         makePut(ch2, 'test1');
         makePut(ch2, 'test2');
 
-        const runner = createRunner(iterate(spy, ch2));
+        const runner = runIterator(iterate(spy, ch2));
 
         await runner;
 

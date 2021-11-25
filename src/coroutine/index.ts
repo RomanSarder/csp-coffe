@@ -2,7 +2,7 @@ import {
     CancellablePromise,
     createCancellablePromise,
 } from '@Lib/cancellablePromise';
-import { createRunner } from '@Lib/runner';
+import { runIterator } from '@Lib/runner';
 
 export const createCoroutine = ({
     iterator,
@@ -13,7 +13,7 @@ export const createCoroutine = ({
         isRunning: true,
         isCancelled: false,
     };
-    const runner = createRunner(iterator);
+    const runner = runIterator(iterator);
 
     const { resolve, reject, cancellablePromise } = createCancellablePromise(
         async () => {

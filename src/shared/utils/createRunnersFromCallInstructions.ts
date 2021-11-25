@@ -1,5 +1,5 @@
 import { CallInstruction, markAsDebug } from '@Lib/go';
-import { createRunner } from '@Lib/runner';
+import { runIterator } from '@Lib/runner';
 import { isGenerator } from './isGenerator';
 
 export function* createRunnersFromCallInstructions(
@@ -16,7 +16,7 @@ export function* createRunnersFromCallInstructions(
                 );
 
                 if (isGenerator(instructionResult)) {
-                    return createRunner(instructionResult);
+                    return runIterator(instructionResult);
                 }
 
                 return Promise.resolve(instructionResult);

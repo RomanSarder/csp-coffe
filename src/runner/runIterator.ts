@@ -11,7 +11,7 @@ import { StepperVerb } from './entity';
 import { handleCancellablePromise } from './utils';
 import { handleGenerator } from './utils/handleGenerator';
 
-export const createRunner = (iterator: Generator): CancellablePromise<any> => {
+export const runIterator = (iterator: Generator): CancellablePromise<any> => {
     const state = {
         isCancelled: false,
     };
@@ -90,7 +90,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                         currentRunners,
                         forkedRunners,
                         cancel: cancellablePromise.cancel,
-                        subRunner: createRunner(instructionResult),
+                        subRunner: runIterator(instructionResult),
                         type: instruction.type as
                             | InstructionType.FORK
                             | InstructionType.SPAWN,
@@ -105,7 +105,7 @@ export const createRunner = (iterator: Generator): CancellablePromise<any> => {
                     currentRunners,
                     forkedRunners,
                     cancel: cancellablePromise.cancel,
-                    subRunner: createRunner(value),
+                    subRunner: runIterator(value),
                 });
                 return step(...nextStepperArgs);
             }

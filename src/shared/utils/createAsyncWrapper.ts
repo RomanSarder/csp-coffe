@@ -1,5 +1,5 @@
 import { GeneratorReturn } from '@Lib/go';
-import { createRunner } from '@Lib/runner';
+import { runIterator } from '@Lib/runner';
 
 type GeneratorFn = (...args: readonly any[]) => any;
 
@@ -8,6 +8,6 @@ export function createAsyncWrapper<
     GenReturn = GeneratorReturn<ReturnType<GenFn>>,
 >(genFn: GenFn) {
     return (...args: Parameters<GenFn>): Promise<GenReturn> => {
-        return createRunner(genFn(...args));
+        return runIterator(genFn(...args));
     };
 }

@@ -1,2 +1,2 @@
 export * from '../cancellablePromise/cancelError';
-export * from './createRunner';
+export * from './runIterator';
