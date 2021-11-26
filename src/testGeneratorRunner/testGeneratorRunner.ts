@@ -5,9 +5,7 @@ import { asyncGeneratorProxy } from './asyncGeneratorProxy';
 function createInstructionAsserter(instructions: Instruction[]) {
     return {
         call(fn: (...args: any[]) => any, ...args: any[]) {
-            console.log('seeking for', fn.name, args);
             return instructions.some((instruction) => {
-                console.log('checking', instruction.name, instruction.args);
                 return (
                     instruction.name === fn.name &&
                     isEqual(instruction.args, args)
@@ -16,8 +14,8 @@ function createInstructionAsserter(instructions: Instruction[]) {
         },
     };
 }
-/* TODO: Accumulate all instructions for tests */
-/* TODO: Create test generator runner which would conveniently provide assertions */
+
+/* TODO: use upcoming stepper function for integration tests */
 // eslint-disable-next-line consistent-return
 export function testGeneratorRunner<G extends Generator>(iterator: G) {
     const emitedInstructions: Instruction[] = [];
@@ -26,7 +24,6 @@ export function testGeneratorRunner<G extends Generator>(iterator: G) {
     return {
         iterator: iteratorProxy,
         createInstructionAsserter: () => {
-            console.log(emitedInstructions);
             return createInstructionAsserter(emitedInstructions);
         },
         async runNTimes(times: number) {

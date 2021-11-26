@@ -1,5 +1,5 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
-import { HandlerReturn } from '../entity';
+import { StepResult } from '../entity';
 import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
 
 export async function handleCancellablePromise({
@@ -8,6 +8,13 @@ export async function handleCancellablePromise({
 }: {
     promise: CancellablePromise<any>;
     childrenIteratorsRunner: ChildrenIteratorsRunner;
-}): Promise<HandlerReturn> {
-    return ['next', await childrenIteratorsRunner.run(promise)];
+}): Promise<StepResult> {
+    let value;
+
+    try {
+        value = await childrenIteratorsRunner.run(promise);
+        return { value, done: false };
+    } catch (e) {
+        return { value: undefined, error: e, done: false };
+    }
 }

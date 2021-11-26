@@ -1,15 +1,8 @@
-import {
-    CancellablePromise,
-    isCancellablePromise,
-} from '@Lib/cancellablePromise';
+import { CancellablePromise } from '@Lib/cancellablePromise';
 import { createCancellablePromise } from '@Lib/cancellablePromise/createCancellablePromise';
-import { InstructionType, isInstruction } from '@Lib/go';
-import { isGenerator } from '@Lib/shared/utils/isGenerator';
 import { isCancelError } from '../cancellablePromise/cancelError';
-import { StepperVerb } from './entity';
 import { makeChildrenIteratorsRunner } from './makeChildrenIteratorsRunner';
-import { handleCancellablePromise } from './utils';
-import { handleGenerator } from './utils/handleGenerator';
+import { makeIteratorStepper } from './makeIteratorStepper';
 
 export const runIterator = (iterator: Generator): CancellablePromise<any> => {
     const state = {
@@ -47,81 +40,38 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
 
     childrenIteratorsRunner.setCancelHandler(cancellablePromise.cancel);
 
-    const step = async (verb: StepperVerb, arg?: any): Promise<any> => {
-        if (state.isCancelled) {
-            return undefined;
-        }
+    const step = makeIteratorStepper({
+        state,
+        iterator,
+        childrenIteratorsRunner,
+    });
+    const workerPromise = (async () => {
         try {
-            let result;
+            let stepResult = await step('next');
 
-            try {
-                result = iterator[verb](arg);
-            } catch (e) {
-                if (verb === 'throw') {
-                    reject(e);
-                    return resolveStepper(undefined);
+            while (!stepResult.done) {
+                const { error, value } = stepResult;
+                if (error) {
+                    stepResult = await step('throw', error);
+                } else {
+                    stepResult = await step('next', value);
                 }
-                throw e;
             }
-            let value;
-            if (isCancellablePromise(result.value)) {
-                const nextStepperArgs = await handleCancellablePromise({
-                    promise: result.value,
-                    childrenIteratorsRunner,
-                });
-                return step(...nextStepperArgs);
-            }
-            value = await result.value;
-            await result.value;
+            const { done, error, value } = stepResult;
 
-            if (value instanceof Error) {
-                throw value;
-            }
-
-            if (isInstruction(value) && !value.debug) {
-                const instruction = value;
-                const instructionResult = await instruction.function(
-                    ...instruction.args,
-                );
-
-                if (isGenerator(instructionResult)) {
-                    const nextStepperArgs = await handleGenerator({
-                        childrenIteratorsRunner,
-                        subRunner: runIterator(instructionResult),
-                        type: instruction.type as
-                            | InstructionType.FORK
-                            | InstructionType.SPAWN,
-                    });
-                    return step(...nextStepperArgs);
-                }
-                value = instructionResult;
-            }
-
-            if (isGenerator(value)) {
-                const nextStepperArgs = await handleGenerator({
-                    childrenIteratorsRunner,
-                    subRunner: runIterator(value),
-                });
-                return step(...nextStepperArgs);
-            }
-
-            if (result.done) {
-                try {
-                    await childrenIteratorsRunner.waitForForks();
+            if (done) {
+                if (error) {
+                    reject(error);
+                } else {
                     resolve(value);
-                } catch (e) {
-                    iterator.throw(e);
-                    reject(e);
                 }
-                return undefined;
             }
-            return step('next', value);
-        } catch (err) {
-            return step('throw', err);
+        } catch (e) {
+            reject(e);
         }
-    };
+    })();
 
-    step('next').then(resolveStepper, rejectStepper);
+    workerPromise.then(resolveStepper, rejectStepper);
 
     return cancellablePromise;
 };

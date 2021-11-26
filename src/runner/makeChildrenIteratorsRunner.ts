@@ -16,7 +16,9 @@ export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
 
         fork(runIteratorPromise: CancellablePromise<any>) {
             forkedIteratorsPromises.push(
-                runIteratorPromise.catch((e) => cancelHandler?.(e)),
+                runIteratorPromise.catch((e) => {
+                    return cancelHandler?.(e);
+                }),
             );
             return runIteratorPromise;
         },
