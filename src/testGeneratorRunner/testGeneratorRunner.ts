@@ -17,7 +17,6 @@ function createInstructionAsserter(instructions: Instruction[]) {
     };
 }
 
-/* TODO: use upcoming stepper function for integration tests */
 // eslint-disable-next-line consistent-return
 export function testGeneratorRunner<G extends Generator>(iterator: G) {
     const emitedInstructions: Instruction[] = [];
@@ -33,7 +32,9 @@ export function testGeneratorRunner<G extends Generator>(iterator: G) {
     let lastStepResult: StepResult;
 
     const next = async (arg?: any) => {
-        lastStepResult = await step('next', arg || lastStepResult?.value);
+        lastStepResult = lastStepResult?.error
+            ? await step('throw', arg || lastStepResult.error)
+            : await step('next', arg || lastStepResult?.value);
         return lastStepResult;
     };
 
@@ -55,13 +56,12 @@ export function testGeneratorRunner<G extends Generator>(iterator: G) {
         },
         async runTillEnd() {
             if (!lastStepResult) {
-                lastStepResult = await next();
+                await next();
             }
 
             while (!lastStepResult.done) {
-                lastStepResult = await next();
+                await next();
             }
-
             return lastStepResult;
         },
     };
