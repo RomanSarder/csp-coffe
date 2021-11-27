@@ -1,10 +1,14 @@
 import { CancellablePromise } from '@Lib/cancellablePromise';
 import { createCancellablePromise } from '@Lib/cancellablePromise/createCancellablePromise';
+import { Instruction } from '@Lib/go';
 import { isCancelError } from '../cancellablePromise/cancelError';
 import { makeChildrenIteratorsRunner } from './makeChildrenIteratorsRunner';
 import { makeIteratorStepper } from './makeIteratorStepper';
 
-export const runIterator = (iterator: Generator): CancellablePromise<any> => {
+export const runIterator = (
+    iterator: Generator,
+    onInstruction?: (instruction: Instruction) => void,
+): CancellablePromise<any> => {
     const state = {
         isCancelled: false,
     };
@@ -40,9 +44,10 @@ export const runIterator = (iterator: Generator): CancellablePromise<any> => {
 
     childrenIteratorsRunner.setCancelHandler(cancellablePromise.cancel);
 
-    const step = makeIteratorStepper({
+    const { step } = makeIteratorStepper({
         state,
         iterator,
+        onInstruction,
         childrenIteratorsRunner,
     });
     const workerPromise = (async () => {

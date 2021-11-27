@@ -1,19 +1,18 @@
 import { InstructionType } from '@Lib/go';
-import { runIterator } from '../runIterator';
+import { CancellablePromise } from '@Lib/cancellablePromise';
 import { StepResult } from '../entity';
 import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
 import { handleCancellablePromise } from './handleCancellablePromise';
 
 export async function handleGenerator({
-    generator,
+    runIteratorPromise,
     childrenIteratorsRunner,
     type,
 }: {
-    generator: Generator;
+    runIteratorPromise: CancellablePromise<any>;
     type?: InstructionType.FORK | InstructionType.SPAWN;
     childrenIteratorsRunner: ChildrenIteratorsRunner;
 }): Promise<StepResult> {
-    const runIteratorPromise = runIterator(generator);
     if (type === InstructionType.FORK) {
         return {
             value: childrenIteratorsRunner.fork(runIteratorPromise),
