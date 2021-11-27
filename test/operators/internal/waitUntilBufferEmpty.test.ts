@@ -11,20 +11,20 @@ describe('waitUntilBufferEmpty', () => {
             const ch = makeChannel(CreatableBufferType.FIXED, 2);
             makePut(ch, 'test1');
             makePut(ch, 'test2');
-            const { iterator } = testGeneratorRunner(waitUntilBufferEmpty(ch));
-            expect((await iterator.next()).done).toEqual(false);
+            const { next } = testGeneratorRunner(waitUntilBufferEmpty(ch));
+            expect((await next()).done).toEqual(false);
             releasePut(ch);
-            expect((await iterator.next()).done).toEqual(false);
+            expect((await next()).done).toEqual(false);
             releasePut(ch);
-            expect((await iterator.next()).done).toEqual(true);
+            expect((await next()).done).toEqual(true);
         });
     });
 
     describe('when put buffer is empty', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel(CreatableBufferType.FIXED, 2);
-            const { iterator } = testGeneratorRunner(waitUntilBufferEmpty(ch));
-            expect((await iterator.next()).done).toEqual(true);
+            const { next } = testGeneratorRunner(waitUntilBufferEmpty(ch));
+            expect((await next()).done).toEqual(true);
         });
     });
 });

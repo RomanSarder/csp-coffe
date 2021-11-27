@@ -1,13 +1,16 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
-import { close, filter, put, take } from '@Lib/operators';
+import { makeChannel } from '@Lib/channel/channel';
+import { close } from '@Lib/operators/close';
+import { filter } from '@Lib/operators/transformation/filter';
+import { putAsync } from '@Lib/operators/putAsync';
+import { takeAsync } from '@Lib/operators/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('filter', () => {
     it('should return channel with filtered values from source channels', async () => {
         const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
         const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
-        const ch3 = filter(
+        const { ch: ch3, promise } = filter(
             (num) => {
                 if (typeof num === 'string') {
                     return parseInt(num, 10) % 2 === 0;
@@ -17,26 +20,21 @@ describe('filter', () => {
             [ch1, ch2],
         );
 
-        await put(ch1, 1);
-        await eventLoopQueue();
-        await put(ch2, '2');
-        await eventLoopQueue();
-        expect(await take(ch3)).toEqual('2');
-        await eventLoopQueue();
-        await put(ch2, '3');
-        await eventLoopQueue();
-        await put(ch1, 4);
-        await eventLoopQueue();
-        expect(await take(ch3)).toEqual(4);
+        await putAsync(ch1, 1);
+        await putAsync(ch2, '2');
+        expect(await takeAsync(ch3)).toEqual('2');
+        await putAsync(ch2, '3');
+        await putAsync(ch1, 4);
+        expect(await takeAsync(ch3)).toEqual(4);
         close(ch1);
         close(ch2);
         close(ch3);
-        await eventLoopQueue();
+        await promise;
     });
 
     it('should return channel with specified configuration', async () => {
         const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
-        const ch2 = filter(
+        const { ch: ch2, promise } = filter(
             (num) => {
                 if (typeof num === 'string') {
                     return parseInt(num, 10) % 2 === 0;
@@ -53,14 +51,14 @@ describe('filter', () => {
         expect(ch2.capacity).toEqual(5);
         close(ch1);
         close(ch2);
-        await eventLoopQueue();
+        await promise;
     });
 
     describe('when the source channels close', () => {
         it('should close the result channel', async () => {
             const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
             const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
-            const ch3 = filter(
+            const { ch: ch3, promise } = filter(
                 (num) => {
                     if (typeof num === 'string') {
                         return parseInt(num, 10) % 2 === 0;
@@ -73,9 +71,8 @@ describe('filter', () => {
             await eventLoopQueue();
             expect(ch3.isClosed).toEqual(false);
             close(ch2);
-            await eventLoopQueue();
+            await promise;
             expect(ch3.isClosed).toEqual(true);
-            await eventLoopQueue();
         });
     });
 });

@@ -1,5 +1,7 @@
-import { makeChannel } from '@Lib/channel';
-import { makePut, makeTake, resetChannel } from '@Lib/operators/internal';
+import { makeChannel } from '@Lib/channel/channel';
+import { makePut } from '@Lib/operators/internal/makePut';
+import { makeTake } from '@Lib/operators/internal/makeTake';
+import { resetChannel } from '@Lib/operators/internal/resetChannel';
 
 describe('resetChannel', () => {
     it('should close the channel', () => {

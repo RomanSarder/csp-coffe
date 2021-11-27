@@ -1,6 +1,7 @@
 import { isCancellablePromise } from '@Lib/cancellablePromise';
 import { Instruction, InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
+import { eventLoopQueue } from '@Lib/internal';
 import { runIterator } from './runIterator';
 import { StepperVerb, StepResult } from './entity';
 import { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
@@ -34,6 +35,7 @@ export const makeIteratorStepper = ({
             let result;
 
             try {
+                await eventLoopQueue();
                 result = iterator[verb](arg);
             } catch (e) {
                 if (verb === 'throw') {

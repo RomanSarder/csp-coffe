@@ -7,10 +7,10 @@ describe('waitForIncomingPut', () => {
     describe('when there is no items in put buffer', () => {
         it('should complete only after any item gets to put buffer', async () => {
             const ch = makeChannel();
-            const { iterator } = testGeneratorRunner(waitForIncomingPut(ch));
-            expect((await iterator.next()).done).toEqual(false);
+            const { next } = testGeneratorRunner(waitForIncomingPut(ch));
+            expect((await next()).done).toEqual(false);
             makePut(ch, 'test1');
-            expect((await iterator.next()).done).toEqual(true);
+            expect((await next()).done).toEqual(true);
         });
     });
 
@@ -18,9 +18,9 @@ describe('waitForIncomingPut', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel();
             makePut(ch, 'test1');
-            const { iterator } = testGeneratorRunner(waitForIncomingPut(ch));
+            const { next } = testGeneratorRunner(waitForIncomingPut(ch));
 
-            expect((await iterator.next()).done).toEqual(true);
+            expect((await next()).done).toEqual(true);
         });
     });
 });

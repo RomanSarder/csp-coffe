@@ -1,11 +1,10 @@
 import { Channel, FlattenChannel } from '../channel/channel.types';
 import { isChannelClosedError } from '../channel/utils';
-import {
-    makePut,
-    resetChannel,
-    waitForIncomingTake,
-    waitForPutQueueToRelease,
-} from './internal';
+
+import { makePut } from './internal/makePut';
+import { resetChannel } from './internal/resetChannel';
+import { waitForIncomingTake } from './internal/waitForIncomingTake';
+import { waitForPutQueueToRelease } from './internal/waitForPutQueueToRelease';
 
 export const PUT = 'PUT';
 

@@ -1,5 +1,5 @@
-import { makeChannel } from '@Lib/channel';
-import { makeTake } from '@Lib/operators/internal';
+import { makeChannel } from '@Lib/channel/channel';
+import { makeTake } from '@Lib/operators/internal/makeTake';
 
 describe('makeTake', () => {
     it('should put an item to take buffer', () => {

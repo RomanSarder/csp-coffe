@@ -4,6 +4,7 @@ import {
     ChannelConfiguration,
 } from '@Lib/channel/channel.types';
 import { makeChannel } from '@Lib/channel/channel';
+import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { close } from '../close';
 import { put } from '../put';
 import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
@@ -16,23 +17,23 @@ export function filter<Channels extends Channel<any>[]>(
         bufferType,
         capacity,
     }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
-): Channel<FlattenChannels<Channels>> {
+): { ch: Channel<FlattenChannels<Channels>>; promise: Promise<void> } {
     const filteredCh = makeChannel<FlattenChannels<Channels>>(
         bufferType,
         capacity,
     );
 
-    const promises = channels.map((ch) => {
-        return iterate<FlattenChannels<Channels>>(async (data) => {
-            if (filterFn(data)) {
-                await put(filteredCh, data);
-            }
-        }, ch);
-    });
+    const promise = (async () => {
+        try {
+            await createAsyncWrapper(iterate)(function* filterValues(data) {
+                if (filterFn(data)) {
+                    yield put(filteredCh, data);
+                }
+            }, ...channels);
+        } finally {
+            close(filteredCh);
+        }
+    })();
 
-    Promise.all(promises).finally(() => {
-        close(filteredCh);
-    });
-
-    return filteredCh;
+    return { ch: filteredCh, promise };
 }

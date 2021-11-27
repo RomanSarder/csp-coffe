@@ -10,22 +10,18 @@ describe('waitForPutQueueToReleaseAsync', () => {
         it('should complete only after put buffer becomes empty', async () => {
             const ch = makeChannel();
             makePut(ch, 'test');
-            const { iterator } = testGeneratorRunner(
-                waitForPutQueueToRelease(ch),
-            );
-            expect((await iterator.next()).done).toEqual(false);
+            const { next } = testGeneratorRunner(waitForPutQueueToRelease(ch));
+            expect((await next()).done).toEqual(false);
             releasePut(ch);
-            expect((await iterator.next()).done).toEqual(true);
+            expect((await next()).done).toEqual(true);
         });
     });
 
     describe('when put buffer is not blocked', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel();
-            const { iterator } = testGeneratorRunner(
-                waitForPutQueueToRelease(ch),
-            );
-            expect((await iterator.next()).done).toEqual(true);
+            const { next } = testGeneratorRunner(waitForPutQueueToRelease(ch));
+            expect((await next()).done).toEqual(true);
         });
     });
 });

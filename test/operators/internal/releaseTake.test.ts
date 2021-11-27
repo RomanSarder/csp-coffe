@@ -1,5 +1,6 @@
-import { makeChannel } from '@Lib/channel';
-import { makeTake, releaseTake } from '@Lib/operators/internal';
+import { makeChannel } from '@Lib/channel/channel';
+import { makeTake } from '@Lib/operators/internal/makeTake';
+import { releaseTake } from '@Lib/operators/internal/releaseTake';
 
 describe('releaseTake', () => {
     it('should remove first item from the take buffer', () => {

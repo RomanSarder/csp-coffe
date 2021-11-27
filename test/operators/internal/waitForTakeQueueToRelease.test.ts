@@ -9,22 +9,18 @@ describe('waitForTakeQueueToRelease', () => {
         it('should complete which resolves only after put buffer becomes empty', async () => {
             const ch = makeChannel();
             makeTake(ch);
-            const { iterator } = testGeneratorRunner(
-                waitForTakeQueueToRelease(ch),
-            );
-            expect((await iterator.next()).done).toEqual(false);
+            const { next } = testGeneratorRunner(waitForTakeQueueToRelease(ch));
+            expect((await next()).done).toEqual(false);
             releaseTake(ch);
-            expect((await iterator.next()).done).toEqual(true);
+            expect((await next()).done).toEqual(true);
         });
     });
 
     describe('when take buffer is unblocked', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel();
-            const { iterator } = testGeneratorRunner(
-                waitForTakeQueueToRelease(ch),
-            );
-            expect((await iterator.next()).done).toEqual(true);
+            const { next } = testGeneratorRunner(waitForTakeQueueToRelease(ch));
+            expect((await next()).done).toEqual(true);
         });
     });
 });
