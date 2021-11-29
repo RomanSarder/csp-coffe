@@ -1,7 +1,7 @@
 // import { Events, Instruction, isInstruction } from '@Lib/go';
 import { Instruction, InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
-import { UnitTestGeneratorRunner } from './entity/unitTestRunner';
+import { UnitTestGeneratorRunner } from './entity';
 
 export function unitTestGeneratorRunner<G extends Generator>(
     iterator: G,

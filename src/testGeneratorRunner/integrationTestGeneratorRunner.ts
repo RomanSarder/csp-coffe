@@ -3,7 +3,7 @@ import { makeChildrenIteratorsRunner } from '@Lib/runner/makeChildrenIteratorsRu
 import { makeIteratorStepper } from '@Lib/runner/makeIteratorStepper';
 import { StepResult } from '@Lib/runner/entity';
 import { createInstructionAsserter } from './createInstructionAsserter';
-import { IntegrationGeneratorTestRunner } from './entity/integrationTestRunner';
+import { IntegrationGeneratorTestRunner } from './entity';
 
 // eslint-disable-next-line consistent-return
 export function integrationTestGeneratorRunner<G extends Generator>(
