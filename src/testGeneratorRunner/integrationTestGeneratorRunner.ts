@@ -18,7 +18,9 @@ function createInstructionAsserter(instructions: Instruction[]) {
 }
 
 // eslint-disable-next-line consistent-return
-export function testGeneratorRunner<G extends Generator>(iterator: G) {
+export function integrationTestGeneratorRunner<G extends Generator>(
+    iterator: G,
+) {
     const emitedInstructions: Instruction[] = [];
     const childrenIteratorsRunner = makeChildrenIteratorsRunner();
     const { step } = makeIteratorStepper({

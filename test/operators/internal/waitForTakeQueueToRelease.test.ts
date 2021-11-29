@@ -1,4 +1,4 @@
-import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
+import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { makeChannel } from '@Lib/channel/channel';
 import { makeTake } from '@Lib/operators/internal/makeTake';
 import { releaseTake } from '@Lib/operators/internal/releaseTake';
@@ -9,7 +9,9 @@ describe('waitForTakeQueueToRelease', () => {
         it('should complete which resolves only after put buffer becomes empty', async () => {
             const ch = makeChannel();
             makeTake(ch);
-            const { next } = testGeneratorRunner(waitForTakeQueueToRelease(ch));
+            const { next } = integrationTestGeneratorRunner(
+                waitForTakeQueueToRelease(ch),
+            );
             expect((await next()).done).toEqual(false);
             releaseTake(ch);
             expect((await next()).done).toEqual(true);
@@ -19,7 +21,9 @@ describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is unblocked', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel();
-            const { next } = testGeneratorRunner(waitForTakeQueueToRelease(ch));
+            const { next } = integrationTestGeneratorRunner(
+                waitForTakeQueueToRelease(ch),
+            );
             expect((await next()).done).toEqual(true);
         });
     });

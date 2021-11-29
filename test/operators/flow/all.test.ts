@@ -1,4 +1,4 @@
-import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
+import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { call, go } from '@Lib/go';
 import { all } from '@Lib/operators/flow/all';
 import { delay } from '@Lib/shared/utils/delay';
@@ -40,9 +40,8 @@ describe('all', () => {
         function* outerGenerator() {
             yield all(call(innerGenerator1), call(innerGenerator2));
         }
-        const { runTillEnd, createInstructionAsserter } = testGeneratorRunner(
-            outerGenerator(),
-        );
+        const { runTillEnd, createInstructionAsserter } =
+            integrationTestGeneratorRunner(outerGenerator());
 
         await runTillEnd();
         const assert = createInstructionAsserter();
