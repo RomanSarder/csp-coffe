@@ -1,26 +1,14 @@
-import { isEqual } from 'lodash-es';
 import { Instruction } from '@Lib/go';
 import { makeChildrenIteratorsRunner } from '@Lib/runner/makeChildrenIteratorsRunner';
 import { makeIteratorStepper } from '@Lib/runner/makeIteratorStepper';
 import { StepResult } from '@Lib/runner/entity';
-
-function createInstructionAsserter(instructions: Instruction[]) {
-    return {
-        call(fn: (...args: any[]) => any, ...args: any[]) {
-            return instructions.some((instruction) => {
-                return (
-                    instruction.name === fn.name &&
-                    isEqual(instruction.args, args)
-                );
-            });
-        },
-    };
-}
+import { createInstructionAsserter } from './createInstructionAsserter';
+import { IntegrationGeneratorTestRunner } from './entity/integrationTestRunner';
 
 // eslint-disable-next-line consistent-return
 export function integrationTestGeneratorRunner<G extends Generator>(
     iterator: G,
-) {
+): IntegrationGeneratorTestRunner {
     const emitedInstructions: Instruction[] = [];
     const childrenIteratorsRunner = makeChildrenIteratorsRunner();
     const { step } = makeIteratorStepper({

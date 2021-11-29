@@ -1,10 +1,7 @@
 // import { Events, Instruction, isInstruction } from '@Lib/go';
 import { Instruction, InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
-
-type UnitTestGeneratorRunner = {
-    next: (arg?: any) => Promise<IteratorResult<any, any>>;
-};
+import { UnitTestGeneratorRunner } from './entity/unitTestRunner';
 
 export function unitTestGeneratorRunner<G extends Generator>(
     iterator: G,
