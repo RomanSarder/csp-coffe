@@ -23,7 +23,7 @@ export function integrationTestGeneratorRunner<G extends Generator>(
 
     const next = async (arg?: any) => {
         lastStepResult = lastStepResult?.error
-            ? await step('throw', arg || lastStepResult.error)
+            ? await step('throw', arg || lastStepResult?.error)
             : await step('next', arg || lastStepResult?.value);
         return lastStepResult;
     };
@@ -35,9 +35,6 @@ export function integrationTestGeneratorRunner<G extends Generator>(
         next,
         async runNTimes(times: number) {
             let counter = 1;
-            if (!lastStepResult) {
-                lastStepResult = await next();
-            }
             while (counter < times && !lastStepResult.done) {
                 lastStepResult = await next();
                 counter += 1;

@@ -2,7 +2,7 @@ module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
     // testMatch: ['<rootDir>/test/**/*.test.[jt]s?(x)'],
-    testMatch: ['<rootDir>/test/**/put.test.[jt]s?(x)'],
+    testMatch: ['<rootDir>/test/**/take.test.[jt]s?(x)'],
     transform: {
         '^.+\\.(ts|tsx)$': 'ts-jest',
         '^.+\\.(js|jsx)$': 'babel-jest',

@@ -20,6 +20,9 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
         makeTake(ch);
 
         try {
+            if (ch.isClosed) {
+                throw new Error(errorMessages.CHANNEL_CLOSED);
+            }
             const maybeResult: FlattenChannel<C> | null = yield poll(ch);
             if (maybeResult !== null) {
                 releaseTake(ch);

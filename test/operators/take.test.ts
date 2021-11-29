@@ -8,38 +8,32 @@ import { makePut } from '@Lib/operators/internal/makePut';
 describe('take', () => {
     it('should take a put value from channel', async () => {
         const ch = makeChannel();
-        const { iterator } = integrationTestGeneratorRunner(take(ch));
+        const { next } = integrationTestGeneratorRunner(take(ch));
         makePut(ch, 'test1');
-        await iterator.next();
-        await iterator.next();
-        await iterator.next();
-        await iterator.next();
-        expect((await iterator.next()).value).toEqual('test1');
+        await next();
+
+        expect((await next()).value).toEqual('test1');
     });
 
     describe('when channel is closed', () => {
         it('should return channel closed message', async () => {
             const ch = makeChannel();
-            const { iterator } = integrationTestGeneratorRunner(take(ch));
+            const { next } = integrationTestGeneratorRunner(take(ch));
             close(ch);
-            expect((await iterator.next()).value).toEqual(
-                Events.CHANNEL_CLOSED,
-            );
+            const result = await next();
+            expect(result.done).toEqual(true);
+            expect(result.value).toEqual(Events.CHANNEL_CLOSED);
         });
     });
 
     describe('when the channel is closed after take was put', () => {
         it('should release take and reset channel', async () => {
             const ch = makeChannel();
-            const { iterator } = integrationTestGeneratorRunner(take(ch));
+            const { next } = integrationTestGeneratorRunner(take(ch));
             makePut(ch, 'test1');
-            await iterator.next();
-            await iterator.next();
-            await iterator.next();
+            await next();
             close(ch);
-            expect((await iterator.next()).value).toEqual(
-                Events.CHANNEL_CLOSED,
-            );
+            expect((await next()).value).toEqual(Events.CHANNEL_CLOSED);
             expect(ch.putBuffer.getElementsArray()).toEqual([]);
             expect(ch.takeBuffer.getElementsArray()).toEqual([]);
         });
