@@ -1,61 +1,72 @@
-import { Events, Instruction, isInstruction } from '@Lib/go';
+// import { Events, Instruction, isInstruction } from '@Lib/go';
+import { Instruction, InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
 
-export async function* asyncGeneratorProxy<G extends Generator>(
+type UnitTestGeneratorRunner = {
+    next: (arg?: any) => Promise<IteratorResult<any, any>>;
+};
+
+export function unitTestGeneratorRunner<G extends Generator>(
     iterator: G,
-    instructionsList: Instruction[],
-): AsyncGenerator {
-    let nextIteratorResult;
-    try {
-        nextIteratorResult = iterator.next();
-    } catch (e) {
-        return iterator.throw(e);
-    }
+    instructionsList: Instruction[] = [],
+): UnitTestGeneratorRunner {
+    let nestedGenerator: UnitTestGeneratorRunner | undefined;
+    let nextIteratorResult: IteratorResult<any, any>;
 
-    while (!nextIteratorResult.done) {
-        let currentIteratorValue;
-        currentIteratorValue = await nextIteratorResult.value;
-        let nextIteratorValue = currentIteratorValue;
-
-        if (currentIteratorValue === Events.CANCELLED) {
-            return currentIteratorValue;
-        }
-
-        yield currentIteratorValue;
-
+    async function next(arg: any): Promise<IteratorResult<any, any>> {
         try {
-            if (isInstruction(currentIteratorValue)) {
-                instructionsList.push(currentIteratorValue);
+            if (nestedGenerator) {
+                console.log('has nested generator');
+                nextIteratorResult = await nestedGenerator.next(arg);
+                console.log('nested generator result', nextIteratorResult);
+                if (nextIteratorResult.done) {
+                    nestedGenerator = undefined;
+                    return { ...nextIteratorResult, done: false };
+                }
+                return nextIteratorResult;
             }
+            console.log('calling next with', arg || nextIteratorResult?.value);
+            nextIteratorResult = iterator.next(
+                arg || nextIteratorResult?.value,
+            );
+            console.log('curr it result', nextIteratorResult);
+            nextIteratorResult = {
+                done: nextIteratorResult.done,
+                value: await nextIteratorResult?.value,
+            };
 
-            if (isGenerator(currentIteratorValue)) {
-                let innerIterator;
-                try {
-                    innerIterator = asyncGeneratorProxy(
-                        currentIteratorValue,
-                        instructionsList,
-                    );
-                    nextIteratorResult = await innerIterator.next();
-                    while (!nextIteratorResult.done) {
-                        currentIteratorValue = await nextIteratorResult.value;
-                        yield currentIteratorValue;
+            if (isInstruction(nextIteratorResult.value)) {
+                console.log('is instruction');
+                instructionsList.push(nextIteratorResult.value);
 
-                        nextIteratorResult = await innerIterator.next(
-                            currentIteratorValue,
-                        );
-                    }
-
-                    nextIteratorValue = await nextIteratorResult.value;
-                    yield nextIteratorValue;
-                } catch (e) {
-                    const errorIteratorResult = await innerIterator?.throw(e);
-                    nextIteratorValue = await errorIteratorResult?.value;
+                if (nextIteratorResult.value.type === InstructionType.CALL) {
+                    nextIteratorResult = {
+                        ...nextIteratorResult,
+                        value: nextIteratorResult.value.function(
+                            ...nextIteratorResult.value.args,
+                        ),
+                    };
                 }
             }
-            nextIteratorResult = iterator.next(nextIteratorValue);
+
+            if (isGenerator(nextIteratorResult.value)) {
+                console.log('setting nested generator');
+                nestedGenerator = unitTestGeneratorRunner(
+                    nextIteratorResult.value,
+                    instructionsList,
+                );
+
+                nextIteratorResult = await nestedGenerator.next();
+                console.log('first nested iterator yield', nextIteratorResult);
+            }
         } catch (e) {
             nextIteratorResult = iterator.throw(e);
         }
+        console.log('returning', nextIteratorResult);
+        return nextIteratorResult;
     }
-    return nextIteratorResult.value;
+
+    return {
+        next,
+    };
 }

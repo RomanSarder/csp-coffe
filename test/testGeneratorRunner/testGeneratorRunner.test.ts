@@ -1,7 +1,7 @@
 import { call } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { delay } from '@Lib/shared/utils/delay';
-import { testGeneratorRunner } from '@Lib/testGeneratorRunner';
+import { unitTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 
 /* TODO: Think of the ways to reuse asyncGeneratorProxy for unit tests
 /* Ignore spawn and fork commands
@@ -25,9 +25,14 @@ describe('testGeneratorRunner', () => {
             expect(callYieldResult).toEqual(50);
         }
 
-        const { next } = testGeneratorRunner(testGenerator());
+        const { next } = unitTestGeneratorRunner(testGenerator());
 
-        console.log(await next());
-        console.log(await next());
+        expect(await next()).toEqual({ value: 10, done: false });
+        expect(await next()).toEqual({ value: 5, done: false });
+        expect(await next()).toEqual({ value: undefined, done: false });
+        expect(await next()).toEqual({ value: 20, done: false });
+        expect(await next()).toEqual({ value: 5, done: false });
+        expect(await next()).toEqual({ value: undefined, done: false });
+        expect(await next()).toEqual({ value: 50, done: false });
     });
 });
