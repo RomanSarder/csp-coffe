@@ -4,6 +4,7 @@ import {
     FlattenChannels,
 } from '@Lib/channel/channel.types';
 import { makeChannel } from '@Lib/channel/channel';
+import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { close } from '../close';
 import { put } from '../put';
 import { iterate } from '../transformation/iterate';
@@ -18,17 +19,17 @@ export function merge<
         bufferType,
         capacity,
     }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
-): Channel<AggregatedType> {
+): { ch: Channel<AggregatedType>; promise: Promise<void> } {
     const mergedChannel = makeChannel<AggregatedType>(bufferType, capacity);
-    const promises = channels.map((ch) => {
-        return iterate<AggregatedType>(async (data) => {
-            await put(mergedChannel, data);
-        }, ch);
-    });
+    const promise = (async () => {
+        try {
+            await createAsyncWrapper(iterate)(function* mapValues(data) {
+                yield put(mergedChannel, data);
+            }, ...channels);
+        } finally {
+            close(mergedChannel);
+        }
+    })();
 
-    Promise.all(promises).finally(() => {
-        close(mergedChannel);
-    });
-
-    return mergedChannel;
+    return { ch: mergedChannel, promise };
 }

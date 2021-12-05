@@ -1,25 +1,27 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
+import { makeChannel } from '@Lib/channel/channel';
 import { eventLoopQueue } from '@Lib/internal';
-import { close, merge, put, take } from '@Lib/operators';
+import { close } from '@Lib/operators/close';
+import { merge } from '@Lib/operators/creation/merge';
+import { putAsync } from '@Lib/operators/putAsync';
+import { takeAsync } from '@Lib/operators/takeAsync';
 
 describe('merge', () => {
     it('should return unbuffered channel with values from source channels', async () => {
         const ch1 = makeChannel<string>();
         const ch2 = makeChannel<number>();
 
-        const resultCh = merge([ch1, ch2]);
+        const { ch: resultCh, promise } = merge([ch1, ch2]);
 
-        await put(ch1, 'test1');
-        await put(ch2, 10);
-        expect(await take(resultCh)).toEqual('test1');
-        expect(await take(resultCh)).toEqual(10);
+        await putAsync(ch1, 'test1');
+        await putAsync(ch2, 10);
+        expect(await takeAsync(resultCh)).toEqual('test1');
+        expect(await takeAsync(resultCh)).toEqual(10);
 
         close(ch1);
         close(ch2);
-        close(resultCh);
 
-        await eventLoopQueue();
+        await promise;
     });
 
     describe('when source channels get closed', () => {
@@ -27,13 +29,13 @@ describe('merge', () => {
             const ch1 = makeChannel<string>();
             const ch2 = makeChannel<number>();
 
-            const resultCh = merge([ch1, ch2]);
+            const { ch: resultCh, promise } = merge([ch1, ch2]);
 
             close(ch1);
             await eventLoopQueue();
             expect(resultCh.isClosed).toEqual(false);
             close(ch2);
-            await eventLoopQueue();
+            await promise;
             expect(resultCh.isClosed).toEqual(true);
         });
     });
@@ -43,7 +45,7 @@ describe('merge', () => {
             const ch1 = makeChannel<string>();
             const ch2 = makeChannel<number>();
 
-            const resultCh = merge([ch1, ch2], {
+            const { ch: resultCh, promise } = merge([ch1, ch2], {
                 bufferType: CreatableBufferType.SLIDING,
                 capacity: 10,
             });
@@ -52,6 +54,11 @@ describe('merge', () => {
             expect(resultCh.putBuffer.type).toEqual(
                 CreatableBufferType.SLIDING,
             );
+
+            close(ch1);
+            close(ch2);
+
+            await promise;
         });
     });
 });
