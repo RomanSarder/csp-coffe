@@ -10,6 +10,7 @@ import { raceToSuccess as promiseRaceToSuccess } from '@Lib/shared/utils/raceToS
 export function* raceToSuccess(...instructions: CallInstruction[]) {
     const runnerPromises: CancellablePromise<any>[] =
         yield createRunnersFromCallInstructions(...instructions);
+
     const { cancellablePromise, resolve, reject } = createCancellablePromise(
         async () => {
             await cancelAll(runnerPromises);

@@ -9,19 +9,12 @@ export function* createRunnersFromCallInstructions(
 
     for (const instruction of callInstructions) {
         yield markAsDebug(instruction);
-        promises.push(
-            (async () => {
-                const instructionResult = instruction.function(
-                    ...instruction.args,
-                );
-
-                if (isGenerator(instructionResult)) {
-                    return runIterator(instructionResult);
-                }
-
-                return Promise.resolve(instructionResult);
-            })(),
-        );
+        const instructionResult = instruction.function(...instruction.args);
+        if (isGenerator(instructionResult)) {
+            promises.push(runIterator(instructionResult));
+        } else {
+            promises.push(Promise.resolve(instructionResult));
+        }
     }
 
     return promises;

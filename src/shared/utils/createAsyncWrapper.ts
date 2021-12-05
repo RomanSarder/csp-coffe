@@ -7,7 +7,8 @@ export function createAsyncWrapper<
     GenFn extends GeneratorFn,
     GenReturn = GeneratorReturn<ReturnType<GenFn>>,
 >(genFn: GenFn) {
-    return (...args: Parameters<GenFn>): Promise<GenReturn> => {
-        return runIterator(genFn(...args));
+    return async (...args: Parameters<GenFn>): Promise<GenReturn> => {
+        const result = await runIterator(genFn(...args));
+        return result;
     };
 }
