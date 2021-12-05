@@ -16,6 +16,8 @@ describe('fromPromise', () => {
 
         await takeAsync(ch);
         await eventLoopQueue();
+        await eventLoopQueue();
+        await eventLoopQueue();
         expect(ch.isClosed).toEqual(true);
     });
 });

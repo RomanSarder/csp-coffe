@@ -5,9 +5,9 @@ import { Channel } from '../channel.types';
 import { isChannelClosedError } from '../utils';
 import { hasKey } from './utils';
 
-let waitingPromise: Promise<void>;
-
 export function closeOnAllValuesTaken<C extends Channel<any>>(ch: C) {
+    let waitingPromise: Promise<void>;
+
     return new Proxy(ch, {
         get(target, name, receiver) {
             if (!waitingPromise) {
