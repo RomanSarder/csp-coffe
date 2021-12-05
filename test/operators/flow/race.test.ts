@@ -8,26 +8,27 @@ describe('race', () => {
 
         function* innerGenerator1() {
             yield delay(1000);
-            executionOrder.push(1);
             return 1;
         }
 
         function* innerGenerator2() {
             yield delay(1200);
-            executionOrder.push(2);
             return 2;
         }
 
         function* outerGenerator() {
-            yield race(call(innerGenerator1), call(innerGenerator2));
-            executionOrder.push(3);
+            const result: number = yield race(
+                call(innerGenerator1),
+                call(innerGenerator2),
+            );
+            executionOrder.push(result);
         }
 
         const { cancellablePromise } = go(outerGenerator);
 
         await cancellablePromise;
 
-        expect(executionOrder).toEqual([1, 3]);
+        expect(executionOrder).toEqual([1]);
     });
 
     it('should cancell all generators', async () => {
