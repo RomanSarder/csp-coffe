@@ -98,8 +98,7 @@ export function* altsGenerator<
         call(performOperationByDefinition, def),
     );
 
-    const result: any = yield race(...instructions);
-    return result;
+    return race(...instructions);
 }
 
 export const alts = createAsyncWrapper(altsGenerator) as (
