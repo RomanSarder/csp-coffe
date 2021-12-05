@@ -20,26 +20,28 @@ describe('go', () => {
         expect(executionOrder).toEqual([1, 2]);
     });
 
-    it('should execute yielded generators', async () => {
+    it('should execute yielded nested generators', async () => {
         const executionOrder = [] as number[];
 
         function* innerGenerator() {
             executionOrder.push(2);
             yield delay(500);
             executionOrder.push(3);
+            return 4;
         }
 
         function* testGenerator() {
             const result1: number = yield fakeAsyncFunction(() => 1);
             executionOrder.push(result1);
-            yield innerGenerator();
+            const result2: number = yield innerGenerator();
+            executionOrder.push(result2);
         }
 
         const { cancellablePromise } = go(testGenerator);
 
         await cancellablePromise;
 
-        expect(executionOrder).toEqual([1, 2, 3]);
+        expect(executionOrder).toEqual([1, 2, 3, 4]);
     });
 
     it('should execute call instructions', async () => {
