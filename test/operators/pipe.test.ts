@@ -1,20 +1,24 @@
-import { makeChannel } from '@Lib/channel';
-import { putAsync, pipe, takeAsync, close } from '@Lib/operators';
-import { eventLoopQueue } from '@Lib/internal';
+import { makeChannel } from '@Lib/channel/channel';
+import { putAsync } from '@Lib/operators/putAsync';
+import { pipe } from '@Lib/operators/pipe';
+import { takeAsync } from '@Lib/operators/takeAsync';
+import { close } from '@Lib/operators/close';
+
+// import { eventLoopQueue } from '@Lib/internal';
 import { CreatableBufferType } from '@Lib/buffer';
 
 describe('pipe', () => {
     it('should put values from source channel to destination channel', async () => {
         const ch1 = makeChannel(CreatableBufferType.UNBLOCKING);
         const ch2 = makeChannel(CreatableBufferType.UNBLOCKING);
-        pipe(ch2, ch1);
+        const { promise } = pipe(ch2, ch1);
 
         await putAsync(ch1, 'test1');
         expect(await takeAsync(ch2)).toEqual('test1');
 
         close(ch1);
         close(ch2);
-        await eventLoopQueue();
+        await promise;
     });
 
     describe('when source channel is closed', () => {
@@ -22,9 +26,9 @@ describe('pipe', () => {
             it('should close destination channel', async () => {
                 const ch1 = makeChannel(CreatableBufferType.UNBLOCKING);
                 const ch2 = makeChannel(CreatableBufferType.UNBLOCKING);
-                pipe(ch2, ch1);
+                const { promise } = pipe(ch2, ch1);
                 close(ch1);
-                await eventLoopQueue();
+                await promise;
                 expect(ch2.isClosed).toEqual(true);
             });
         });
@@ -33,12 +37,11 @@ describe('pipe', () => {
             it('should not close destination channel', async () => {
                 const ch1 = makeChannel(CreatableBufferType.UNBLOCKING);
                 const ch2 = makeChannel(CreatableBufferType.UNBLOCKING);
-                pipe(ch2, ch1, true);
+                const { promise } = pipe(ch2, ch1, true);
                 close(ch1);
-                await eventLoopQueue();
+                await promise;
                 expect(ch2.isClosed).toEqual(false);
                 close(ch2);
-                await eventLoopQueue();
             });
         });
     });
