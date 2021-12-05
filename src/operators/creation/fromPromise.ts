@@ -1,8 +1,8 @@
 import { Channel, ChannelConfiguration } from '@Lib/channel/channel.types';
 import { makeChannel } from '@Lib/channel/channel';
 import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/constants';
-import { close } from '../close';
-import { put } from '../put';
+import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
+import { putAsync } from '../putAsync';
 
 type PromiseResponseType<PromiseType> = PromiseType extends Promise<
     NonNullable<infer T>
@@ -19,13 +19,9 @@ export function fromPromise<PromiseType extends Promise<NonNullable<any>>>(
         capacity,
     );
 
-    promise
-        .then((response) => {
-            put(ch, response);
-        })
-        .finally(() => {
-            close(ch);
-        });
+    promise.then((response) => {
+        return putAsync(ch, response);
+    });
 
-    return ch;
+    return closeOnAllValuesTaken(ch);
 }
