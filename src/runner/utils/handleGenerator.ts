@@ -7,28 +7,31 @@ import { handleCancellablePromise } from './handleCancellablePromise';
 export async function handleGenerator({
     runIteratorPromise,
     childrenIteratorsRunner,
+    done,
     type,
 }: {
     runIteratorPromise: CancellablePromise<any>;
+    done: boolean;
     type?: InstructionType.FORK | InstructionType.SPAWN;
     childrenIteratorsRunner: ChildrenIteratorsRunner;
 }): Promise<StepResult> {
     if (type === InstructionType.FORK) {
         return {
             value: childrenIteratorsRunner.fork(runIteratorPromise),
-            done: false,
+            done,
         };
     }
 
     if (type === InstructionType.SPAWN) {
         return {
             value: childrenIteratorsRunner.spawn(runIteratorPromise),
-            done: false,
+            done,
         };
     }
 
     return handleCancellablePromise({
         childrenIteratorsRunner,
         promise: runIteratorPromise,
+        done,
     });
 }

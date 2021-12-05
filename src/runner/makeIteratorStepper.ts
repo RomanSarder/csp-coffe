@@ -53,6 +53,7 @@ export const makeIteratorStepper = ({
                 return handleCancellablePromise({
                     promise: result.value,
                     childrenIteratorsRunner,
+                    done: result.done as boolean,
                 });
             }
             value = await result.value;
@@ -78,6 +79,7 @@ export const makeIteratorStepper = ({
                         type: instruction.type as
                             | InstructionType.FORK
                             | InstructionType.SPAWN,
+                        done: result.done as boolean,
                     });
                 }
                 value = instructionResult;
@@ -87,6 +89,7 @@ export const makeIteratorStepper = ({
                 return handleGenerator({
                     childrenIteratorsRunner,
                     runIteratorPromise: runIterator(value, onInstruction),
+                    done: result.done as boolean,
                 });
             }
 
