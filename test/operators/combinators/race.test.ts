@@ -1,5 +1,5 @@
 import { call, go } from '@Lib/go';
-import { race } from '@Lib/operators/flow/race';
+import { race } from '@Lib/operators/combinators/race';
 import { delay } from '@Lib/shared/utils/delay';
 
 describe('race', () => {

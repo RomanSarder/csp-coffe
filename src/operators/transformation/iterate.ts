@@ -7,7 +7,7 @@ import {
 import { call } from '@Lib/go';
 import { Events } from '@Lib/channel/constants';
 
-import { all } from '../flow';
+import { all } from '../combinators';
 import { take } from '../take';
 
 function* iterateOverSingleChannel<C extends Channel<any>>(
