@@ -1,7 +1,7 @@
 import { makeChannel } from '@Lib/channel/channel';
 import { Events } from '@Lib/channel/constants';
 import { close } from '@Lib/operators/close';
-import { zip } from '@Lib/operators/combinators';
+import { zip } from '@Lib/operators/combinators/zip';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { delay } from '@Lib/shared/utils/delay';
 

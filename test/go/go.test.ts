@@ -1,4 +1,5 @@
-import { call, fork, go, spawn } from '@Lib/go';
+import { call, fork, spawn } from '@Lib/go';
+import { go } from '@Lib/go/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { close } from '@Lib/operators/close';
 import { CancelError } from '@Lib/runner';

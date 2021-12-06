@@ -8,7 +8,7 @@
     "test:clear": "jest --clearCache",
     "test:watch": "jest --watchAll",
     "build": "tsc --build",
-    "dev": "yarn build --watch --preserveWatchOutput"
+    "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
   },
   "keywords": [],
   "author": "",

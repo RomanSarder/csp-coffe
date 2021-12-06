@@ -11,7 +11,7 @@ import { FlattenChannel, Channel } from '@Lib/channel/channel.types';
 import { call } from '@Lib/go';
 import { Flatten } from '@Lib/shared/types';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
-import { race } from './combinators';
+import { race } from './combinators/race';
 import { offerFn } from './offer';
 import { pollFn } from './poll';
 import { put } from './put';

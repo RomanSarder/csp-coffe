@@ -1,4 +1,4 @@
-import { GeneratorReturn } from '@Lib/go';
+import { GeneratorReturn } from '@Lib/go/utils/GeneratorReturn';
 import { runIterator } from '@Lib/runner';
 
 type GeneratorFn = (...args: readonly any[]) => any;
