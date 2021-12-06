@@ -1,5 +1,5 @@
 import { makeBufferMixin } from './bufferMixin';
-import { makeDroppingQueue } from './collection';
+import { makeDroppingQueue } from './collection/droppingQueue';
 import { BufferType } from './buffer.enum';
 import { Buffer } from './buffer.types';
 

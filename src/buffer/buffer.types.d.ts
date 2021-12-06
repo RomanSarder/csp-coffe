@@ -1,5 +1,5 @@
 import { BufferType } from './buffer.enum';
-import { Collection } from './collection';
+import { Collection } from './collection/entity/collection';
 
 export type Buffer<T = unknown> = {
     type: BufferType;

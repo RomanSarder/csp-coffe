@@ -1,5 +1,5 @@
 import { makeBufferMixin } from './bufferMixin';
-import { makeQueue } from './collection';
+import { makeQueue } from './collection/queue';
 import { BufferType } from './buffer.enum';
 import { Buffer } from './buffer.types';
 
