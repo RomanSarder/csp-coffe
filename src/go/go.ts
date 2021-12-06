@@ -4,7 +4,7 @@ import { makePut } from '@Lib/operators/internal/makePut';
 import { close } from '@Lib/operators/close';
 import { createCoroutine } from '@Lib/coroutine';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
-import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
+import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { Events } from './entity';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';
 

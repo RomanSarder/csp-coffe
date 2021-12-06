@@ -1,7 +1,7 @@
 import { Channel, ChannelConfiguration } from '@Lib/channel/channel.types';
 import { makeChannel } from '@Lib/channel/channel';
 import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/constants';
-import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
+import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { putAsync } from '../putAsync';
 
 type PromiseResponseType<PromiseType> = PromiseType extends Promise<

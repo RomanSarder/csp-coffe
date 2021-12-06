@@ -1,7 +1,7 @@
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
 import { Channel } from '@Lib/channel/channel.types';
-import { closeOnEmptyBuffer } from '@Lib/channel/proxy';
+import { closeOnEmptyBuffer } from '@Lib/channel/proxy/closeOnEmptyBuffer';
 import { Flatten } from '@Lib/shared/types';
 import { makePut } from '../internal/makePut';
 

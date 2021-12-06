@@ -1,6 +1,6 @@
 import { close } from '@Lib/operators/close';
 import { Channel } from '../channel.types';
-import { hasKey } from './utils';
+import { hasKey } from './utils/hasKey';
 
 export function closeOnEmptyBuffer<C extends Channel<any>>(ch: C) {
     return new Proxy(ch, {

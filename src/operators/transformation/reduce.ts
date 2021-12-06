@@ -4,7 +4,7 @@ import {
     ChannelConfiguration,
 } from '@Lib/channel/channel.types';
 import { makeChannel } from '@Lib/channel/channel';
-import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
+import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { putAsync } from '../putAsync';
 import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';

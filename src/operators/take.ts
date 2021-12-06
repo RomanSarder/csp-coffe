@@ -1,6 +1,6 @@
 import { Channel, FlattenChannel } from '@Lib/channel/channel.types';
 import { errorMessages, Events } from '@Lib/channel/constants';
-import { isChannelClosedError } from '@Lib/channel/utils';
+import { isChannelClosedError } from '@Lib/channel/utils/isChannelClosedError';
 import { makeTake } from './internal/makeTake';
 import { releasePut } from './internal/releasePut';
 import { releaseTake } from './internal/releaseTake';
