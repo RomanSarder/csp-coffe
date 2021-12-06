@@ -1,4 +1,4 @@
-import { CancellablePromise } from '@Lib/cancellablePromise';
+import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 
 export type ChildrenIteratorsRunner = {
     setCancelHandler(handler: (reason: any) => Promise<void>): void;

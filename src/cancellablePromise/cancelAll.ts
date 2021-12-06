@@ -1,5 +1,5 @@
-import { isCancellablePromise } from './isCancellablePromise';
-import { CancellablePromise } from './entity';
+import { isCancellablePromise } from './utils/isCancellablePromise';
+import type { CancellablePromise } from './entity/cancellablePromise';
 
 export function cancelAll(
     cancellablePromises: (CancellablePromise<any> | Promise<any>)[],

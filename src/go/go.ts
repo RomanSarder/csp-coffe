@@ -3,7 +3,7 @@ import { makeChannel } from '@Lib/channel/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { close } from '@Lib/operators/close';
 import { createCoroutine } from '@Lib/coroutine';
-import { CancellablePromise } from '@Lib/cancellablePromise';
+import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
 import { Events } from './entity';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';

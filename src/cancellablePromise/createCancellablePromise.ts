@@ -1,5 +1,5 @@
-import { CancelError } from './cancelError';
-import { CancellablePromise } from './entity';
+import { CancelError } from './entity/cancelError';
+import type { CancellablePromise } from './entity/cancellablePromise';
 
 export function createCancellablePromise<T = any>(
     cancelCallback?: (reason?: any) => unknown,

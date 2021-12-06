@@ -1,4 +1,4 @@
-import { isCancellablePromise } from '@Lib/cancellablePromise';
+import { isCancellablePromise } from '@Lib/cancellablePromise/utils/isCancellablePromise';
 import { Instruction, InstructionType, isInstruction } from '@Lib/go';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
 import { eventLoopQueue } from '@Lib/internal';

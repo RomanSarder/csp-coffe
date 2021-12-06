@@ -5,6 +5,3 @@ export class CancelError extends Error {
         this.name = 'CancelError';
     }
 }
-
-export const isCancelError = (error: any): error is CancelError =>
-    error instanceof Error && error instanceof CancelError;

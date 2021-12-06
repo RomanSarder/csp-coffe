@@ -1,7 +1,7 @@
 import {
-    CancellablePromise,
     createCancellablePromise,
-} from '@Lib/cancellablePromise';
+} from '@Lib/cancellablePromise/createCancellablePromise';
+import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise'
 import { runIterator } from '@Lib/runner';
 
 export const createCoroutine = ({

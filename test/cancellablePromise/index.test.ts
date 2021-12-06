@@ -1,4 +1,6 @@
-import { createCancellablePromise } from '@Lib/cancellablePromise';
+import {
+    createCancellablePromise,
+} from '@Lib/cancellablePromise/createCancellablePromise';
 
 describe('cancellablePromise', () => {
     it('should resolve', async () => {

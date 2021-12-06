@@ -1,4 +1,4 @@
-import { CancellablePromise } from './entity';
+import { CancellablePromise } from '../entity/cancellablePromise';
 
 export function isCancellablePromise(
     promise: CancellablePromise<any> | any,
