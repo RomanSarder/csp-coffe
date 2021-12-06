@@ -1,4 +1,4 @@
-import { Instruction } from '@Lib/go';
+import { Instruction } from '@Lib/go/entity/instruction';
 import { isEqual } from 'lodash-es';
 
 export function createInstructionAsserter(instructions: Instruction[]) {

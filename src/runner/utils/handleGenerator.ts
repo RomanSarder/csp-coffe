@@ -1,4 +1,4 @@
-import { InstructionType } from '@Lib/go';
+import { InstructionType } from '@Lib/go/entity/instructionType';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 import { StepResult } from '../entity';
 import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';

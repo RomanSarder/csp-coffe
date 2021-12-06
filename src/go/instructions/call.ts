@@ -1,4 +1,4 @@
-import { InstructionType } from '../entity';
+import { InstructionType } from '../entity/instructionType';
 import { CallInstruction } from '../entity/callInstruction';
 import { makeInstruction } from './makeInstruction';
 

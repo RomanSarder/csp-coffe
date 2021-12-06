@@ -1,4 +1,4 @@
-import { Instruction } from '../entity';
+import { Instruction } from '../entity/instruction';
 
 export function markAsDebug(instruction: Instruction) {
     return {

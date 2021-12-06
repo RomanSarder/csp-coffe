@@ -1,9 +1,7 @@
-import {
-    createCancellablePromise,
-} from '@Lib/cancellablePromise/createCancellablePromise';
+import { createCancellablePromise } from '@Lib/cancellablePromise/createCancellablePromise';
 import { cancelAll } from '@Lib/cancellablePromise/cancelAll';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
-import { CallInstruction } from '@Lib/go';
+import { CallInstruction } from '@Lib/go/entity/callInstruction';
 import { createRunnersFromCallInstructions } from '@Lib/shared/utils/createRunnersFromCallInstructions';
 import { raceToSuccess as promiseRaceToSuccess } from '@Lib/shared/utils/raceToSuccess';
 

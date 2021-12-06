@@ -1,12 +1,7 @@
-import { call } from '@Lib/go';
+import { call } from '@Lib/go/instructions/call';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { delay } from '@Lib/shared/utils/delay';
 import { unitTestGeneratorRunner } from '@Lib/testGeneratorRunner';
-
-/* TODO: Think of the ways to reuse asyncGeneratorProxy for unit tests
-/* Ignore spawn and fork commands
-/* Add call instructions handling
-/* Add next(arg) passing */
 
 describe('testGeneratorRunner', () => {
     it('TBD', async () => {

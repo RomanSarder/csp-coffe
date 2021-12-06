@@ -1,4 +1,4 @@
-import { Instruction } from '@Lib/go';
+import { Instruction } from '@Lib/go/entity/instruction';
 import { makeChildrenIteratorsRunner } from '@Lib/runner/makeChildrenIteratorsRunner';
 import { makeIteratorStepper } from '@Lib/runner/makeIteratorStepper';
 import { StepResult } from '@Lib/runner/entity';

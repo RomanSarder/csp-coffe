@@ -1,4 +1,4 @@
-import { call } from '@Lib/go';
+import { call } from '@Lib/go/instructions/call';
 import { go } from '@Lib/go/go';
 import { raceToSuccess } from '@Lib/operators/combinators/raceToSuccess';
 import { delay } from '@Lib/shared/utils/delay';
