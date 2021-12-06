@@ -3,9 +3,7 @@ import { putAsync } from '@Lib/operators/putAsync';
 import { pipe } from '@Lib/operators/pipe';
 import { takeAsync } from '@Lib/operators/takeAsync';
 import { close } from '@Lib/operators/close';
-
-// import { eventLoopQueue } from '@Lib/internal';
-import { CreatableBufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 
 describe('pipe', () => {
     it('should put values from source channel to destination channel', async () => {

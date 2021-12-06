@@ -1,5 +1,5 @@
-import { BufferType } from './buffer.enum';
-import { Collection } from './collection/entity/collection';
+import type { BufferType } from './bufferType';
+import type { Collection } from '../collection/entity/collection';
 
 export type Buffer<T = unknown> = {
     type: BufferType;
@@ -10,5 +10,3 @@ export type Buffer<T = unknown> = {
     isBlocked: () => boolean;
     getElementsArray: () => T[];
 };
-
-export type TypelessBuffer<T = unknown> = Omit<Buffer<T>, 'type'>;

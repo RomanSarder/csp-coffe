@@ -3,7 +3,7 @@ import { makePut } from '@Lib/operators/internal/makePut';
 import { releasePut } from '@Lib/operators/internal/releasePut';
 import { waitUntilBufferEmpty } from '@Lib/operators/internal/waitUntilBufferEmpty';
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
-import { CreatableBufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 
 describe('waitUntilBufferEmpty', () => {
     describe('when put buffer is not empty', () => {

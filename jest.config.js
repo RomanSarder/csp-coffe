@@ -18,6 +18,7 @@ module.exports = {
         '^@Lib/(.*)$': '<rootDir>/src/$1',
     },
     moduleDirectories: ['node_modules', 'src'],
+    moduleFileExtensions: ['js', 'jsx', 'ts', '.d.ts', 'tsx', 'json', 'node'],
     coverageDirectory: '<rootDir>/coverage/',
     coverageThreshold: {
         global: {

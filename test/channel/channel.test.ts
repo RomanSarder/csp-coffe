@@ -1,4 +1,4 @@
-import { CreatableBufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { Events } from '@Lib/channel/constants';
 import { makeChannel, makeTimeoutChannel } from '@Lib/channel/channel';
 import { close } from '@Lib/operators/close';

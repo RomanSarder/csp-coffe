@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
-import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
+import { BufferType, CreatableBufferType } from '@Lib/buffer/entity/bufferType';
+import { makeBuffer } from '@Lib/buffer/buffer';
 import { close } from '@Lib/operators/close';
 import { takeAsync } from '@Lib/operators/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';

@@ -1,4 +1,4 @@
-import type { TypelessBuffer } from './buffer.types';
+import type { TypelessBuffer } from './entity/typelessBuffer';
 import type { Collection } from './collection/entity/collection';
 
 export function makeBufferMixin<T = unknown>(

@@ -1,4 +1,5 @@
-import { BufferType, makeBuffer } from '@Lib/buffer';
+import { BufferType } from '@Lib/buffer/entity/bufferType';
+import { makeBuffer } from '@Lib/buffer/buffer';
 import { Channel } from '@Lib/channel/channel.types';
 import { close } from '../close';
 

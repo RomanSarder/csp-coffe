@@ -1,8 +1,6 @@
-import {
-    makeSlidingBuffer,
-    makeDroppingBuffer,
-    makeUnblockingBuffer,
-} from '@Lib/buffer';
+import { makeSlidingBuffer } from '@Lib/buffer/slidingBuffer';
+import { makeDroppingBuffer } from '@Lib/buffer/droppingBuffer';
+import { makeUnblockingBuffer } from '@Lib/buffer/unblockingBuffer';
 import { makeFixedBuffer } from '@Lib/buffer/fixedBuffer';
 
 describe('Buffer', () => {

@@ -4,7 +4,7 @@ import { map } from '@Lib/operators/transformation/map';
 import { putAsync } from '@Lib/operators/putAsync';
 import { takeAsync } from '@Lib/operators/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
-import { CreatableBufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 
 describe('map', () => {
     it('should return channel with mapped values from source channels', async () => {

@@ -1,5 +1,5 @@
-import type { Buffer } from '@Lib/buffer';
-import { CreatableBufferType } from '@Lib/buffer';
+import type { Buffer } from '@Lib/buffer/entity/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { Flatten } from '@Lib/shared/types';
 
 export type Channel<T = NonNullable<any>> = {

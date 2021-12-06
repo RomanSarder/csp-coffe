@@ -1,4 +1,4 @@
-import { CreatableBufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
 import { iterate } from '@Lib/operators/transformation/iterate';
 import { makePut } from '@Lib/operators/internal/makePut';

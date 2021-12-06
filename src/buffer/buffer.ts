@@ -1,8 +1,8 @@
-import { BufferType, CreatableBufferType } from './buffer.enum';
+import { BufferType, CreatableBufferType } from './entity/bufferType';
 import { makeClosedBuffer } from './closedBuffer';
 import { makeDroppingBuffer } from './droppingBuffer';
 import { makeSlidingBuffer } from './slidingBuffer';
-import { Buffer } from './buffer.types';
+import { Buffer } from './entity/buffer';
 import { makeFixedBuffer } from './fixedBuffer';
 import { makeUnblockingBuffer } from './unblockingBuffer';
 

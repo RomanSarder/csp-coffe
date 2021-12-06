@@ -1,4 +1,4 @@
-import { CreatableBufferType } from '@Lib/buffer';
+import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 
 export const errorMessages = {
     CHANNEL_CLOSED: 'CHANNEL_CLOSED_ERROR',
