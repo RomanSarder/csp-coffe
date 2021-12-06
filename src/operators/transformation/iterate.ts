@@ -1,11 +1,9 @@
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
-import {
-    Channel,
-    FlattenChannel,
-    FlattenChannels,
-} from '@Lib/channel/channel.types';
+import { FlattenChannels, FlattenChannel } from '@Lib/channel/entity/flatten';
+import { Channel } from '@Lib/channel/entity/channel';
+
 import { call } from '@Lib/go';
-import { Events } from '@Lib/channel/constants';
+import { Events } from '@Lib/channel/entity/events';
 
 import { all } from '../combinators/all';
 import { take } from '../take';

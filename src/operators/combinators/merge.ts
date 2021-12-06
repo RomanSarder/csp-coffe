@@ -1,8 +1,6 @@
-import {
-    Channel,
-    ChannelConfiguration,
-    FlattenChannels,
-} from '@Lib/channel/channel.types';
+import { ChannelConfiguration } from '@Lib/channel/entity/channelConfiguration';
+import { Channel } from '@Lib/channel/entity/channel';
+import { FlattenChannels } from '@Lib/channel/entity/flatten';
 import { makeChannel } from '@Lib/channel/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { close } from '../close';

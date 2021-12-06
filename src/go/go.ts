@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel/channel.types';
+import { Channel } from '@Lib/channel/entity/channel';
 import { makeChannel } from '@Lib/channel/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { close } from '@Lib/operators/close';

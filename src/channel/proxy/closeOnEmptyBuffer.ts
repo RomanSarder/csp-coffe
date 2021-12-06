@@ -1,5 +1,5 @@
 import { close } from '@Lib/operators/close';
-import { Channel } from '../channel.types';
+import { Channel } from '../entity/channel';
 import { hasKey } from './utils/hasKey';
 
 export function closeOnEmptyBuffer<C extends Channel<any>>(ch: C) {

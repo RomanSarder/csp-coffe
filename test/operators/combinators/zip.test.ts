@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel/channel';
-import { Events } from '@Lib/channel/constants';
+import { Events } from '@Lib/channel/entity/events';
 import { close } from '@Lib/operators/close';
 import { zip } from '@Lib/operators/combinators/zip';
 import { makePut } from '@Lib/operators/internal/makePut';

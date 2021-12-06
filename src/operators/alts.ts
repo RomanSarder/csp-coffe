@@ -7,7 +7,9 @@
 // // if default value provided - return it
 // // if no default value - wait for operations, return first one to succeed
 
-import { FlattenChannel, Channel } from '@Lib/channel/channel.types';
+import { FlattenChannel } from '@Lib/channel/entity/flatten';
+import { Channel } from '@Lib/channel/entity/channel';
+
 import { call } from '@Lib/go';
 import { Flatten } from '@Lib/shared/types';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';

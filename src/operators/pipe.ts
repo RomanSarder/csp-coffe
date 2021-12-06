@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel/channel.types';
+import { Channel } from '@Lib/channel/entity/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { put } from './put';
 import { iterate } from './transformation';

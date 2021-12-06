@@ -1,4 +1,5 @@
-import { Channel, FlattenChannel } from '@Lib/channel/channel.types';
+import { FlattenChannel } from '@Lib/channel/entity/flatten';
+import { Channel } from '@Lib/channel/entity/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { iterate } from './iterate';
 

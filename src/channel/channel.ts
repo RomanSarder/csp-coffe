@@ -5,8 +5,9 @@ import { makeBuffer } from '@Lib/buffer/buffer';
 import { close } from '@Lib/operators/close';
 import { takeAsync } from '@Lib/operators/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
-import type { Channel } from './channel.types';
-import { DEFAULT_CHANNEL_CONFIG, Events } from './constants';
+import type { Channel } from './entity/channel';
+import { DEFAULT_CHANNEL_CONFIG } from './config';
+import { Events } from './entity/events'
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
     if (bufferType === CreatableBufferType.UNBLOCKING || capacity > 1) {

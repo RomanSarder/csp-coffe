@@ -1,4 +1,6 @@
-import { Channel, FlattenChannel } from '@Lib/channel/channel.types';
+import { FlattenChannel } from '@Lib/channel/entity/flatten';
+import { Channel } from '@Lib/channel/entity/channel';
+
 import { isChannelClosedError } from '@Lib/channel/utils/isChannelClosedError';
 
 import { makePut } from './internal/makePut';

@@ -1,5 +1,5 @@
-import { Channel } from '@Lib/channel/channel.types';
-import { errorMessages } from '@Lib/channel/constants';
+import { Channel } from '@Lib/channel/entity/channel';
+import { errorMessages } from '@Lib/channel/entity/errorMessages';
 
 export function* waitForIncomingTake<C extends Channel<any>>(ch: C) {
     if (ch.isClosed) {

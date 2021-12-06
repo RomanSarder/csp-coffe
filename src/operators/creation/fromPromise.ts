@@ -1,6 +1,7 @@
-import { Channel, ChannelConfiguration } from '@Lib/channel/channel.types';
+import { ChannelConfiguration } from '@Lib/channel/entity/channelConfiguration';
+import { Channel } from '@Lib/channel/entity/channel';
 import { makeChannel } from '@Lib/channel/channel';
-import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/constants';
+import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/config';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { putAsync } from '../putAsync';
 

@@ -1,7 +1,7 @@
 import { close } from '@Lib/operators/close';
 import { waitForIncomingPutAsync } from '@Lib/operators/internal/waitForIncomingPutAsync';
 import { waitUntilBufferIsEmptyAsync } from '@Lib/operators/internal/waitUntilBufferEmptyAsync';
-import { Channel } from '../channel.types';
+import { Channel } from '../entity/channel';
 import { isChannelClosedError } from '../utils/isChannelClosedError';
 import { hasKey } from './utils/hasKey';
 
