@@ -4,6 +4,7 @@ import { makePut } from '@Lib/operators/internal/makePut';
 import { close } from '@Lib/operators/close';
 import { createCoroutine } from '@Lib/coroutine';
 import { CancellablePromise } from '@Lib/cancellablePromise';
+import { closeOnAllValuesTaken } from '@Lib/channel/proxy';
 import { Events } from './entity';
 import { GeneratorReturn, MaybeGeneratorReturnFromValue } from './utils';
 
@@ -34,6 +35,6 @@ export function go<
                 close(channel);
                 throw e;
             }),
-        channel,
+        channel: closeOnAllValuesTaken(channel),
     };
 }

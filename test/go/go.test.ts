@@ -1,5 +1,6 @@
 import { call, fork, go, spawn } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
+import { close } from '@Lib/operators/close';
 import { CancelError } from '@Lib/runner';
 import { delay } from '@Lib/shared/utils/delay';
 
@@ -221,5 +222,17 @@ describe('go', () => {
             expect(executionOrder).toEqual([1, 2, 3, 5]);
             expect(innerSpy).toHaveBeenCalledWith(new CancelError());
         });
+    });
+
+    it('should return a channel with a value of generator return', async () => {
+        function* testGenerator() {
+            yield 5;
+            return 10;
+        }
+
+        const { channel, cancellablePromise } = go(testGenerator);
+        await cancellablePromise;
+        expect(channel.putBuffer.getElementsArray()).toEqual([10]);
+        close(channel);
     });
 });
