@@ -3,7 +3,7 @@ import { cancelAll } from '@Lib/cancellablePromise/cancelAll';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 import { CallInstruction } from '@Lib/go/entity/callInstruction';
 import { createRunnersFromCallInstructions } from '@Lib/shared/utils/createRunnersFromCallInstructions';
-import { raceToSuccess as promiseRaceToSuccess } from '@Lib/shared/utils/raceToSuccess';
+import { raceToSuccess as promiseRaceToSuccess } from '@Lib/operators/utils/raceToSuccess';
 
 export function* raceToSuccess(...instructions: CallInstruction[]) {
     const runnerPromises: CancellablePromise<any>[] =

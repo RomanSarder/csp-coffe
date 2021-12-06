@@ -6,7 +6,7 @@ import { call } from '@Lib/go/instructions/call';
 import { Events } from '@Lib/channel/entity/events';
 
 import { all } from '../combinators/all';
-import { take } from '../take';
+import { take } from '../core/take';
 
 function* iterateOverSingleChannel<C extends Channel<any>>(
     callback: (data: FlattenChannel<C>) => void,

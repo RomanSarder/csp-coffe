@@ -1,10 +1,10 @@
 import { makeChannel } from '@Lib/channel/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
-import { alts } from '@Lib/operators/alts';
+import { alts } from '@Lib/operators/combinators/alts';
 import { releasePut } from '@Lib/operators/internal/releasePut';
 import { delay } from '@Lib/shared/utils/delay';
-import { takeAsync } from '@Lib/operators/takeAsync';
-import { close } from '@Lib/operators/close';
+import { takeAsync } from '@Lib/operators/core/takeAsync';
+import { close } from '@Lib/operators/core/close';
 
 describe('alts', () => {
     describe('when provided a list of channels', () => {

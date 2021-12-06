@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel/channel';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { drain } from '@Lib/operators/transformation/drain';
 import { delay } from '@Lib/shared/utils/delay';

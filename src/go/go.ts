@@ -1,7 +1,7 @@
 import { Channel } from '@Lib/channel/entity/channel';
 import { makeChannel } from '@Lib/channel/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { runIterator } from '@Lib/runner';

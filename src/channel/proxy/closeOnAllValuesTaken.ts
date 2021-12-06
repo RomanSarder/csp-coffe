@@ -1,4 +1,4 @@
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { waitForIncomingPutAsync } from '@Lib/operators/internal/waitForIncomingPutAsync';
 import { waitUntilBufferIsEmptyAsync } from '@Lib/operators/internal/waitUntilBufferEmptyAsync';
 import { Channel } from '../entity/channel';

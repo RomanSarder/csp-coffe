@@ -1,10 +1,10 @@
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
 import { eventLoopQueue } from '@Lib/internal';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { merge } from '@Lib/operators/combinators/merge';
-import { putAsync } from '@Lib/operators/putAsync';
-import { takeAsync } from '@Lib/operators/takeAsync';
+import { putAsync } from '@Lib/operators/core/putAsync';
+import { takeAsync } from '@Lib/operators/core/takeAsync';
 
 describe('merge', () => {
     it('should return unbuffered channel with values from source channels', async () => {

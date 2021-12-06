@@ -4,18 +4,15 @@ import { ChannelConfiguration } from '@Lib/channel/entity/channelConfiguration';
 import { makeChannel } from '@Lib/channel/channel';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
-import { putAsync } from '../putAsync';
-import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
+import { putAsync } from '../core/putAsync';
+import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
 
 export function reduce<Channels extends Channel<any>[], A = unknown>(
     reducer: (acc: A, data: FlattenChannels<Channels>) => A,
     acc: A,
     channels: Channels,
-    {
-        bufferType,
-        capacity,
-    }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
+    { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
 ): { ch: Channel<A>; promise: Promise<void> } {
     const reducedCh = makeChannel<A>(bufferType, capacity);
     let result = acc;

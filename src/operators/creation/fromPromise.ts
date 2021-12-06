@@ -3,7 +3,7 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { makeChannel } from '@Lib/channel/channel';
 import { DEFAULT_CHANNEL_CONFIG } from '@Lib/channel/config';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
-import { putAsync } from '../putAsync';
+import { putAsync } from '../core/putAsync';
 
 type PromiseResponseType<PromiseType> = PromiseType extends Promise<
     NonNullable<infer T>

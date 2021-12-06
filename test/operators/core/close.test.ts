@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel/channel';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 
 describe('close', () => {
     it('should close the channel', () => {

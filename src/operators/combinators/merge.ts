@@ -3,20 +3,17 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { FlattenChannels } from '@Lib/channel/entity/flatten';
 import { makeChannel } from '@Lib/channel/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
-import { close } from '../close';
-import { put } from '../put';
+import { close } from '../core/close';
+import { put } from '../core/put';
 import { iterate } from '../transformation/iterate';
-import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
+import { DefaultResultChannelConfig } from '../config';
 
 export function merge<
     Channels extends Channel<any>[],
     AggregatedType = FlattenChannels<Channels>,
 >(
     channels: Channels,
-    {
-        bufferType,
-        capacity,
-    }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
+    { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
 ): { ch: Channel<AggregatedType>; promise: Promise<void> } {
     const mergedChannel = makeChannel<AggregatedType>(bufferType, capacity);
     const promise = (async () => {

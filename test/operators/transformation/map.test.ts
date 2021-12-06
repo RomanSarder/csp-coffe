@@ -1,8 +1,8 @@
 import { makeChannel } from '@Lib/channel/channel';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { map } from '@Lib/operators/transformation/map';
-import { putAsync } from '@Lib/operators/putAsync';
-import { takeAsync } from '@Lib/operators/takeAsync';
+import { putAsync } from '@Lib/operators/core/putAsync';
+import { takeAsync } from '@Lib/operators/core/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 

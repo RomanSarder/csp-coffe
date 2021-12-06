@@ -13,11 +13,11 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { call } from '@Lib/go/instructions/call';
 import { Flatten } from '@Lib/shared/types';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
-import { race } from './combinators/race';
-import { offerFn } from './offer';
-import { pollFn } from './poll';
-import { put } from './put';
-import { take } from './take';
+import { race } from './race';
+import { offerFn } from '../core/offer';
+import { pollFn } from '../core/poll';
+import { put } from '../core/put';
+import { take } from '../core/take';
 
 type PutDefinition<C extends Channel<any>> = [C, FlattenChannel<C>];
 

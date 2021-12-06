@@ -2,8 +2,8 @@ import { v4 as uuid } from 'uuid';
 
 import { BufferType, CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeBuffer } from '@Lib/buffer/buffer';
-import { close } from '@Lib/operators/close';
-import { takeAsync } from '@Lib/operators/takeAsync';
+import { close } from '@Lib/operators/core/close';
+import { takeAsync } from '@Lib/operators/core/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
 import type { Channel } from './entity/channel';
 import { DEFAULT_CHANNEL_CONFIG } from './config';

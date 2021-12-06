@@ -1,9 +1,9 @@
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { filter } from '@Lib/operators/transformation/filter';
-import { putAsync } from '@Lib/operators/putAsync';
-import { takeAsync } from '@Lib/operators/takeAsync';
+import { putAsync } from '@Lib/operators/core/putAsync';
+import { takeAsync } from '@Lib/operators/core/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
 
 describe('filter', () => {

@@ -3,9 +3,9 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { ChannelConfiguration } from '@Lib/channel/entity/channelConfiguration';
 import { makeChannel } from '@Lib/channel/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
-import { close } from '../close';
-import { put } from '../put';
-import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
+import { close } from '../core/close';
+import { put } from '../core/put';
+import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
 
 export function map<
@@ -14,10 +14,7 @@ export function map<
 >(
     mapFn: (data: FlattenChannels<Channels>) => M,
     channels: Channels,
-    {
-        bufferType,
-        capacity,
-    }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
+    { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
 ): { ch: Channel<M>; promise: Promise<void> } {
     const mappedCh = makeChannel<M>(bufferType, capacity);
 

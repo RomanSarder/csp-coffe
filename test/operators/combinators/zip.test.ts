@@ -1,6 +1,6 @@
 import { makeChannel } from '@Lib/channel/channel';
 import { Events } from '@Lib/channel/entity/events';
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { zip } from '@Lib/operators/combinators/zip';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { delay } from '@Lib/shared/utils/delay';

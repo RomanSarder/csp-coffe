@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel/channel';
-import { pollFn } from '@Lib/operators/poll';
+import { pollFn } from '@Lib/operators/core/poll';
 import { makePut } from '@Lib/operators/internal/makePut';
 
 describe('poll', () => {

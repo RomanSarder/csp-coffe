@@ -1,7 +1,7 @@
 import { makeChannel } from '@Lib/channel/channel';
 import { Events } from '@Lib/channel/entity/events';
-import { take } from '@Lib/operators/take';
-import { close } from '@Lib/operators/close';
+import { take } from '@Lib/operators/core/take';
+import { close } from '@Lib/operators/core/close';
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { makePut } from '@Lib/operators/internal/makePut';
 

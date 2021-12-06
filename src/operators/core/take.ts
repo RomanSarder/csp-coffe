@@ -3,12 +3,12 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { Events } from '@Lib/channel/entity/events';
 import { errorMessages } from '@Lib/channel/entity/errorMessages';
 import { isChannelClosedError } from '@Lib/channel/utils/isChannelClosedError';
-import { makeTake } from './internal/makeTake';
-import { releasePut } from './internal/releasePut';
-import { releaseTake } from './internal/releaseTake';
-import { waitForIncomingPut } from './internal/waitForIncomingPut';
-import { waitForTakeQueueToRelease } from './internal/waitForTakeQueueToRelease';
-import { resetChannel } from './internal/resetChannel';
+import { makeTake } from '../internal/makeTake';
+import { releasePut } from '../internal/releasePut';
+import { releaseTake } from '../internal/releaseTake';
+import { waitForIncomingPut } from '../internal/waitForIncomingPut';
+import { waitForTakeQueueToRelease } from '../internal/waitForTakeQueueToRelease';
+import { resetChannel } from '../internal/resetChannel';
 import { poll } from './poll';
 
 export const TAKE = 'TAKE';

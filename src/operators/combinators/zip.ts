@@ -4,7 +4,7 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { call } from '@Lib/go/instructions/call';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { all } from './all';
-import { take } from '../take';
+import { take } from '../core/take';
 
 function* zipGenerator<Channels extends Channel<any>[]>(
     callback: (data: readonly FlattenChannels<Channels>[]) => any,

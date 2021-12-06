@@ -1,4 +1,4 @@
-import { close } from '@Lib/operators/close';
+import { close } from '@Lib/operators/core/close';
 import { Channel } from '../entity/channel';
 import { hasKey } from './utils/hasKey';
 

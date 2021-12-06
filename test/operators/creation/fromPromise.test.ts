@@ -1,6 +1,6 @@
 import { eventLoopQueue } from '@Lib/internal';
 import { fromPromise } from '@Lib/operators/creation/fromPromise';
-import { takeAsync } from '@Lib/operators/takeAsync';
+import { takeAsync } from '@Lib/operators/core/takeAsync';
 
 describe('fromPromise', () => {
     it('should create channel with promise result in it', async () => {

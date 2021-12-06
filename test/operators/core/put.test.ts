@@ -4,8 +4,8 @@ import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,
 } from '@Lib/testGeneratorRunner';
-import { put } from '@Lib/operators/put';
-import { close } from '@Lib/operators/close';
+import { put } from '@Lib/operators/core/put';
+import { close } from '@Lib/operators/core/close';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { releasePut } from '@Lib/operators/internal/releasePut';
 

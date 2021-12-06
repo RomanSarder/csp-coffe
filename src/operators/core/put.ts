@@ -3,10 +3,10 @@ import { Channel } from '@Lib/channel/entity/channel';
 
 import { isChannelClosedError } from '@Lib/channel/utils/isChannelClosedError';
 
-import { makePut } from './internal/makePut';
-import { resetChannel } from './internal/resetChannel';
-import { waitForIncomingTake } from './internal/waitForIncomingTake';
-import { waitForPutQueueToRelease } from './internal/waitForPutQueueToRelease';
+import { makePut } from '../internal/makePut';
+import { resetChannel } from '../internal/resetChannel';
+import { waitForIncomingTake } from '../internal/waitForIncomingTake';
+import { waitForPutQueueToRelease } from '../internal/waitForPutQueueToRelease';
 
 export const PUT = 'PUT';
 

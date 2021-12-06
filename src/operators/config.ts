@@ -1,5 +1,5 @@
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 
-export const DEFAULT_RESULT_CHANNEL_CONFIG = {
+export const DefaultResultChannelConfig = {
     bufferType: CreatableBufferType.UNBLOCKING,
 };

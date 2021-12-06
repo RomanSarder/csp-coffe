@@ -3,18 +3,15 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { ChannelConfiguration } from '@Lib/channel/entity/channelConfiguration';
 import { makeChannel } from '@Lib/channel/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
-import { close } from '../close';
-import { put } from '../put';
-import { DEFAULT_RESULT_CHANNEL_CONFIG } from '../shared/constants';
+import { close } from '../core/close';
+import { put } from '../core/put';
+import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
 
 export function filter<Channels extends Channel<any>[]>(
     filterFn: (data: FlattenChannels<Channels>) => boolean,
     channels: Channels,
-    {
-        bufferType,
-        capacity,
-    }: ChannelConfiguration = DEFAULT_RESULT_CHANNEL_CONFIG,
+    { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
 ): { ch: Channel<FlattenChannels<Channels>>; promise: Promise<void> } {
     const filteredCh = makeChannel<FlattenChannels<Channels>>(
         bufferType,
