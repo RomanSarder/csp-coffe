@@ -2,7 +2,10 @@ import { makeChannel } from '@Lib/channel/channel';
 import { Events } from '@Lib/channel/entity/events';
 import { take } from '@Lib/operators/core/take';
 import { close } from '@Lib/operators/core/close';
-import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
+import {
+    integrationTestGeneratorRunner,
+    unitTestGeneratorRunner,
+} from '@Lib/testGeneratorRunner';
 import { makePut } from '@Lib/operators/internal/makePut';
 
 describe('take', () => {
@@ -20,6 +23,7 @@ describe('take', () => {
             const ch = makeChannel();
             const { next } = integrationTestGeneratorRunner(take(ch));
             close(ch);
+            await next();
             const result = await next();
             expect(result.done).toEqual(true);
             expect(result.value).toEqual(Events.CHANNEL_CLOSED);
@@ -29,10 +33,13 @@ describe('take', () => {
     describe('when the channel is closed after take was put', () => {
         it('should release take and reset channel', async () => {
             const ch = makeChannel();
-            const { next } = integrationTestGeneratorRunner(take(ch));
+            const { next } = unitTestGeneratorRunner(take(ch));
             makePut(ch, 'test1');
             await next();
+            await next();
             close(ch);
+            await next();
+            await next();
             expect((await next()).value).toEqual(Events.CHANNEL_CLOSED);
             expect(ch.putBuffer.getElementsArray()).toEqual([]);
             expect(ch.takeBuffer.getElementsArray()).toEqual([]);

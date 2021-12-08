@@ -19,8 +19,11 @@ export function* probe<C extends Channel<NonNullable<any>>>(
             if (ch.isClosed) {
                 throw new Error(errorMessages.CHANNEL_CLOSED);
             }
+            console.log('wait for take queue to release', ch.id);
             yield waitForTakeQueueToRelease(ch);
             makeTake(ch);
+            console.log('made take', ch.id);
+            yield;
 
             try {
                 if (ch.isClosed) {
@@ -28,19 +31,21 @@ export function* probe<C extends Channel<NonNullable<any>>>(
                 }
                 if (ch.putBuffer.getSize() > 0) {
                     const lastItem = ch.putBuffer.preview();
-                    releaseTake(ch);
+                    console.log('immediate preview', lastItem, ch.id);
                     if (predicate(lastItem)) {
                         result = releasePut(ch);
                     }
+                    releaseTake(ch);
+                    console.log('continue', ch.id);
                     continue;
                 }
 
                 yield waitForIncomingPut(ch);
                 const lastItem = ch.putBuffer.preview();
                 if (predicate(lastItem)) {
-                    releaseTake(ch);
                     result = releasePut(ch);
                 }
+                releaseTake(ch);
             } catch (e) {
                 // If channel closed, cleanup made take
                 if (isChannelClosedError(e)) {

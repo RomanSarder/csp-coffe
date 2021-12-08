@@ -16,6 +16,7 @@ describe('probe', () => {
             );
             makePut(ch, 'test1');
             await next();
+            await next();
 
             expect((await next()).value).toEqual('test1');
             expect(ch.putBuffer.getSize()).toEqual(0);
@@ -54,6 +55,7 @@ describe('probe', () => {
                 probe(ch, () => false),
             );
             makePut(ch, 'test1');
+            await next();
             await next();
             close(ch);
             expect((await next()).value).toEqual(null);

@@ -4,6 +4,7 @@ import { iterate } from '@Lib/operators/collection/iterate';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { runIterator } from '@Lib/runner';
+import { constant } from 'lodash';
 
 describe('iterate', () => {
     it('should call a callback with values in channel until it closes', async () => {
@@ -13,7 +14,7 @@ describe('iterate', () => {
         makePut(ch2, 'test1');
         makePut(ch2, 'test2');
 
-        const runner = runIterator(iterate(spy, ch2));
+        const runner = runIterator(iterate(spy, constant(true), ch2));
 
         await runner;
 

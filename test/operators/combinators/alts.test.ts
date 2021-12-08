@@ -87,7 +87,6 @@ describe('alts', () => {
                 releasePut(ch1);
                 await delay(500);
                 await takeAsync(ch1);
-
                 await altsPromise;
                 expect(spy.mock.calls[0][0].value).toEqual(true);
                 expect(spy.mock.calls[0][0].ch.is(ch1)).toEqual(true);

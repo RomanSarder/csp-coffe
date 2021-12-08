@@ -5,11 +5,12 @@ import { filter } from '@Lib/operators/collection/filter';
 import { putAsync } from '@Lib/operators/core/putAsync';
 import { takeAsync } from '@Lib/operators/core/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
+import { releasePut } from '@Lib/operators/internal/releasePut';
 
 describe('filter', () => {
     it('should return channel with filtered values from source channels', async () => {
-        const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
-        const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
+        const ch1 = makeChannel<number>(CreatableBufferType.UNBLOCKING);
+        const ch2 = makeChannel<string>(CreatableBufferType.UNBLOCKING);
         const { ch: ch3, promise } = filter(
             (num) => {
                 if (typeof num === 'string') {
@@ -21,10 +22,23 @@ describe('filter', () => {
         );
 
         await putAsync(ch1, 1);
+        console.log('put one');
         await putAsync(ch2, '2');
+        console.log('put two');
         expect(await takeAsync(ch3)).toEqual('2');
+        releasePut(ch1);
         await putAsync(ch2, '3');
+        console.log(
+            'put three',
+            ch1.putBuffer.getElementsArray(),
+            ch2.putBuffer.getElementsArray(),
+        );
         await putAsync(ch1, 4);
+        console.log(
+            'put four',
+            ch1.putBuffer.getElementsArray(),
+            ch2.putBuffer.getElementsArray(),
+        );
         expect(await takeAsync(ch3)).toEqual(4);
         close(ch1);
         close(ch2);
