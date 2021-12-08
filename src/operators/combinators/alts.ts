@@ -67,7 +67,7 @@ function* performOperationByDefinition<C extends Channel<any>>(
 export function* altsGenerator<
     Definitions extends ArrayOfDefinitions<Channel<any>>,
     InnerType = DefinitionType<Definitions>,
->(defs: Definitions, defaultValue?: InnerType): Generator {
+>(defs: Definitions, defaultValue?: InnerType) {
     const successes: OperationResponse<InnerType>[] = [];
 
     defs.forEach((def) => {

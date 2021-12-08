@@ -24,7 +24,4 @@ function* zipGenerator<Channels extends Channel<any>[]>(
     }
 }
 
-export const zip = createAsyncWrapper(zipGenerator) as (
-    callback: (data: readonly any[]) => any,
-    ...chs: Channel<any>[]
-) => void;
+export const zip = createAsyncWrapper(zipGenerator);
