@@ -11,7 +11,6 @@ module.exports = {
         sourceType: 'module', // Allows for the use of imports
     },
     extends: [
-        'airbnb',
         'eslint:recommended',
         'plugin:import/recommended',
         'plugin:@typescript-eslint/eslint-recommended',
@@ -53,7 +52,7 @@ module.exports = {
         'import/ignore': ['node_modules'],
         'import/resolver': {
             node: {
-                extensions: ['.ts', '.tsx'],
+                extensions: ['.ts'],
             },
             typescript: {},
         },
