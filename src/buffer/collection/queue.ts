@@ -47,5 +47,12 @@ export function makeQueue<T = unknown>(capacity: number | null = 1) {
             }
             return undefined;
         },
+
+        preview(): T | undefined {
+            if (this.getSize() > 0) {
+                return this.contents[this.head];
+            }
+            return undefined;
+        },
     };
 }

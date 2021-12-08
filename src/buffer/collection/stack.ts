@@ -36,5 +36,11 @@ export function makeStack<T = unknown>(capacity = 1) {
             }
             return value;
         },
+
+        preview(): T | undefined {
+            if (this.size === 0) return undefined;
+
+            return this.contents[this.size];
+        },
     };
 }

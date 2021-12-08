@@ -19,6 +19,17 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
 
+        it('should preview first item without deleting it', () => {
+            const buffer = makeFixedBuffer(2);
+            buffer.add('sasagi');
+            buffer.add('sasagi 2');
+            expect(buffer.preview()).toEqual('sasagi');
+            expect(buffer.collection.getElementsArray()).toEqual([
+                'sasagi',
+                'sasagi 2',
+            ]);
+        });
+
         describe('when full', () => {
             it('should not add an item', () => {
                 const buffer = makeFixedBuffer(1);
@@ -50,6 +61,17 @@ describe('Buffer', () => {
             buffer.add('sasagi 2');
             buffer.release();
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
+        });
+
+        it('should preview first put item', () => {
+            const buffer = makeSlidingBuffer(2);
+            buffer.add('sasagi');
+            buffer.add('sasagi 2');
+            expect(buffer.preview()).toEqual('sasagi');
+            expect(buffer.collection.getElementsArray()).toEqual([
+                'sasagi',
+                'sasagi 2',
+            ]);
         });
 
         describe('when full', () => {
@@ -89,6 +111,17 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
 
+        it('should preview first put item', () => {
+            const buffer = makeDroppingBuffer(2);
+            buffer.add('sasagi');
+            buffer.add('sasagi 2');
+            expect(buffer.preview()).toEqual('sasagi');
+            expect(buffer.collection.getElementsArray()).toEqual([
+                'sasagi',
+                'sasagi 2',
+            ]);
+        });
+
         describe('when full', () => {
             it('should not be blocked', () => {
                 const buffer = makeDroppingBuffer(2);
@@ -125,6 +158,17 @@ describe('Buffer', () => {
             buffer.add('sasagi 2');
             buffer.release();
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
+        });
+
+        it('should preview first put item', () => {
+            const buffer = makeUnblockingBuffer();
+            buffer.add('sasagi');
+            buffer.add('sasagi 2');
+            expect(buffer.preview()).toEqual('sasagi');
+            expect(buffer.collection.getElementsArray()).toEqual([
+                'sasagi',
+                'sasagi 2',
+            ]);
         });
 
         describe('when full', () => {

@@ -15,6 +15,10 @@ export function makeBufferMixin<T = unknown>(
             return this.collection.release();
         },
 
+        preview() {
+            return this.collection.preview();
+        },
+
         getSize() {
             return this.collection.getSize();
         },
