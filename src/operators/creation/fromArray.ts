@@ -2,7 +2,7 @@ import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
 import { Channel } from '@Lib/channel/entity/channel';
 import { closeOnEmptyBuffer } from '@Lib/channel/proxy/closeOnEmptyBuffer';
-import { Flatten } from '@Lib/shared/types';
+import { Flatten } from '@Lib/shared/entity';
 import { makePut } from '../internal/makePut';
 
 export function fromArray<Arr extends any[]>(arr: Arr): Channel<Flatten<Arr>> {

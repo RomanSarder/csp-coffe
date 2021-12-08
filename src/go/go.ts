@@ -5,9 +5,11 @@ import { close } from '@Lib/operators/core/close';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { runIterator } from '@Lib/runner';
-import { Events } from './entity/events';
-import { GeneratorReturn } from './utils/GeneratorReturn';
-import { MaybeGeneratorReturnFromValue } from './utils/MaybeGeneratorReturnFromValue';
+import {
+    Events,
+    GeneratorReturn,
+    MaybeGeneratorReturnFromValue,
+} from './entity';
 
 export function go<
     GenFn extends (...args1: readonly any[]) => Generator,

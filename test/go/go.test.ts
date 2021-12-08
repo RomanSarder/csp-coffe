@@ -4,7 +4,7 @@ import { spawn } from '@Lib/go/instructions/spawn';
 import { go } from '@Lib/go/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { close } from '@Lib/operators/core/close';
-import { CancelError } from '@Lib/runner';
+import { CancelError } from '@Lib/cancellablePromise/entity/cancelError';
 import { delay } from '@Lib/shared/utils/delay';
 
 describe('go', () => {

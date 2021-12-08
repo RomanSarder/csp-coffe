@@ -11,7 +11,7 @@ import { FlattenChannel } from '@Lib/channel/entity/flatten';
 import { Channel } from '@Lib/channel/entity/channel';
 
 import { call } from '@Lib/go/instructions/call';
-import { Flatten } from '@Lib/shared/types';
+import { Flatten } from '@Lib/shared/entity';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { race } from './race';
 import { offerFn } from '../core/offer';
