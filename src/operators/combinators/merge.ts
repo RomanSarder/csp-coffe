@@ -5,7 +5,7 @@ import { makeChannel } from '@Lib/channel/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { close } from '../core/close';
 import { put } from '../core/put';
-import { iterate } from '../transformation/iterate';
+import { iterate } from '../collection/iterate';
 import { DefaultResultChannelConfig } from '../config';
 
 export function merge<

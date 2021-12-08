@@ -1,7 +1,7 @@
 import { Channel } from '@Lib/channel/entity/channel';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { put } from '../core/put';
-import { iterate } from '../transformation/iterate';
+import { iterate } from '../collection/iterate';
 import { close } from '../core/close';
 
 export function pipe<T = unknown>(

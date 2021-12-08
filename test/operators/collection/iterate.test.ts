@@ -1,6 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
-import { iterate } from '@Lib/operators/transformation/iterate';
+import { iterate } from '@Lib/operators/collection/iterate';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { runIterator } from '@Lib/runner';

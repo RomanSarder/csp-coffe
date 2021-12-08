@@ -1,7 +1,7 @@
 import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
 import { makeChannel } from '@Lib/channel/channel';
 import { close } from '@Lib/operators/core/close';
-import { reduce } from '@Lib/operators/transformation/reduce';
+import { reduce } from '@Lib/operators/collection/reduce';
 import { putAsync } from '@Lib/operators/core/putAsync';
 import { takeAsync } from '@Lib/operators/core/takeAsync';
 import { eventLoopQueue } from '@Lib/internal';
