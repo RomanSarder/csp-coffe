@@ -1,5 +1,6 @@
 export * from './close';
 export * from './offer';
+export * from './probe';
 export * from './poll';
 export * from './put';
 export * from './putAsync';
