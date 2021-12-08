@@ -7,6 +7,7 @@ import { close } from '../core/close';
 import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
+import { ChannelTransformationResponse } from './entity';
 
 export function map<
     Channels extends Channel<any>[],
@@ -15,7 +16,7 @@ export function map<
     mapFn: (data: FlattenChannels<Channels>) => M,
     channels: Channels,
     { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
-): { ch: Channel<M>; promise: Promise<void> } {
+): ChannelTransformationResponse<M> {
     const mappedCh = makeChannel<M>(bufferType, capacity);
 
     const promise = (async () => {

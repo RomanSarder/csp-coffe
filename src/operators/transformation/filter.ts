@@ -7,12 +7,13 @@ import { close } from '../core/close';
 import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
+import { ChannelTransformationResponse } from './entity';
 
 export function filter<Channels extends Channel<any>[]>(
     filterFn: (data: FlattenChannels<Channels>) => boolean,
     channels: Channels,
     { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
-): { ch: Channel<FlattenChannels<Channels>>; promise: Promise<void> } {
+): ChannelTransformationResponse<FlattenChannels<Channels>> {
     const filteredCh = makeChannel<FlattenChannels<Channels>>(
         bufferType,
         capacity,

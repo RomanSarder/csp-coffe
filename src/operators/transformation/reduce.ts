@@ -7,13 +7,14 @@ import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { putAsync } from '../core/putAsync';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
+import { ChannelTransformationResponse } from './entity';
 
 export function reduce<Channels extends Channel<any>[], A = unknown>(
     reducer: (acc: A, data: FlattenChannels<Channels>) => A,
     acc: A,
     channels: Channels,
     { bufferType, capacity }: ChannelConfiguration = DefaultResultChannelConfig,
-): { ch: Channel<A>; promise: Promise<void> } {
+): ChannelTransformationResponse<A> {
     const reducedCh = makeChannel<A>(bufferType, capacity);
     let result = acc;
 
