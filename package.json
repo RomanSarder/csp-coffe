@@ -8,6 +8,7 @@
     "test:clear": "jest --clearCache",
     "test:watch": "jest --watchAll",
     "build": "tsc --build",
+    "start:examples": "ts-node -r tsconfig-paths/register examples/fastFoodRestaurant/index.ts",
     "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
   },
   "keywords": [],
@@ -33,6 +34,7 @@
     "lint-staged": "^11.2.0",
     "prettier": "^2.4.1",
     "ts-jest": "^27.0.7",
+    "tsconfig-paths": "^3.12.0",
     "typescript": "^4.4.2"
   },
   "dependencies": {

@@ -22,23 +22,11 @@ describe('filter', () => {
         );
 
         await putAsync(ch1, 1);
-        console.log('put one');
         await putAsync(ch2, '2');
-        console.log('put two');
         expect(await takeAsync(ch3)).toEqual('2');
         releasePut(ch1);
         await putAsync(ch2, '3');
-        console.log(
-            'put three',
-            ch1.putBuffer.getElementsArray(),
-            ch2.putBuffer.getElementsArray(),
-        );
         await putAsync(ch1, 4);
-        console.log(
-            'put four',
-            ch1.putBuffer.getElementsArray(),
-            ch2.putBuffer.getElementsArray(),
-        );
         expect(await takeAsync(ch3)).toEqual(4);
         close(ch1);
         close(ch2);

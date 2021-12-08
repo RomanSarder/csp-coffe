@@ -57,7 +57,6 @@ function* performOperationByDefinition<C extends Channel<any>>(
         };
     }
     const result: FlattenChannel<C> = yield take(definition);
-
     return {
         value: result,
         ch: definition,

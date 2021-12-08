@@ -7,7 +7,6 @@ export const TAKE = 'TAKE';
 
 export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
     const result: FlattenChannel<C> | null = yield probe(ch, () => true);
-    console.log('take result', result);
     if (result === null) {
         return Events.CHANNEL_CLOSED;
     }
