@@ -4,8 +4,5 @@ export type { Instruction } from './instruction';
 export type { SpawnInstruction } from './spawnInstruction';
 export type { GeneratorNext } from './GeneratorNext';
 export type { GeneratorReturn } from './GeneratorReturn';
-export type { GeneratorT } from './GeneratorT';
-export type { MaybeGeneratorReturnFromValue } from './MaybeGeneratorReturnFromValue';
-export type { OnlyGeneratorReturnFromValue } from './OnlyGeneratorReturnFromValue';
 export * from './instructionType';
 export * from './events';

@@ -5,17 +5,12 @@ import { close } from '@Lib/operators/core/close';
 import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
 import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { runIterator } from '@Lib/runner';
-import {
-    Events,
-    GeneratorReturn,
-    MaybeGeneratorReturnFromValue,
-} from './entity';
+import { Events } from './entity';
 
 export function go<
     GenFn extends (...args1: readonly any[]) => Generator,
     Args extends Parameters<GenFn>,
-    G extends Generator = ReturnType<GenFn>,
-    TReturn = Exclude<MaybeGeneratorReturnFromValue<GeneratorReturn<G>>, void>,
+    TReturn = unknown,
 >(
     generator: GenFn,
     ...args: Args
