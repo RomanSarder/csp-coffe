@@ -1,7 +1,7 @@
 import { call, fork, spawn } from '@Lib/instruction';
 import { go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/shared/utils';
-import { close } from '@Lib/operators/core/close';
+import { close } from '@Lib/operators';
 import { CancelError } from '@Lib/cancellablePromise';
 import { delay } from '@Lib/shared/utils/delay';
 

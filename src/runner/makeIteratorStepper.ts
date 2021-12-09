@@ -4,10 +4,9 @@ import {
 } from '@Lib/cancellablePromise';
 import type { Instruction } from '@Lib/instruction';
 import { InstructionType, isInstruction } from '@Lib/instruction';
-import { isGenerator } from '@Lib/shared/utils/isGenerator';
-import { eventLoopQueue } from '@Lib/shared/utils';
-import { StepperVerb, StepResult } from './entity';
-import { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
+import { isGenerator, eventLoopQueue } from '@Lib/shared/utils';
+import type { StepperVerb, StepResult } from './entity';
+import type { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
 import { handleCancellablePromise, handleGenerator } from './utils';
 
 export type Params = {

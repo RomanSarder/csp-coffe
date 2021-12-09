@@ -9,7 +9,7 @@ import { close } from '../core/close';
 import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
-import { ChannelTransformationResponse } from './entity';
+import type { ChannelTransformationResponse } from './entity/channelTransformationResponse';
 
 export function filter<Channels extends Channel<any>[]>(
     filterFn: (data: FlattenChannels<Channels>) => boolean,

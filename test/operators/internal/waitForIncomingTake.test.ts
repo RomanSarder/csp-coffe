@@ -1,6 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { makeTake } from '@Lib/operators/internal/makeTake';
-import { waitForIncomingTake } from '@Lib/operators/internal/waitForIncomingTake';
+import { makeTake, waitForIncomingTake } from '@Lib/operators';
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 
 describe('waitForIncomingTake', () => {

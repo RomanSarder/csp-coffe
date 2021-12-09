@@ -1,7 +1,7 @@
 import { call } from '@Lib/instruction';
 import { go } from '@Lib/go';
-import { raceToSuccess } from '@Lib/operators/combinators/raceToSuccess';
-import { delay } from '@Lib/shared/utils/delay';
+import { raceToSuccess } from '@Lib/operators';
+import { delay } from '@Lib/shared/utils';
 
 describe('race', () => {
     it('should resolve once any of the runners is successfully completed and cancel others', async () => {

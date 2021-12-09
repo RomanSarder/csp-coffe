@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { offerFn } from '@Lib/operators/core/offer';
+import { offerFn } from '@Lib/operators';
 
 describe('offer', () => {
     it('should put value in channel and return true', () => {

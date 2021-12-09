@@ -1,8 +1,6 @@
 import { makeChannel, Events } from '@Lib/channel';
-import { close } from '@Lib/operators/core/close';
-import { zip } from '@Lib/operators/combinators/zip';
-import { makePut } from '@Lib/operators/internal/makePut';
-import { delay } from '@Lib/shared/utils/delay';
+import { close, zip, makePut } from '@Lib/operators';
+import { delay } from '@Lib/shared/utils';
 
 describe('zip', () => {
     describe('when given a list of channels and a callback', () => {

@@ -1,6 +1,5 @@
 import { eventLoopQueue } from '@Lib/shared/utils';
-import { fromArray } from '@Lib/operators/creation/fromArray';
-import { takeAsync } from '@Lib/operators/core/takeAsync';
+import { fromArray, takeAsync } from '@Lib/operators';
 
 describe('fromArray', () => {
     it('should create channel with contents of array in buffer', async () => {

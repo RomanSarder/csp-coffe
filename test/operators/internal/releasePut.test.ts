@@ -1,6 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { makePut } from '@Lib/operators/internal/makePut';
-import { releasePut } from '@Lib/operators/internal/releasePut';
+import { makePut, releasePut } from '@Lib/operators';
 
 describe('releasePut', () => {
     it('should remove first item from the put buffer and return it', () => {

@@ -1,7 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { makePut } from '@Lib/operators/internal/makePut';
-import { releasePut } from '@Lib/operators/internal/releasePut';
-import { waitUntilBufferEmpty } from '@Lib/operators/internal/waitUntilBufferEmpty';
+import { makePut, releasePut, waitUntilBufferEmpty } from '@Lib/operators';
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { CreatableBufferType } from '@Lib/buffer';
 

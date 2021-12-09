@@ -1,8 +1,10 @@
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 import { makeChannel } from '@Lib/channel';
-import { makeTake } from '@Lib/operators/internal/makeTake';
-import { releaseTake } from '@Lib/operators/internal/releaseTake';
-import { waitForTakeQueueToRelease } from '@Lib/operators/internal/waitForTakeQueueToRelease';
+import {
+    makeTake,
+    releaseTake,
+    waitForTakeQueueToRelease,
+} from '@Lib/operators';
 
 describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is blocked', () => {

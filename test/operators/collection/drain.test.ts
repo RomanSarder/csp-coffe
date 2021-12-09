@@ -1,7 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { close } from '@Lib/operators/core/close';
-import { makePut } from '@Lib/operators/internal/makePut';
-import { drain } from '@Lib/operators/collection/drain';
+import { close, drain, makePut } from '@Lib/operators';
 import { delay } from '@Lib/shared/utils/delay';
 
 describe('drain', () => {

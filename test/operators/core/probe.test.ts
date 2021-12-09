@@ -1,11 +1,9 @@
 import { makeChannel } from '@Lib/channel';
-import { probe } from '@Lib/operators/core/probe';
-import { close } from '@Lib/operators/core/close';
+import { probe, close, makePut } from '@Lib/operators';
 import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,
 } from '@Lib/testGeneratorRunner';
-import { makePut } from '@Lib/operators/internal/makePut';
 
 describe('probe', () => {
     describe('when predicate returns true for value put in channel', () => {

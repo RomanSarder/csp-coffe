@@ -1,11 +1,7 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
-import { close } from '@Lib/operators/core/close';
-import { filter } from '@Lib/operators/collection/filter';
-import { putAsync } from '@Lib/operators/core/putAsync';
-import { takeAsync } from '@Lib/operators/core/takeAsync';
+import { close, filter, putAsync, takeAsync, releasePut } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
-import { releasePut } from '@Lib/operators/internal/releasePut';
 
 describe('filter', () => {
     it('should return channel with filtered values from source channels', async () => {

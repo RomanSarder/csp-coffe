@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { makePut } from '@Lib/operators/internal/makePut';
+import { makePut } from '@Lib/operators';
 
 describe('makePut', () => {
     it('should put a given value to put queue', () => {

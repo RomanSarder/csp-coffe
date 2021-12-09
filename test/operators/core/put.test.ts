@@ -4,10 +4,7 @@ import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,
 } from '@Lib/testGeneratorRunner';
-import { put } from '@Lib/operators/core/put';
-import { close } from '@Lib/operators/core/close';
-import { makePut } from '@Lib/operators/internal/makePut';
-import { releasePut } from '@Lib/operators/internal/releasePut';
+import { put, close, makePut, releasePut } from '@Lib/operators';
 
 describe('put', () => {
     it('should put a value to channel', async () => {

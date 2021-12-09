@@ -1,6 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { pollFn } from '@Lib/operators/core/poll';
-import { makePut } from '@Lib/operators/internal/makePut';
+import { pollFn, makePut } from '@Lib/operators';
 
 describe('poll', () => {
     describe('when there is value in channel', () => {

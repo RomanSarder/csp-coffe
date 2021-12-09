@@ -1,7 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel, closeOnAllValuesTaken } from '@Lib/channel';
-import { iterate } from '@Lib/operators/collection/iterate';
-import { makePut } from '@Lib/operators/internal/makePut';
+import { iterate, makePut } from '@Lib/operators';
 import { runIterator } from '@Lib/runner';
 import { constant } from 'lodash';
 

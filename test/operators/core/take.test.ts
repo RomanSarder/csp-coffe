@@ -1,11 +1,9 @@
 import { makeChannel, Events } from '@Lib/channel';
-import { take } from '@Lib/operators/core/take';
-import { close } from '@Lib/operators/core/close';
+import { take, close, makePut } from '@Lib/operators';
 import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,
 } from '@Lib/testGeneratorRunner';
-import { makePut } from '@Lib/operators/internal/makePut';
 
 describe('take', () => {
     it('should take a put value from channel', async () => {

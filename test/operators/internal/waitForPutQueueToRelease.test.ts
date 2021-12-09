@@ -1,7 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { makePut } from '@Lib/operators/internal/makePut';
-import { releasePut } from '@Lib/operators/internal/releasePut';
-import { waitForPutQueueToRelease } from '@Lib/operators/internal/waitForPutQueueToRelease';
+import { makePut, releasePut, waitForPutQueueToRelease } from '@Lib/operators';
 
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 

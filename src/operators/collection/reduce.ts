@@ -8,7 +8,7 @@ import { createAsyncWrapper } from '@Lib/runner';
 import { putAsync } from '../core/putAsync';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
-import { ChannelTransformationResponse } from './entity';
+import type { ChannelTransformationResponse } from './entity/channelTransformationResponse';
 import { constant } from 'lodash';
 
 export function reduce<Channels extends Channel<any>[], A = unknown>(
