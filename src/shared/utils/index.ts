@@ -1,6 +1,6 @@
-export * from './delay';
-export * from './isGenerator';
-export * from './constant';
-export * from './eventLoopQueue';
-export * from './fakeAsyncFunction';
-export * from './markAsDebug';
+export { delay } from './delay';
+export { isGenerator } from './isGenerator';
+export { constant } from './constant';
+export { eventLoopQueue } from './eventLoopQueue';
+export { fakeAsyncFunction } from './fakeAsyncFunction';
+export { markAsDebug } from './markAsDebug';
