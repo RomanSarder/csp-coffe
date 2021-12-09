@@ -1,4 +1,4 @@
-import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
+import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel/channel';
 import { Channel } from '@Lib/channel/entity/channel';
 import { closeOnEmptyBuffer } from '@Lib/channel/proxy/closeOnEmptyBuffer';

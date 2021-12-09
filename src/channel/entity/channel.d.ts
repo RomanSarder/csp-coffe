@@ -1,4 +1,4 @@
-import type { Buffer } from '@Lib/buffer/entity/buffer';
+import type { Buffer } from '@Lib/buffer';
 
 export type Channel<T = NonNullable<any>> = {
     id: string;

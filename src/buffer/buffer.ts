@@ -2,7 +2,7 @@ import { BufferType, CreatableBufferType } from './entity/bufferType';
 import { makeClosedBuffer } from './closedBuffer';
 import { makeDroppingBuffer } from './droppingBuffer';
 import { makeSlidingBuffer } from './slidingBuffer';
-import { Buffer } from './entity/buffer';
+import type { Buffer } from './entity/buffer';
 import { makeFixedBuffer } from './fixedBuffer';
 import { makeUnblockingBuffer } from './unblockingBuffer';
 

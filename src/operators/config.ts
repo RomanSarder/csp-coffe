@@ -1,4 +1,4 @@
-import { CreatableBufferType } from '@Lib/buffer/entity/bufferType';
+import { CreatableBufferType } from '@Lib/buffer';
 
 export const DefaultResultChannelConfig = {
     bufferType: CreatableBufferType.UNBLOCKING,

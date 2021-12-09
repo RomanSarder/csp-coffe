@@ -1,10 +1,8 @@
 import { v4 as uuid } from 'uuid';
 
-import { BufferType, CreatableBufferType } from '@Lib/buffer/entity/bufferType';
-import { makeBuffer } from '@Lib/buffer/buffer';
+import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
 import { close } from '@Lib/operators/core/close';
 import { takeAsync } from '@Lib/operators/core/takeAsync';
-import { eventLoopQueue } from '@Lib/internal';
 import type { Channel } from './entity/channel';
 import { DEFAULT_CHANNEL_CONFIG } from './config';
 import { Events } from './entity/events';
@@ -35,7 +33,6 @@ export function makeChannel<T = NonNullable<any>>(
         async *[Symbol.asyncIterator]() {
             while (!this.isClosed) {
                 yield await takeAsync(this);
-                await eventLoopQueue();
             }
 
             return Events.CHANNEL_CLOSED;

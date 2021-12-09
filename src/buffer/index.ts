@@ -1,7 +1,4 @@
-export * from './entity';
+export type { Buffer } from './entity/buffer';
+export { BufferType, CreatableBufferType } from './entity/bufferType';
 
-export * from './closedBuffer';
-export * from './droppingBuffer';
-export * from './fixedBuffer';
-export * from './slidingBuffer';
-export * from './unblockingBuffer';
+export * from './buffer';
