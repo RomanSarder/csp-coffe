@@ -1,5 +1,5 @@
-import { StepResult } from '@Lib/runner/entity';
-import { InstructionAsserter } from './instructionAsserter';
+import type { StepResult } from '@Lib/runner';
+import type { InstructionAsserter } from './instructionAsserter';
 
 export interface IntegrationGeneratorTestRunner {
     createInstructionAsserter: () => InstructionAsserter;
