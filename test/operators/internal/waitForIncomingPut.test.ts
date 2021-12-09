@@ -16,7 +16,7 @@ describe('waitForIncomingPut', () => {
     });
 
     describe('when there is already an item in put buffer', () => {
-        it('should complete immediately', async () => {
+        it('should resolve immediately', async () => {
             const ch = makeChannel();
             makePut(ch, 'test1');
             const { next } = integrationTestGeneratorRunner(

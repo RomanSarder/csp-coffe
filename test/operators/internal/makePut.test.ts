@@ -2,7 +2,7 @@ import { makeChannel } from '@Lib/channel';
 import { makePut } from '@Lib/operators';
 
 describe('makePut', () => {
-    it('should put a given value to put queue', () => {
+    it('should put a given value into put buffer', () => {
         const ch = makeChannel();
         makePut(ch, 'test1');
         expect(ch.putBuffer.getElementsArray()[0]).toEqual('test1');

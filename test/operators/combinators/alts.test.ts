@@ -29,6 +29,7 @@ describe('alts', () => {
                 expect(result.ch.is(ch1)).toEqual(true);
                 expect(result.value).toEqual('test1');
             });
+            /* TODO: Implement priority flag */
         });
 
         describe('when no channel has data in buffer', () => {

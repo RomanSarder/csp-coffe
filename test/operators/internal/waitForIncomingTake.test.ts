@@ -16,7 +16,7 @@ describe('waitForIncomingTake', () => {
     });
 
     describe('when there is already an item in take buffer', () => {
-        it('should return immediately', async () => {
+        it('should resolve immediately', async () => {
             const ch = makeChannel();
             makeTake(ch);
             const { next } = integrationTestGeneratorRunner(

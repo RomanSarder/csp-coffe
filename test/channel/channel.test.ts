@@ -5,7 +5,7 @@ import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('Channel', () => {
     describe('makeChannel', () => {
-        it('should create a channel with buffers', () => {
+        it('should create a channel with put and take buffers', () => {
             const ch = makeChannel();
 
             expect(ch.putBuffer.getElementsArray()).toEqual([]);

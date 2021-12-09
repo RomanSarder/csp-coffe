@@ -4,27 +4,29 @@ import { close, reduce, putAsync, takeAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('reduce', () => {
-    it('should return channel with reduced value', async () => {
-        const ch1 = makeChannel<string>();
-        const ch2 = makeChannel<number>();
-        const { ch: ch3, promise } = reduce(
-            (acc, next) => {
-                if (typeof next === 'string') {
-                    return acc + parseInt(next, 10);
-                }
-                return acc + next;
-            },
-            0,
-            [ch1, ch2],
-        );
-        await putAsync(ch1, '1');
-        await putAsync(ch2, 2);
-        close(ch1);
-        close(ch2);
-        await eventLoopQueue();
-        expect(await takeAsync(ch3)).toEqual(3);
-        close(ch3);
-        await promise;
+    describe('when source channels close', () => {
+        it('should return channel with a value reduced from source channels', async () => {
+            const ch1 = makeChannel<string>();
+            const ch2 = makeChannel<number>();
+            const { ch: ch3, promise } = reduce(
+                (acc, next) => {
+                    if (typeof next === 'string') {
+                        return acc + parseInt(next, 10);
+                    }
+                    return acc + next;
+                },
+                0,
+                [ch1, ch2],
+            );
+            await putAsync(ch1, '1');
+            await putAsync(ch2, 2);
+            close(ch1);
+            close(ch2);
+            await eventLoopQueue();
+            expect(await takeAsync(ch3)).toEqual(3);
+            close(ch3);
+            await promise;
+        });
     });
 
     it('should return channel with specified configuration', async () => {

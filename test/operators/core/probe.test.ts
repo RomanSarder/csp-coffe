@@ -7,7 +7,7 @@ import {
 
 describe('probe', () => {
     describe('when predicate returns true for value put in channel', () => {
-        it('should release from channel and return it', async () => {
+        it('should delete value from channel and return it', async () => {
             const ch = makeChannel<string>();
             const { next } = integrationTestGeneratorRunner(
                 probe(ch, () => true),
@@ -22,7 +22,7 @@ describe('probe', () => {
     });
 
     describe('when predicate returns false for value put in channel', () => {
-        it('should not take a put value from channel if predicate returns false', async () => {
+        it('should not take a value from channel', async () => {
             const ch = makeChannel<string>();
             const { next } = unitTestGeneratorRunner(probe(ch, () => false));
             makePut(ch, 'test1');
@@ -47,7 +47,7 @@ describe('probe', () => {
     });
 
     describe('when the channel is closed after take was put', () => {
-        it('should release take and reset channel', async () => {
+        it('should delete take request and reset channel', async () => {
             const ch = makeChannel();
             const { next } = integrationTestGeneratorRunner(
                 probe(ch, () => false),

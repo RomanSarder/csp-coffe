@@ -5,7 +5,7 @@ import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 
 describe('waitForPutQueueToReleaseAsync', () => {
     describe('when put buffer is blocked', () => {
-        it('should complete only after put buffer becomes empty', async () => {
+        it('should complete only after put buffer becomes unblocked', async () => {
             const ch = makeChannel();
             makePut(ch, 'test');
             const { next } = integrationTestGeneratorRunner(
@@ -18,7 +18,7 @@ describe('waitForPutQueueToReleaseAsync', () => {
     });
 
     describe('when put buffer is not blocked', () => {
-        it('should complete immediately', async () => {
+        it('should resolve immediately', async () => {
             const ch = makeChannel();
             const { next } = integrationTestGeneratorRunner(
                 waitForPutQueueToRelease(ch),

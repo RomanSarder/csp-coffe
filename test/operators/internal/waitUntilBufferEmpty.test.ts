@@ -5,7 +5,7 @@ import { CreatableBufferType } from '@Lib/buffer';
 
 describe('waitUntilBufferEmpty', () => {
     describe('when put buffer is not empty', () => {
-        it('should complete only after put buffer becomes empty', async () => {
+        it('should complete only after put buffer becomes unblocked', async () => {
             const ch = makeChannel(CreatableBufferType.FIXED, 2);
             makePut(ch, 'test1');
             makePut(ch, 'test2');
@@ -20,7 +20,7 @@ describe('waitUntilBufferEmpty', () => {
         });
     });
 
-    describe('when put buffer is empty', () => {
+    describe('when put buffer is unblocked', () => {
         it('should complete immediately', async () => {
             const ch = makeChannel(CreatableBufferType.FIXED, 2);
             const { next } = integrationTestGeneratorRunner(

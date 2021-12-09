@@ -8,7 +8,7 @@ describe('resetChannel', () => {
         expect(ch.isClosed).toEqual(true);
     });
 
-    it('should create closed buffers', () => {
+    it('should set buffer types to closed', () => {
         const ch = makeChannel();
         resetChannel(ch);
         makePut(ch, 'test1');

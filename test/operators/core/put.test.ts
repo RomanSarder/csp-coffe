@@ -36,7 +36,7 @@ describe('put', () => {
     });
 
     describe('when the channel is closed after the item is put', () => {
-        it('should release put', async () => {
+        it('should delete put request', async () => {
             const ch = makeChannel();
             const { next } = unitTestGeneratorRunner(put(ch, 'test1'));
             await next();
@@ -49,8 +49,8 @@ describe('put', () => {
     });
 
     describe('when the channel buffer size is more than 1', () => {
-        describe('when there is no pending take', () => {
-            it('should not block put if no take request is there', async () => {
+        describe('when there is no pending take request', () => {
+            it('should not block put', async () => {
                 const ch = makeChannel(CreatableBufferType.DROPPING, 2);
                 const { next } = integrationTestGeneratorRunner(
                     put(ch, 'test1'),
@@ -61,7 +61,7 @@ describe('put', () => {
             });
 
             describe('when the buffer is full', () => {
-                it('should block put request if buffer is full', async () => {
+                it('should block put request', async () => {
                     const ch = makeChannel(CreatableBufferType.FIXED, 2);
                     const { next } = unitTestGeneratorRunner(put(ch, 'test1'));
                     makePut(ch, 'test11');

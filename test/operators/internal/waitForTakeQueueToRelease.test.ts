@@ -8,7 +8,7 @@ import {
 
 describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is blocked', () => {
-        it('should complete which resolves only after put buffer becomes empty', async () => {
+        it('should complete which resolves only after put buffer becomes unblocked', async () => {
             const ch = makeChannel();
             makeTake(ch);
             const { next } = integrationTestGeneratorRunner(
@@ -21,7 +21,7 @@ describe('waitForTakeQueueToRelease', () => {
     });
 
     describe('when take buffer is unblocked', () => {
-        it('should complete immediately', async () => {
+        it('should resolve immediately', async () => {
             const ch = makeChannel();
             const { next } = integrationTestGeneratorRunner(
                 waitForTakeQueueToRelease(ch),

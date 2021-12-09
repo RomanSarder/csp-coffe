@@ -2,7 +2,7 @@ import { eventLoopQueue } from '@Lib/shared/utils';
 import { fromPromise, takeAsync } from '@Lib/operators';
 
 describe('fromPromise', () => {
-    it('should create channel with promise result in it', async () => {
+    it('should create channel with promise result value', async () => {
         const promise = Promise.resolve('test');
         const ch = fromPromise(promise);
 

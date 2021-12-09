@@ -5,7 +5,7 @@ import { runIterator } from '@Lib/runner';
 import { constant } from 'lodash';
 
 describe('iterate', () => {
-    it('should call a callback with values in channel until it closes', async () => {
+    it('should call a callback with next channel value until channel closes', async () => {
         const spy = jest.fn();
         const ch = makeChannel(CreatableBufferType.UNBLOCKING);
         const ch2 = closeOnAllValuesTaken(ch);

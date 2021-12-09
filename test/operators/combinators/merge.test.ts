@@ -4,7 +4,7 @@ import { eventLoopQueue } from '@Lib/shared/utils';
 import { close, merge, putAsync, takeAsync } from '@Lib/operators';
 
 describe('merge', () => {
-    it('should return unbuffered channel with values from source channels', async () => {
+    it('should return unblocking channel with values from source channels', async () => {
         const ch1 = makeChannel<string>();
         const ch2 = makeChannel<number>();
 

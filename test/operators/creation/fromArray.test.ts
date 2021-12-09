@@ -2,7 +2,7 @@ import { eventLoopQueue } from '@Lib/shared/utils';
 import { fromArray, takeAsync } from '@Lib/operators';
 
 describe('fromArray', () => {
-    it('should create channel with contents of array in buffer', async () => {
+    it('should create channel containing values from array', async () => {
         const array = ['test1', 'test2'];
         const ch = fromArray(array);
         expect(await takeAsync(ch)).toEqual('test1');

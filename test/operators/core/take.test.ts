@@ -6,7 +6,7 @@ import {
 } from '@Lib/testGeneratorRunner';
 
 describe('take', () => {
-    it('should take a put value from channel', async () => {
+    it('should take a value from channel', async () => {
         const ch = makeChannel();
         const { next } = integrationTestGeneratorRunner(take(ch));
         makePut(ch, 'test1');
@@ -28,7 +28,7 @@ describe('take', () => {
     });
 
     describe('when the channel is closed after take was put', () => {
-        it('should release take and reset channel', async () => {
+        it('should delete take request and reset channel', async () => {
             const ch = makeChannel();
             const { next } = unitTestGeneratorRunner(take(ch));
             makePut(ch, 'test1');

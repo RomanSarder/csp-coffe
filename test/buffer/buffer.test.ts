@@ -11,7 +11,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put item', () => {
+        it('should delete first put item', () => {
             const buffer = makeFixedBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -19,7 +19,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
 
-        it('should preview first item without deleting it', () => {
+        it('should return first item without deleting it', () => {
             const buffer = makeFixedBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -55,7 +55,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put item', () => {
+        it('should delete first put item', () => {
             const buffer = makeSlidingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -63,7 +63,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
 
-        it('should preview first put item', () => {
+        it('should get first put item without deleting it', () => {
             const buffer = makeSlidingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -82,7 +82,7 @@ describe('Buffer', () => {
             });
 
             describe('when adding an element', () => {
-                it('should release first put item', () => {
+                it('should delete first put item', () => {
                     const buffer = makeSlidingBuffer(2);
                     buffer.add('sasagi');
                     buffer.add('sasagi 2');
@@ -103,7 +103,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put item', () => {
+        it('should delete first put item', () => {
             const buffer = makeDroppingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -111,7 +111,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
 
-        it('should preview first put item', () => {
+        it('should get first put item without deleting it', () => {
             const buffer = makeDroppingBuffer(2);
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -131,7 +131,7 @@ describe('Buffer', () => {
             });
 
             describe('when adding an item', () => {
-                it('should drop the last put item', () => {
+                it('should delete the last put item', () => {
                     const buffer = makeDroppingBuffer(2);
                     buffer.add('sasagi');
                     buffer.add('sasagi 2');
@@ -152,7 +152,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi']);
         });
 
-        it('should release first put item', () => {
+        it('should delete first put item', () => {
             const buffer = makeUnblockingBuffer();
             buffer.add('sasagi');
             buffer.add('sasagi 2');
@@ -160,7 +160,7 @@ describe('Buffer', () => {
             expect(buffer.collection.getElementsArray()).toEqual(['sasagi 2']);
         });
 
-        it('should preview first put item', () => {
+        it('should get first put item without deleting it', () => {
             const buffer = makeUnblockingBuffer();
             buffer.add('sasagi');
             buffer.add('sasagi 2');
