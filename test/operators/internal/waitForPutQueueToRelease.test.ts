@@ -1,4 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { releasePut } from '@Lib/operators/internal/releasePut';
 import { waitForPutQueueToRelease } from '@Lib/operators/internal/waitForPutQueueToRelease';

@@ -1,4 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { makeTake } from '@Lib/operators/internal/makeTake';
 import { waitForIncomingTake } from '@Lib/operators/internal/waitForIncomingTake';
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';

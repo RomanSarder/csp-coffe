@@ -1,6 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
 
-export const DEFAULT_CHANNEL_CONFIG = {
+export const DefaultChannelConfig = {
     bufferType: CreatableBufferType.FIXED,
     capacity: 1,
 };

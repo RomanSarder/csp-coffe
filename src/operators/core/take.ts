@@ -1,6 +1,6 @@
-import { FlattenChannel } from '@Lib/channel/entity/flatten';
-import { Channel } from '@Lib/channel/entity/channel';
-import { Events } from '@Lib/channel/entity/events';
+import type { FlattenChannel, Channel } from '@Lib/channel';
+
+import { Events } from '@Lib/channel';
 import { probe } from './probe';
 
 export const TAKE = 'TAKE';

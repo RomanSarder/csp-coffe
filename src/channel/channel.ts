@@ -4,7 +4,7 @@ import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
 import { close } from '@Lib/operators/core/close';
 import { takeAsync } from '@Lib/operators/core/takeAsync';
 import type { Channel } from './entity/channel';
-import { DEFAULT_CHANNEL_CONFIG } from './config';
+import { DefaultChannelConfig } from './config';
 import { Events } from './entity/events';
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
@@ -15,7 +15,7 @@ function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
 }
 
 export function makeChannel<T = NonNullable<any>>(
-    bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
+    bufferType = DefaultChannelConfig.bufferType,
     capacity = 1,
 ): Channel<T> {
     const result: Channel<T> = {
@@ -49,7 +49,7 @@ export function makeChannel<T = NonNullable<any>>(
 
 export function makeTimeoutChannel<T = NonNullable<unknown>>(
     ms: number,
-    bufferType = DEFAULT_CHANNEL_CONFIG.bufferType,
+    bufferType = DefaultChannelConfig.bufferType,
     capacity = 1,
 ) {
     const ch = makeChannel<T>(bufferType, capacity);

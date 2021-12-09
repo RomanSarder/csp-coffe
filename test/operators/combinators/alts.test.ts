@@ -1,4 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { alts } from '@Lib/operators/combinators/alts';
 import { releasePut } from '@Lib/operators/internal/releasePut';

@@ -1,4 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
 
 describe('makePut', () => {

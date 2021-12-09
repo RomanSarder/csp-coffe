@@ -1,5 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
-import { Events } from '@Lib/channel/entity/events';
+import { makeChannel, Events } from '@Lib/channel';
 import { take } from '@Lib/operators/core/take';
 import { close } from '@Lib/operators/core/close';
 import {

@@ -1,5 +1,4 @@
-import { FlattenChannel } from '@Lib/channel/entity/flatten';
-import { Channel } from '@Lib/channel/entity/channel';
+import type { Channel, FlattenChannel } from '@Lib/channel';
 
 export function releasePut<C extends Channel<any>>(
     ch: C,

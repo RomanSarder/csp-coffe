@@ -1,5 +1,5 @@
 import { BufferType, makeBuffer } from '@Lib/buffer';
-import type { Channel } from '@Lib/channel/entity/channel';
+import type { Channel } from '@Lib/channel';
 import { close } from '../core/close';
 
 export function resetChannel<T = unknown>(ch: Channel<T>) {

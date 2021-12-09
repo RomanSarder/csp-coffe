@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel';
+import type { Channel } from '@Lib/channel';
 
 export type ChannelTransformationResponse<T = any> = {
     promise: Promise<void>;

@@ -1,4 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { offerFn } from '@Lib/operators/core/offer';
 
 describe('offer', () => {

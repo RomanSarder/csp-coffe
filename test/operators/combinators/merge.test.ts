@@ -1,5 +1,5 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { eventLoopQueue } from '@Lib/internal';
 import { close } from '@Lib/operators/core/close';
 import { merge } from '@Lib/operators/combinators/merge';

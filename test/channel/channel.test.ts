@@ -1,6 +1,5 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { Events } from '@Lib/channel/entity/events';
-import { makeChannel, makeTimeoutChannel } from '@Lib/channel/channel';
+import { Events, makeChannel, makeTimeoutChannel } from '@Lib/channel';
 import { close } from '@Lib/operators/core/close';
 import { putAsync } from '@Lib/operators/core/putAsync';
 import { eventLoopQueue } from '@Lib/internal';

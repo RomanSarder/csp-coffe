@@ -1,5 +1,5 @@
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { makeTake } from '@Lib/operators/internal/makeTake';
 import { releaseTake } from '@Lib/operators/internal/releaseTake';
 import { waitForTakeQueueToRelease } from '@Lib/operators/internal/waitForTakeQueueToRelease';

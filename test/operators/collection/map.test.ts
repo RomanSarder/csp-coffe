@@ -1,4 +1,4 @@
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { close } from '@Lib/operators/core/close';
 import { map } from '@Lib/operators/collection/map';
 import { putAsync } from '@Lib/operators/core/putAsync';

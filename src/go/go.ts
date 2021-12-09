@@ -1,9 +1,8 @@
-import { Channel } from '@Lib/channel/entity/channel';
-import { makeChannel } from '@Lib/channel/channel';
+import type { Channel } from '@Lib/channel';
+import { makeChannel, closeOnAllValuesTaken } from '@Lib/channel';
 import { makePut } from '@Lib/operators/internal/makePut';
 import { close } from '@Lib/operators/core/close';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
-import { closeOnAllValuesTaken } from '@Lib/channel/proxy/closeOnAllValuesTaken';
 import { runIterator } from '@Lib/runner';
 import { Events } from './entity';
 

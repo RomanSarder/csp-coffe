@@ -1,5 +1,5 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,

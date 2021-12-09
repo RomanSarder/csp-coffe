@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel/entity/channel';
+import type { Channel } from '@Lib/channel';
 import { errorMessages } from '@Lib/channel/entity/errorMessages';
 
 export function* waitForIncomingTake<C extends Channel<any>>(ch: C) {

@@ -1,4 +1,4 @@
-import { Channel } from '@Lib/channel/entity/channel';
+import type { Channel } from '@Lib/channel';
 
 export function makePut<T = unknown>(ch: Channel<T>, data: T): boolean {
     if (data === null) {

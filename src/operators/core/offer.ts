@@ -1,5 +1,4 @@
-import { FlattenChannel } from '@Lib/channel/entity/flatten';
-import { Channel } from '@Lib/channel/entity/channel';
+import type { FlattenChannel, Channel } from '@Lib/channel';
 
 import { call } from '@Lib/go/instructions/call';
 import { makePut } from '../internal/makePut';

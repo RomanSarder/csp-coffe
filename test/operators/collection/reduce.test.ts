@@ -1,5 +1,5 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel/channel';
+import { makeChannel } from '@Lib/channel';
 import { close } from '@Lib/operators/core/close';
 import { reduce } from '@Lib/operators/collection/reduce';
 import { putAsync } from '@Lib/operators/core/putAsync';

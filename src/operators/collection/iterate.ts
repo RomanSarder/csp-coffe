@@ -1,6 +1,5 @@
 import type { CancellablePromise } from '@Lib/cancellablePromise';
-import { FlattenChannels, FlattenChannel } from '@Lib/channel/entity/flatten';
-import { Channel } from '@Lib/channel/entity/channel';
+import type { FlattenChannels, FlattenChannel, Channel } from '@Lib/channel';
 
 import { call } from '@Lib/go/instructions/call';
 
