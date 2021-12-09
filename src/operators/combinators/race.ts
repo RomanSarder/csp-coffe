@@ -1,6 +1,5 @@
-import { createCancellablePromise } from '@Lib/cancellablePromise/createCancellablePromise';
-import { cancelAll } from '@Lib/cancellablePromise/cancelAll';
-import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
+import { createCancellablePromise, cancelAll } from '@Lib/cancellablePromise';
+import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { CallInstruction } from '@Lib/go/entity/callInstruction';
 import { createRunnersFromCallInstructions } from '@Lib/shared/utils/createRunnersFromCallInstructions';
 

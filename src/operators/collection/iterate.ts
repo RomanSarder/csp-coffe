@@ -1,4 +1,4 @@
-import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
+import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { FlattenChannels, FlattenChannel } from '@Lib/channel/entity/flatten';
 import { Channel } from '@Lib/channel/entity/channel';
 

@@ -1,4 +1,4 @@
-import { isCancellablePromise } from '@Lib/cancellablePromise/utils/isCancellablePromise';
+import { isCancellablePromise } from '@Lib/cancellablePromise';
 import { Instruction } from '@Lib/go/entity/instruction';
 import { InstructionType } from '@Lib/go/entity/instructionType';
 import { isInstruction } from '@Lib/go/utils/isInstruction';

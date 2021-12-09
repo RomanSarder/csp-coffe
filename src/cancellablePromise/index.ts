@@ -1,3 +1,7 @@
-export * from './entity';
-export * from './cancelAll';
-export * from './createCancellablePromise';
+export { CancelError } from './entity/cancelError';
+export type { CancellablePromise } from './entity/cancellablePromise';
+
+export { isCancellablePromise } from './utils/isCancellablePromise';
+
+export { cancelAll } from './cancelAll';
+export { createCancellablePromise } from './createCancellablePromise';

@@ -1,5 +1,5 @@
-import { cancelAll } from '@Lib/cancellablePromise/cancelAll';
-import type { CancellablePromise } from '@Lib/cancellablePromise/entity/cancellablePromise';
+import { cancelAll } from '@Lib/cancellablePromise';
+import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
 
 export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
