@@ -1,4 +1,4 @@
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { waitForIncomingPut } from './waitForIncomingPut';
 
 export const waitForIncomingPutAsync = createAsyncWrapper(waitForIncomingPut);

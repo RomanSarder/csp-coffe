@@ -1,5 +1,5 @@
 import type { Channel } from '@Lib/channel';
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { put } from '../core/put';
 import { iterate } from '../collection/iterate';
 import { close } from '../core/close';

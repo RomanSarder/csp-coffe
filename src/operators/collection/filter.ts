@@ -4,7 +4,7 @@ import type {
     ChannelConfiguration,
 } from '@Lib/channel';
 import { makeChannel } from '@Lib/channel';
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { close } from '../core/close';
 import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';

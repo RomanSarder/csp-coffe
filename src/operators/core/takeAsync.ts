@@ -1,4 +1,4 @@
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { take } from './take';
 
 export const takeAsync = createAsyncWrapper(take);

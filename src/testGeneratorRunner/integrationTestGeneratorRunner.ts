@@ -1,7 +1,7 @@
 import type { Instruction } from '@Lib/instruction';
 import { makeChildrenIteratorsRunner } from '@Lib/runner/makeChildrenIteratorsRunner';
-import { makeIteratorStepper } from '@Lib/runner/makeIteratorStepper';
-import { StepResult } from '@Lib/runner/entity';
+import { makeIteratorStepper, runIterator } from '@Lib/runner';
+import type { StepResult } from '@Lib/runner/entity';
 import { createInstructionAsserter } from './createInstructionAsserter';
 import { IntegrationGeneratorTestRunner } from './entity';
 
@@ -15,6 +15,7 @@ export function integrationTestGeneratorRunner<G extends Generator>(
         iterator,
         childrenIteratorsRunner,
         state: { isCancelled: false },
+        onGenerator: runIterator,
         onInstruction: (instruction) => {
             emitedInstructions.push(instruction);
         },

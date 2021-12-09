@@ -2,7 +2,7 @@ import { CreatableBufferType } from '@Lib/buffer';
 import { Events, makeChannel, makeTimeoutChannel } from '@Lib/channel';
 import { close } from '@Lib/operators/core/close';
 import { putAsync } from '@Lib/operators/core/putAsync';
-import { eventLoopQueue } from '@Lib/internal';
+import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('Channel', () => {
     describe('makeChannel', () => {

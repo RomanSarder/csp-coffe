@@ -1,4 +1,4 @@
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { waitUntilBufferEmpty } from './waitUntilBufferEmpty';
 
 export const waitUntilBufferIsEmptyAsync =

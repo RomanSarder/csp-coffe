@@ -1,5 +1,5 @@
 import type { GeneratorReturn } from '@Lib/shared/entity';
-import { runIterator } from '@Lib/runner';
+import { runIterator } from './runIterator';
 
 type GeneratorFn = (...args: readonly any[]) => any;
 

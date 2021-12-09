@@ -1,5 +1,5 @@
 import type { FlattenChannel, Channel } from '@Lib/channel';
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { iterate } from './iterate';
 import { constant } from '@Lib/shared/utils';
 

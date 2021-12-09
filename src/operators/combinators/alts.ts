@@ -11,7 +11,7 @@ import type { FlattenChannel, Channel } from '@Lib/channel';
 
 import { call } from '@Lib/instruction';
 import { Flatten } from '@Lib/shared/entity';
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { race } from './race';
 import { offerFn } from '../core/offer';
 import { pollFn } from '../core/poll';

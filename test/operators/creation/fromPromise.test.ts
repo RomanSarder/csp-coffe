@@ -1,4 +1,4 @@
-import { eventLoopQueue } from '@Lib/internal';
+import { eventLoopQueue } from '@Lib/shared/utils';
 import { fromPromise } from '@Lib/operators/creation/fromPromise';
 import { takeAsync } from '@Lib/operators/core/takeAsync';
 

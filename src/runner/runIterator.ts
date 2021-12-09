@@ -48,6 +48,7 @@ export const runIterator = (
         state,
         iterator,
         onInstruction,
+        onGenerator: runIterator,
         childrenIteratorsRunner,
     });
     const workerPromise = (async () => {

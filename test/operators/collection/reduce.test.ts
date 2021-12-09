@@ -4,7 +4,7 @@ import { close } from '@Lib/operators/core/close';
 import { reduce } from '@Lib/operators/collection/reduce';
 import { putAsync } from '@Lib/operators/core/putAsync';
 import { takeAsync } from '@Lib/operators/core/takeAsync';
-import { eventLoopQueue } from '@Lib/internal';
+import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('reduce', () => {
     it('should return channel with reduced value', async () => {

@@ -1,4 +1,4 @@
-import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
+import { createAsyncWrapper } from '@Lib/runner';
 import { waitForPutQueueToRelease } from './waitForPutQueueToRelease';
 
 export const waitForPutQueueToReleaseAsync = createAsyncWrapper(

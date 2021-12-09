@@ -1,7 +1,7 @@
 import { createCancellablePromise, cancelAll } from '@Lib/cancellablePromise';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
 import type { CallInstruction } from '@Lib/go';
-import { createRunnersFromCallInstructions } from '@Lib/shared/utils/createRunnersFromCallInstructions';
+import { createRunnersFromCallInstructions } from '@Lib/runner';
 
 export function* all(...instructions: CallInstruction[]) {
     const runnerPromises: CancellablePromise<any>[] =

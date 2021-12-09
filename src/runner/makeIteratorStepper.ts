@@ -1,9 +1,11 @@
-import { isCancellablePromise } from '@Lib/cancellablePromise';
+import {
+    CancellablePromise,
+    isCancellablePromise,
+} from '@Lib/cancellablePromise';
 import type { Instruction } from '@Lib/instruction';
 import { InstructionType, isInstruction } from '@Lib/instruction';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
-import { eventLoopQueue } from '@Lib/internal';
-import { runIterator } from './runIterator';
+import { eventLoopQueue } from '@Lib/shared/utils';
 import { StepperVerb, StepResult } from './entity';
 import { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
 import { handleCancellablePromise, handleGenerator } from './utils';
@@ -13,6 +15,10 @@ export type Params = {
     verb: StepperVerb;
     state: { isCancelled: boolean };
     childrenIteratorsRunner: ChildrenIteratorsRunner;
+    onGenerator: (
+        iterator: Generator,
+        onInstruction?: ((instruction: Instruction) => void) | undefined,
+    ) => CancellablePromise<any>;
     arg?: any;
     onInstruction?: (instruction: Instruction) => void;
 };
@@ -21,9 +27,14 @@ export const makeIteratorStepper = ({
     state,
     childrenIteratorsRunner,
     onInstruction,
+    onGenerator,
 }: Pick<
     Params,
-    'iterator' | 'state' | 'childrenIteratorsRunner' | 'onInstruction'
+    | 'iterator'
+    | 'state'
+    | 'childrenIteratorsRunner'
+    | 'onInstruction'
+    | 'onGenerator'
 >) => {
     return {
         step: async (
@@ -73,7 +84,7 @@ export const makeIteratorStepper = ({
                 if (isGenerator(instructionResult)) {
                     return handleGenerator({
                         childrenIteratorsRunner,
-                        runIteratorPromise: runIterator(
+                        runIteratorPromise: onGenerator(
                             instructionResult,
                             onInstruction,
                         ),
@@ -89,7 +100,7 @@ export const makeIteratorStepper = ({
             if (isGenerator(value)) {
                 return handleGenerator({
                     childrenIteratorsRunner,
-                    runIteratorPromise: runIterator(value, onInstruction),
+                    runIteratorPromise: onGenerator(value, onInstruction),
                     done: result.done as boolean,
                 });
             }
