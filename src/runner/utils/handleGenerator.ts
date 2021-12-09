@@ -1,7 +1,7 @@
 import { InstructionType } from '@Lib/instruction';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
-import { StepResult } from '../entity';
-import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
+import type { StepResult } from '../entity/stepResult';
+import type { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
 import { handleCancellablePromise } from './handleCancellablePromise';
 
 export async function handleGenerator({

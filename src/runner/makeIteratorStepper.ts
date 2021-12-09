@@ -5,9 +5,11 @@ import {
 import type { Instruction } from '@Lib/instruction';
 import { InstructionType, isInstruction } from '@Lib/instruction';
 import { isGenerator, eventLoopQueue } from '@Lib/shared/utils';
-import type { StepperVerb, StepResult } from './entity';
+import type { StepResult } from './entity/stepResult';
+import type { StepperVerb } from './entity/stepperVerb';
 import type { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
-import { handleCancellablePromise, handleGenerator } from './utils';
+import { handleCancellablePromise } from './utils/handleCancellablePromise';
+import { handleGenerator } from './utils/handleGenerator';
 
 export type Params = {
     iterator: Generator;

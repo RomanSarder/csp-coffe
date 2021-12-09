@@ -1,6 +1,6 @@
 import { cancelAll } from '@Lib/cancellablePromise';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
-import { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
+import type { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
 
 export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
     let cancelHandler: (reason: any) => Promise<void>;

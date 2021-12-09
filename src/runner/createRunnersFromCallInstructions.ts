@@ -1,7 +1,6 @@
-import { markAsDebug } from '../shared/utils/markAsDebug';
+import { markAsDebug, isGenerator } from '@Lib/shared/utils';
 import type { CallInstruction } from '@Lib/go';
 import { runIterator } from './runIterator';
-import { isGenerator } from '@Lib/shared/utils';
 
 export function* createRunnersFromCallInstructions(
     ...callInstructions: CallInstruction[]

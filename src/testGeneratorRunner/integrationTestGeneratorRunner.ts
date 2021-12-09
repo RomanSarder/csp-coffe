@@ -1,7 +1,10 @@
 import type { Instruction } from '@Lib/instruction';
-import { makeChildrenIteratorsRunner } from '@Lib/runner/makeChildrenIteratorsRunner';
-import { makeIteratorStepper, runIterator } from '@Lib/runner';
-import type { StepResult } from '@Lib/runner/entity';
+import {
+    makeChildrenIteratorsRunner,
+    makeIteratorStepper,
+    runIterator,
+} from '@Lib/runner';
+import type { StepResult } from '@Lib/runner';
 import { createInstructionAsserter } from './createInstructionAsserter';
 import { IntegrationGeneratorTestRunner } from './entity';
 

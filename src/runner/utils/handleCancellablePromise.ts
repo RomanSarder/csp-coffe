@@ -1,6 +1,6 @@
 import type { CancellablePromise } from '@Lib/cancellablePromise';
-import { StepResult } from '../entity';
-import { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
+import type { StepResult } from '../entity/stepResult';
+import type { ChildrenIteratorsRunner } from '../entity/childrenIteratorsRunner';
 
 export async function handleCancellablePromise({
     promise,
