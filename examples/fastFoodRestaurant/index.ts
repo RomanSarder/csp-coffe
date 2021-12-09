@@ -1,6 +1,7 @@
 import { makeChannel } from '../../src/channel';
 import { go } from '../../src/go';
 import { CallInstruction } from '../../src/instruction';
+import { CancellablePromise, cancelAll } from '../../src/cancellablePromise';
 import {
     take,
     put,
@@ -9,6 +10,7 @@ import {
     filter,
     fork,
     call,
+    close,
 } from '../../src/operators';
 import { CreatableBufferType } from '../../src/buffer';
 import { cookerWorker, randomIntFromInterval } from './cookerWorker';
@@ -103,10 +105,12 @@ function* orderWorkerRoutine(order: Order) {
 }
 
 function* watchOrders() {
-    while (true) {
+    const promises: CancellablePromise<any>[] = [];
+    while (tillsChannel.isClosed === false) {
         const order: Order = yield take(tillsChannel);
-        yield fork(orderWorkerRoutine, order);
+        promises.push(yield fork(orderWorkerRoutine, order));
     }
+    yield Promise.all(promises);
 }
 
 // "я смотрю за входящими заказами "
@@ -150,19 +154,61 @@ async function generateOrders() {
         await delay(randomIntFromInterval(500, 1000 * (index + 1)));
         await putAsync(tillsChannel, order);
     });
-    return Promise.all(promises);
+    await Promise.all(promises);
+    close(tillsChannel);
 }
 
-go(watchOrders);
-go(cookerWorker, burgerCookerChannel, kitchenDeliveryChannel);
-go(cookerWorker, frenchFriesCookerChannel, kitchenDeliveryChannel);
-go(cookerWorker, drinksCookerChannel, kitchenDeliveryChannel);
-go(cookerWorker, dessertCookerChannel, kitchenDeliveryChannel);
-go(cookerWorker, soucesCookerChannel, kitchenDeliveryChannel);
-go(cookerWorker, coffeeCookerChannel, kitchenDeliveryChannel);
+const { cancellablePromise: workerPromise1 } = go(
+    cookerWorker,
+    burgerCookerChannel,
+    kitchenDeliveryChannel,
+);
+const { cancellablePromise: workerPromise2 } = go(
+    cookerWorker,
+    frenchFriesCookerChannel,
+    kitchenDeliveryChannel,
+);
+const { cancellablePromise: workerPromise3 } = go(
+    cookerWorker,
+    drinksCookerChannel,
+    kitchenDeliveryChannel,
+);
+const { cancellablePromise: workerPromise4 } = go(
+    cookerWorker,
+    dessertCookerChannel,
+    kitchenDeliveryChannel,
+);
+const { cancellablePromise: workerPromise5 } = go(
+    cookerWorker,
+    soucesCookerChannel,
+    kitchenDeliveryChannel,
+);
+const { cancellablePromise: workerPromise6 } = go(
+    cookerWorker,
+    coffeeCookerChannel,
+    kitchenDeliveryChannel,
+);
+const { cancellablePromise } = go(watchOrders);
 
 generateOrders();
 
-delay(8000).then(() => {
-    console.log(deliveredOrders);
+cancellablePromise.then(async () => {
+    close(burgerCookerChannel);
+    close(frenchFriesCookerChannel);
+    close(drinksCookerChannel);
+    close(soucesCookerChannel);
+    close(coffeeCookerChannel);
+    close(dessertCookerChannel);
+    close(tillsChannel);
+    close(orderDeliveryChannel);
+    close(kitchenDeliveryChannel);
+    await cancelAll([
+        workerPromise1,
+        workerPromise2,
+        workerPromise3,
+        workerPromise4,
+        workerPromise5,
+        workerPromise6,
+    ]);
+    return undefined;
 });
