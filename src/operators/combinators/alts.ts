@@ -9,7 +9,7 @@
 
 import type { FlattenChannel, Channel } from '@Lib/channel';
 
-import { call } from '@Lib/go';
+import { call } from '@Lib/instruction';
 import { Flatten } from '@Lib/shared/entity';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { race } from './race';

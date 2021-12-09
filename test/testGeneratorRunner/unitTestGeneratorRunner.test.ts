@@ -1,4 +1,4 @@
-import { call } from '@Lib/go';
+import { call } from '@Lib/instruction';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { delay } from '@Lib/shared/utils/delay';
 import { unitTestGeneratorRunner } from '@Lib/testGeneratorRunner';

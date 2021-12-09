@@ -1,6 +1,6 @@
 import type { FlattenChannel, Channel } from '@Lib/channel';
 
-import { call } from '@Lib/go';
+import { call } from '@Lib/instruction';
 import { makePut } from '../internal/makePut';
 
 export function offerFn<C extends Channel<any>>(

@@ -1,6 +1,6 @@
 import { isCancellablePromise } from '@Lib/cancellablePromise';
-import type { Instruction } from '@Lib/go';
-import { InstructionType, isInstruction } from '@Lib/go';
+import type { Instruction } from '@Lib/instruction';
+import { InstructionType, isInstruction } from '@Lib/instruction';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
 import { eventLoopQueue } from '@Lib/internal';
 import { runIterator } from './runIterator';

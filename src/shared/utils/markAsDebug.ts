@@ -1,4 +1,4 @@
-import type { Instruction } from '@Lib/go';
+import type { Instruction } from '@Lib/instruction';
 
 export function markAsDebug(instruction: Instruction) {
     return {

@@ -1,5 +1,5 @@
-import { InstructionType } from '../entity/instructionType';
-import { Instruction } from '../entity/instruction';
+import { InstructionType } from './entity/instructionType';
+import { Instruction } from './entity/instruction';
 
 export function makeInstruction<
     O extends (...a1: readonly any[]) => any,

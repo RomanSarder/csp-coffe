@@ -1,5 +1,5 @@
-import { InstructionType, isInstruction } from '@Lib/go';
-import type { Instruction } from '@Lib/go';
+import { InstructionType, isInstruction } from '@Lib/instruction';
+import type { Instruction } from '@Lib/instruction';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
 import { UnitTestGeneratorRunner } from './entity';
 

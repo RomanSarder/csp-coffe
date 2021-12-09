@@ -1,5 +1,5 @@
-import { InstructionType } from '../entity/instructionType';
-import { CallInstruction } from '../entity/callInstruction';
+import { InstructionType } from './entity/instructionType';
+import { CallInstruction } from './entity/callInstruction';
 import { makeInstruction } from './makeInstruction';
 
 export function call<

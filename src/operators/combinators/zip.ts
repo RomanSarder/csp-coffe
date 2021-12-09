@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 import type { FlattenChannels, Channel } from '@Lib/channel';
-import { call } from '@Lib/go';
+import { call } from '@Lib/instruction';
 import { createAsyncWrapper } from '@Lib/shared/utils/createAsyncWrapper';
 import { all } from './all';
 import { take } from '../core/take';
