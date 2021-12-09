@@ -1,7 +1,4 @@
-import { call } from '@Lib/go/instructions/call';
-import { fork } from '@Lib/go/instructions/fork';
-import { spawn } from '@Lib/go/instructions/spawn';
-import { go } from '@Lib/go/go';
+import { call, fork, spawn, go } from '@Lib/go';
 import { fakeAsyncFunction } from '@Lib/internal';
 import { close } from '@Lib/operators/core/close';
 import { CancelError } from '@Lib/cancellablePromise';

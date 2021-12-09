@@ -1,5 +1,5 @@
 import { InstructionType } from '../entity/instructionType';
-import { Instruction } from '../entity/instruction';
+import type { Instruction } from '../entity/instruction';
 
 export function isInstruction<T extends any>(
     data: any | T,

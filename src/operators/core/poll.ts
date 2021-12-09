@@ -1,6 +1,6 @@
 import type { FlattenChannel, Channel } from '@Lib/channel';
 
-import { call } from '@Lib/go/instructions/call';
+import { call } from '@Lib/go';
 import { releasePut } from '../internal/releasePut';
 
 export function pollFn<C extends Channel<any>>(

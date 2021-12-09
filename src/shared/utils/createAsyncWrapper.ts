@@ -1,4 +1,4 @@
-import { GeneratorReturn } from '@Lib/go/entity';
+import type { GeneratorReturn } from '@Lib/shared/entity';
 import { runIterator } from '@Lib/runner';
 
 type GeneratorFn = (...args: readonly any[]) => any;

@@ -1,7 +1,7 @@
 import type { CancellablePromise } from '@Lib/cancellablePromise';
 import type { FlattenChannels, FlattenChannel, Channel } from '@Lib/channel';
 
-import { call } from '@Lib/go/instructions/call';
+import { call } from '@Lib/go';
 
 import { all } from '../combinators/all';
 import { probe } from '../core/probe';

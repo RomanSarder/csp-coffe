@@ -1,1 +1,2 @@
-export type Flatten<Type> = Type extends Array<infer Item> ? Item : Type;
+export type { Flatten } from './flatten';
+export type { GeneratorReturn } from './generatorReturn';

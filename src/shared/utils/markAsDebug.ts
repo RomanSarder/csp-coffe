@@ -1,4 +1,4 @@
-import { Instruction } from '../entity/instruction';
+import type { Instruction } from '@Lib/go';
 
 export function markAsDebug(instruction: Instruction) {
     return {

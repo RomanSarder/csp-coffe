@@ -4,7 +4,7 @@ import { makePut } from '@Lib/operators/internal/makePut';
 import { close } from '@Lib/operators/core/close';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { runIterator } from '@Lib/runner';
-import { Events } from './entity';
+import { Events } from './entity/events';
 
 export function go<
     GenFn extends (...args1: readonly any[]) => Generator,

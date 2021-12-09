@@ -1,6 +1,6 @@
 import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { createCancellablePromise } from '@Lib/cancellablePromise';
-import { Instruction } from '@Lib/go/entity/instruction';
+import type { Instruction } from '@Lib/go';
 import { isCancelError } from '../cancellablePromise/utils/isCancelError';
 import { makeChildrenIteratorsRunner } from './makeChildrenIteratorsRunner';
 import { makeIteratorStepper } from './makeIteratorStepper';

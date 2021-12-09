@@ -1,5 +1,5 @@
-import { markAsDebug } from '@Lib/go/instructions/markAsDebug';
-import { CallInstruction } from '@Lib/go/entity/callInstruction';
+import { markAsDebug } from './markAsDebug';
+import type { CallInstruction } from '@Lib/go';
 import { runIterator } from '@Lib/runner';
 import { isGenerator } from './isGenerator';
 
