@@ -1,7 +1,7 @@
 import { InstructionType, isInstruction } from '@Lib/instruction';
 import type { Instruction } from '@Lib/instruction';
 import { isGenerator } from '@Lib/shared/utils/isGenerator';
-import { UnitTestGeneratorRunner } from './entity';
+import type { UnitTestGeneratorRunner } from './entity/unitTestRunner';
 
 export function unitTestGeneratorRunner<G extends Generator>(
     iterator: G,

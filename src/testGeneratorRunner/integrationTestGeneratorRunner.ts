@@ -6,7 +6,7 @@ import {
 } from '@Lib/runner';
 import type { StepResult } from '@Lib/runner';
 import { createInstructionAsserter } from './createInstructionAsserter';
-import { IntegrationGeneratorTestRunner } from './entity';
+import type { IntegrationGeneratorTestRunner } from './entity/integrationTestRunner';
 
 // eslint-disable-next-line consistent-return
 export function integrationTestGeneratorRunner<G extends Generator>(

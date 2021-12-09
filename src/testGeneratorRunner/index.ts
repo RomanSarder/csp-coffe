@@ -1,2 +1,2 @@
-export * from './integrationTestGeneratorRunner';
-export * from './unitTestGeneratorRunner';
+export { integrationTestGeneratorRunner } from './integrationTestGeneratorRunner';
+export { unitTestGeneratorRunner } from './unitTestGeneratorRunner';
