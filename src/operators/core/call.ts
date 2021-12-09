@@ -1,6 +1,8 @@
-import { InstructionType } from './entity/instructionType';
-import { CallInstruction } from './entity/callInstruction';
-import { makeInstruction } from './makeInstruction';
+import {
+    InstructionType,
+    CallInstruction,
+    makeInstruction,
+} from '@Lib/instruction';
 
 export function call<
     O extends (...a1: readonly any[]) => any,

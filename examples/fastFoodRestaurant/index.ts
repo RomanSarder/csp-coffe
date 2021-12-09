@@ -1,6 +1,15 @@
 import { makeChannel } from '../../src/channel';
-import { go, call, CallInstruction, fork } from '../../src/go';
-import { take, put, all, putAsync, filter } from '../../src/operators';
+import { go } from '../../src/go';
+import { CallInstruction } from '../../src/instruction';
+import {
+    take,
+    put,
+    all,
+    putAsync,
+    filter,
+    fork,
+    call,
+} from '../../src/operators';
 import { CreatableBufferType } from '../../src/buffer';
 import { cookerWorker, randomIntFromInterval } from './cookerWorker';
 

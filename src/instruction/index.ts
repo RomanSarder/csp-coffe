@@ -6,6 +6,4 @@ export type { SpawnInstruction } from './entity/spawnInstruction';
 
 export { isInstruction } from './utils/isInstruction';
 
-export { call } from './call';
-export { fork } from './fork';
-export { spawn } from './spawn';
+export { makeInstruction } from './makeInstruction';

@@ -14,6 +14,9 @@ export { put } from './core/put';
 export { putAsync } from './core/putAsync';
 export { take } from './core/take';
 export { takeAsync } from './core/takeAsync';
+export { call } from './core/call';
+export { fork } from './core/fork';
+export { spawn } from './core/spawn';
 
 export { fromPromise } from './creation/fromPromise';
 export { fromArray } from './creation/fromArray';

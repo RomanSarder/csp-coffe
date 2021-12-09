@@ -1,6 +1,5 @@
-import { call } from '@Lib/instruction';
+import { call, race } from '@Lib/operators';
 import { go } from '@Lib/go';
-import { race } from '@Lib/operators';
 import { delay } from '@Lib/shared/utils/delay';
 
 describe('race', () => {

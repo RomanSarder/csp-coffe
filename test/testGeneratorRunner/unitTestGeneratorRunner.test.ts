@@ -1,4 +1,4 @@
-import { call } from '@Lib/instruction';
+import { call } from '@Lib/operators';
 import { fakeAsyncFunction } from '@Lib/shared/utils';
 import { delay } from '@Lib/shared/utils/delay';
 import { unitTestGeneratorRunner } from '@Lib/testGeneratorRunner';

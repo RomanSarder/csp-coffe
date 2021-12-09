@@ -1,7 +1,6 @@
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
-import { call } from '@Lib/instruction';
+import { call, all } from '@Lib/operators';
 import { go } from '@Lib/go';
-import { all } from '@Lib/operators';
 import { delay } from '@Lib/shared/utils';
 
 describe('all', () => {

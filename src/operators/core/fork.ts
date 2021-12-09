@@ -1,6 +1,8 @@
-import { InstructionType } from './entity/instructionType';
-import { ForkInstruction } from './entity/forkInstruction';
-import { makeInstruction } from './makeInstruction';
+import {
+    InstructionType,
+    ForkInstruction,
+    makeInstruction,
+} from '@Lib/instruction';
 
 export function fork<GenFn extends (...a1: readonly any[]) => Generator>(
     genFn: GenFn,
