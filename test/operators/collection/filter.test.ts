@@ -1,12 +1,12 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel } from '@Lib/channel';
-import { close, filter, putAsync, takeAsync, releasePut } from '@Lib/operators';
+import { close, filter, putAsync, takeAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('filter', () => {
     it('should return channel with filtered values from source channels', async () => {
-        const ch1 = makeChannel<number>(CreatableBufferType.UNBLOCKING);
-        const ch2 = makeChannel<string>(CreatableBufferType.UNBLOCKING);
+        const ch1 = makeChannel<number>(CreatableBufferType.DROPPING, 2);
+        const ch2 = makeChannel<string>(CreatableBufferType.DROPPING, 2);
         const { ch: ch3, promise } = filter(
             (num) => {
                 if (typeof num === 'string') {
@@ -20,7 +20,6 @@ describe('filter', () => {
         await putAsync(ch1, 1);
         await putAsync(ch2, '2');
         expect(await takeAsync(ch3)).toEqual('2');
-        releasePut(ch1);
         await putAsync(ch2, '3');
         await putAsync(ch1, 4);
         expect(await takeAsync(ch3)).toEqual(4);

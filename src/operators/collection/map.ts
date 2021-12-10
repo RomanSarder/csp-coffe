@@ -10,7 +10,6 @@ import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
 import type { ChannelTransformationResponse } from './entity/channelTransformationResponse';
-import { constant } from '@Lib/shared/utils';
 
 export function map<
     Channels extends Channel<any>[],
@@ -24,16 +23,9 @@ export function map<
 
     const promise = (async () => {
         try {
-            await createAsyncWrapper(iterate)(
-                function* mapValues(data) {
-                    yield put(
-                        mappedCh,
-                        mapFn(data as FlattenChannels<Channels>),
-                    );
-                },
-                constant(true),
-                ...channels,
-            );
+            await createAsyncWrapper(iterate)(function* mapValues(data) {
+                yield put(mappedCh, mapFn(data as FlattenChannels<Channels>));
+            }, ...channels);
         } finally {
             close(mappedCh);
         }

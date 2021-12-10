@@ -11,7 +11,6 @@ describe('take', () => {
         const { next } = integrationTestGeneratorRunner(take(ch));
         makePut(ch, 'test1');
         await next();
-
         expect((await next()).value).toEqual('test1');
     });
 
@@ -20,7 +19,6 @@ describe('take', () => {
             const ch = makeChannel();
             const { next } = integrationTestGeneratorRunner(take(ch));
             close(ch);
-            await next();
             const result = await next();
             expect(result.done).toEqual(true);
             expect(result.value).toEqual(Events.CHANNEL_CLOSED);
@@ -33,9 +31,7 @@ describe('take', () => {
             const { next } = unitTestGeneratorRunner(take(ch));
             makePut(ch, 'test1');
             await next();
-            await next();
             close(ch);
-            await next();
             await next();
             expect((await next()).value).toEqual(Events.CHANNEL_CLOSED);
             expect(ch.putBuffer.getElementsArray()).toEqual([]);

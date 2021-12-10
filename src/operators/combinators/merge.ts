@@ -9,7 +9,6 @@ import { close } from '../core/close';
 import { put } from '../core/put';
 import { iterate } from '../collection/iterate';
 import { DefaultResultChannelConfig } from '../config';
-import { constant } from '@Lib/shared/utils';
 
 export function merge<
     Channels extends Channel<any>[],
@@ -21,13 +20,9 @@ export function merge<
     const mergedChannel = makeChannel<AggregatedType>(bufferType, capacity);
     const promise = (async () => {
         try {
-            await createAsyncWrapper(iterate)(
-                function* mapValues(data) {
-                    yield put(mergedChannel, data);
-                },
-                constant(true),
-                ...channels,
-            );
+            await createAsyncWrapper(iterate)(function* mapValues(data) {
+                yield put(mergedChannel, data);
+            }, ...channels);
         } finally {
             close(mergedChannel);
         }

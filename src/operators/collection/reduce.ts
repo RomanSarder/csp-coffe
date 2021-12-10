@@ -9,7 +9,6 @@ import { putAsync } from '../core/putAsync';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
 import type { ChannelTransformationResponse } from './entity/channelTransformationResponse';
-import { constant } from 'lodash';
 
 export function reduce<Channels extends Channel<any>[], A = unknown>(
     reducer: (acc: A, data: FlattenChannels<Channels>) => A,
@@ -22,13 +21,9 @@ export function reduce<Channels extends Channel<any>[], A = unknown>(
 
     const promise = (async () => {
         try {
-            await createAsyncWrapper(iterate)(
-                function reduceValues(data) {
-                    result = reducer(result, data);
-                },
-                constant(true),
-                ...channels,
-            );
+            await createAsyncWrapper(iterate)(function reduceValues(data) {
+                result = reducer(result, data);
+            }, ...channels);
         } finally {
             await putAsync(reducedCh, result);
         }

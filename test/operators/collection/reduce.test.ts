@@ -10,6 +10,7 @@ describe('reduce', () => {
             const ch2 = makeChannel<number>();
             const { ch: ch3, promise } = reduce(
                 (acc, next) => {
+                    console.log('acc', 'next', acc, next);
                     if (typeof next === 'string') {
                         return acc + parseInt(next, 10);
                     }

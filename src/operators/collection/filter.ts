@@ -23,13 +23,11 @@ export function filter<Channels extends Channel<any>[]>(
 
     const promise = (async () => {
         try {
-            await createAsyncWrapper(iterate)(
-                function* filterValues(data) {
+            await createAsyncWrapper(iterate)(function* filterValues(data) {
+                if (filterFn(data)) {
                     yield put(filteredCh, data);
-                },
-                filterFn,
-                ...channels,
-            );
+                }
+            }, ...channels);
         } finally {
             close(filteredCh);
         }

@@ -3,7 +3,6 @@ import { createAsyncWrapper } from '@Lib/runner';
 import { put } from '../core/put';
 import { iterate } from '../collection/iterate';
 import { close } from '../core/close';
-import { constant } from '@Lib/shared/utils';
 
 export function pipe<T = unknown>(
     destinationChannel: Channel<T>,
@@ -12,13 +11,9 @@ export function pipe<T = unknown>(
 ): { promise: Promise<void> } {
     const promise = (async () => {
         try {
-            await createAsyncWrapper(iterate)(
-                function* mapValues(data) {
-                    yield put(destinationChannel, data);
-                },
-                constant(true),
-                sourceChannel,
-            );
+            await createAsyncWrapper(iterate)(function* mapValues(data) {
+                yield put(destinationChannel, data);
+            }, sourceChannel);
         } finally {
             if (!keepOpen) {
                 close(destinationChannel);

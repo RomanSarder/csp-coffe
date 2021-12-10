@@ -8,7 +8,6 @@ export { zip } from './combinators/zip';
 
 export { close } from './core/close';
 export { offer, offerFn } from './core/offer';
-export { probe } from './core/probe';
 export { poll, pollFn } from './core/poll';
 export { put } from './core/put';
 export { putAsync } from './core/putAsync';
