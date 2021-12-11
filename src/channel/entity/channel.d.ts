@@ -1,4 +1,7 @@
 import type { Buffer } from '@Lib/buffer';
+import { PutBuffer, TakeBuffer, Values } from './privateKeys';
+import type { PutRequest } from './putRequest';
+import type { TakeRequest } from './takeRequest';
 
 export type Channel<T = NonNullable<any>> = {
     id: string;
@@ -8,8 +11,9 @@ export type Channel<T = NonNullable<any>> = {
 
     capacity: number;
 
-    putBuffer: Buffer<T>;
-    takeBuffer: Buffer<null>;
+    [Values]: T[];
+    [PutBuffer]: Buffer<PutRequest>;
+    [TakeBuffer]: Buffer<TakeRequest>;
 
     is: (ch: Channel<any>) => boolean;
 

@@ -1,13 +1,13 @@
-import type { FlattenChannel, Channel } from '@Lib/channel';
-
-import { isChannelClosedError } from '@Lib/channel';
-
-import { makePut } from '../internal/makePut';
-import { resetChannel } from '../internal/resetChannel';
-import { waitForIncomingTake } from '../internal/waitForIncomingTake';
-import { waitForPutQueueToRelease } from '../internal/waitForPutQueueToRelease';
-
-export const PUT = 'PUT';
+import {
+    FlattenChannel,
+    Channel,
+    push,
+    isChannelClosedError,
+    resetChannel,
+    makePutRequest,
+    waitForIncomingTake,
+    waitForPutQueueToRelease,
+} from '@Lib/channel';
 
 export function* put<C extends Channel<NonNullable<any>>>(
     ch: C,
@@ -19,7 +19,8 @@ export function* put<C extends Channel<NonNullable<any>>>(
 
     try {
         yield waitForPutQueueToRelease(ch);
-        makePut(ch, data);
+        makePutRequest(ch);
+        push(ch, data);
 
         if (!ch.isBuffered) {
             yield waitForIncomingTake(ch);

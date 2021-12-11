@@ -1,28 +1,34 @@
-import { makeChannel } from '@Lib/channel';
-import { makePut, waitForIncomingPut } from '@Lib/operators';
+import {
+    makeChannel,
+    makePutRequest,
+    push,
+    releasePut,
+    waitForPutQueueToRelease,
+} from '@Lib/channel';
+
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 
-describe('waitForIncomingPut', () => {
-    describe('when there is no items in put buffer', () => {
-        it('should complete only after any item gets to put buffer', async () => {
+describe('waitForPutQueueToReleaseAsync', () => {
+    describe('when put buffer is blocked', () => {
+        it('should complete only after put buffer becomes unblocked', async () => {
             const ch = makeChannel();
+            makePutRequest(ch);
+            push(ch, 'test1');
             const { next } = integrationTestGeneratorRunner(
-                waitForIncomingPut(ch),
+                waitForPutQueueToRelease(ch),
             );
             expect((await next()).done).toEqual(false);
-            makePut(ch, 'test1');
+            releasePut(ch);
             expect((await next()).done).toEqual(true);
         });
     });
 
-    describe('when there is already an item in put buffer', () => {
+    describe('when put buffer is not blocked', () => {
         it('should resolve immediately', async () => {
             const ch = makeChannel();
-            makePut(ch, 'test1');
             const { next } = integrationTestGeneratorRunner(
-                waitForIncomingPut(ch),
+                waitForPutQueueToRelease(ch),
             );
-
             expect((await next()).done).toEqual(true);
         });
     });

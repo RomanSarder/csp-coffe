@@ -1,6 +1,6 @@
 import type { Channel } from '@Lib/channel';
 import { makeChannel, closeOnAllValuesTaken } from '@Lib/channel';
-import { makePut, close } from '@Lib/operators';
+import { makePutRequest, close } from '@Lib/operators';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { runIterator } from '@Lib/runner';
 import { Events } from './entity/events';
@@ -22,7 +22,7 @@ export function go<
     return {
         cancellablePromise: cancellablePromise
             .then((res) => {
-                makePut(channel, res);
+                makePutRequest(channel, res);
                 return res;
             })
             .catch((e) => {

@@ -1,12 +1,15 @@
 import { BufferType, makeBuffer } from '@Lib/buffer';
 import type { Channel } from '@Lib/channel';
-import { close } from '../core/close';
+import { close } from './close';
+import { PutBuffer, TakeBuffer } from '../entity/privateKeys';
+import type { PutRequest } from '../entity/putRequest';
+import type { TakeRequest } from '../entity/takeRequest';
 
 export function resetChannel<T = unknown>(ch: Channel<T>) {
     // eslint-disable-next-line no-param-reassign
-    ch.putBuffer = makeBuffer<T>(BufferType.CLOSED);
+    ch[PutBuffer] = makeBuffer<PutRequest>(BufferType.CLOSED);
     // eslint-disable-next-line no-param-reassign
-    ch.takeBuffer = makeBuffer<null>(BufferType.CLOSED);
+    ch[TakeBuffer] = makeBuffer<TakeRequest>(BufferType.CLOSED);
     // eslint-disable-next-line no-param-reassign
     close(ch);
     // eslint-disable-next-line no-param-reassign

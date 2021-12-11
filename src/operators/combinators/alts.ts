@@ -13,8 +13,8 @@ import { call } from '../core/call';
 import { Flatten } from '@Lib/shared/entity';
 import { createAsyncWrapper } from '@Lib/runner';
 import { race } from './race';
-import { offerFn } from '../core/offer';
-import { pollFn } from '../core/poll';
+import { offer } from '../core/offer';
+import { poll } from '../core/poll';
 import { put } from '../core/put';
 import { take } from '../core/take';
 
@@ -68,23 +68,23 @@ export function* altsGenerator<
 >(defs: Definitions, defaultValue?: InnerType) {
     const successes: OperationResponse<InnerType>[] = [];
 
-    defs.forEach((def) => {
+    for (const def of defs) {
         if (isPutDefinition(def)) {
             const [ch, data] = def;
-            const result = offerFn(ch, data);
+            const result: null | true = yield offer(ch, data);
 
-            if (result !== null) {
+            if (result === true) {
                 successes.push({ value: result, ch });
             }
         } else {
             const ch = def;
-            const result = pollFn(ch);
+            const result: null | InnerType = yield poll(ch);
 
             if (result !== null) {
                 successes.push({ value: result, ch });
             }
         }
-    });
+    }
 
     if (successes.length > 0) {
         return successes[0];

@@ -1,11 +1,9 @@
-import {
-    close,
-    waitForIncomingPutAsync,
-    waitUntilBufferIsEmptyAsync,
-} from '@Lib/operators';
+import { waitForIncomingPutAsync } from '../utils/waitForIncomingPutAsync';
+import { waitUntilBufferIsEmptyAsync } from '../utils/waitUntilBufferEmptyAsync';
 import { Channel } from '../entity/channel';
 import { isChannelClosedError } from '../utils/isChannelClosedError';
 import { hasKey } from './utils/hasKey';
+import { close } from '../utils/close';
 
 export function closeOnAllValuesTaken<C extends Channel<any>>(ch: C) {
     let waitingPromise: Promise<void>;

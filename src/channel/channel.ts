@@ -1,10 +1,13 @@
 import { v4 as uuid } from 'uuid';
 
 import { BufferType, CreatableBufferType, makeBuffer } from '@Lib/buffer';
-import { close, takeAsync } from '@Lib/operators';
+import { takeAsync } from '@Lib/operators';
 import type { Channel } from './entity/channel';
 import { DefaultChannelConfig } from './config';
 import { Events } from './entity/events';
+import type { PutRequest } from './entity/putRequest';
+import { PutBuffer, TakeBuffer, Values } from './entity/privateKeys';
+import { close } from './utils/close';
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
     if (bufferType === CreatableBufferType.UNBLOCKING || capacity > 1) {
@@ -22,8 +25,9 @@ export function makeChannel<T = NonNullable<any>>(
         capacity,
         isBuffered: isChannelBuffered(bufferType, capacity),
         isClosed: false,
-        putBuffer: makeBuffer<T>(bufferType, capacity),
-        takeBuffer: makeBuffer(BufferType.FIXED, 1),
+        [Values]: [],
+        [PutBuffer]: makeBuffer<PutRequest>(bufferType, capacity),
+        [TakeBuffer]: makeBuffer(BufferType.FIXED, 1),
 
         is(ch: Channel<unknown>) {
             return this.id === ch.id;

@@ -3,15 +3,16 @@ import { Channel } from '@Lib/channel/entity/channel';
 import { Events } from '@Lib/channel/entity/events';
 import { errorMessages } from '@Lib/channel/entity/errorMessages';
 import { isChannelClosedError } from '@Lib/channel/utils/isChannelClosedError';
-import { makeTake } from '../internal/makeTake';
-import { releasePut } from '../internal/releasePut';
-import { releaseTake } from '../internal/releaseTake';
-import { waitForIncomingPut } from '../internal/waitForIncomingPut';
-import { waitForTakeQueueToRelease } from '../internal/waitForTakeQueueToRelease';
-import { resetChannel } from '../internal/resetChannel';
+import {
+    makeTakeRequest,
+    pop,
+    releasePut,
+    releaseTake,
+    resetChannel,
+    waitForIncomingPut,
+    waitForTakeQueueToRelease,
+} from '@Lib/channel';
 import { poll } from './poll';
-
-export const TAKE = 'TAKE';
 
 export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
     try {
@@ -19,7 +20,7 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
         yield waitForTakeQueueToRelease(ch);
-        makeTake(ch);
+        makeTakeRequest(ch);
 
         try {
             if (ch.isClosed) {
@@ -27,7 +28,6 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
             }
             const maybeResult: FlattenChannel<C> | null = yield poll(ch);
             if (maybeResult !== null) {
-                releaseTake(ch);
                 return maybeResult;
             }
             yield waitForIncomingPut(ch);
@@ -40,7 +40,8 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
             throw e;
         }
         releaseTake(ch);
-        return releasePut(ch);
+        releasePut(ch);
+        return pop(ch);
     } catch (e) {
         if (isChannelClosedError(e)) {
             return Events.CHANNEL_CLOSED;

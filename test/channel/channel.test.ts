@@ -1,6 +1,7 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { Events, makeChannel, makeTimeoutChannel } from '@Lib/channel';
-import { close, putAsync } from '@Lib/operators';
+import { Events, makeChannel, makeTimeoutChannel, close } from '@Lib/channel';
+import { PutBuffer, TakeBuffer } from '@Lib/channel/entity/privateKeys';
+import { putAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('Channel', () => {
@@ -8,8 +9,8 @@ describe('Channel', () => {
         it('should create a channel with put and take buffers', () => {
             const ch = makeChannel();
 
-            expect(ch.putBuffer.getElementsArray()).toEqual([]);
-            expect(ch.takeBuffer.getElementsArray()).toEqual([]);
+            expect(ch[PutBuffer].getElementsArray()).toEqual([]);
+            expect(ch[TakeBuffer].getElementsArray()).toEqual([]);
         });
 
         it('should be async iterable', async () => {

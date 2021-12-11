@@ -1,23 +1,24 @@
-import type { FlattenChannel, Channel } from '@Lib/channel';
+import {
+    FlattenChannel,
+    Channel,
+    isPutBlocked,
+    isChannelClosed,
+    makePutRequest,
+    releasePut,
+    push,
+} from '@Lib/channel';
 
-import { call } from '../core/call';
-import { makePut } from '../internal/makePut';
-
-export function offerFn<C extends Channel<any>>(
-    ch: C,
-    data: FlattenChannel<C>,
-): true | null {
+export function* offer<C extends Channel<any>>(ch: C, data: FlattenChannel<C>) {
     if (data === null) {
         throw new Error('null values are not allowed');
     }
 
-    if (ch.putBuffer.isBlocked() || ch.isClosed) {
+    if (isPutBlocked(ch) || isChannelClosed(ch)) {
         return null;
     }
-    makePut(ch, data);
+    makePutRequest(ch);
+    yield;
+    releasePut(ch);
+    push(ch, data);
     return true;
-}
-
-export function offer<C extends Channel<any>>(ch: C, data: FlattenChannel<C>) {
-    return call(offerFn, ch, data);
 }

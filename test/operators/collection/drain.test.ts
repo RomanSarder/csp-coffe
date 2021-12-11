@@ -1,5 +1,5 @@
 import { makeChannel } from '@Lib/channel';
-import { close, drain, makePut } from '@Lib/operators';
+import { close, drain, makePutRequest } from '@Lib/operators';
 import { delay } from '@Lib/shared/utils/delay';
 
 describe('drain', () => {
@@ -7,11 +7,11 @@ describe('drain', () => {
         const ch = makeChannel();
         const drainPromise = drain(ch);
 
-        makePut(ch, 1);
+        makePutRequest(ch, 1);
         await delay(200);
-        makePut(ch, 2);
+        makePutRequest(ch, 2);
         await delay(200);
-        makePut(ch, 3);
+        makePutRequest(ch, 3);
         await delay(500);
         close(ch);
 

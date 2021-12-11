@@ -1,17 +1,22 @@
-import { makeChannel } from '@Lib/channel';
-import { offerFn } from '@Lib/operators';
+import { close, makeChannel } from '@Lib/channel';
+import { PutBuffer } from '@Lib/channel/entity/privateKeys';
+import { offer } from '@Lib/operators';
+import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 
 describe('offer', () => {
-    it('should put value in channel and return true', () => {
+    it('should put value in channel and return true', async () => {
         const ch = makeChannel();
-        expect(offerFn(ch, 'test1')).toEqual(true);
-        expect(ch.putBuffer.getElementsArray()).toEqual(['test1']);
+        const { next } = integrationTestGeneratorRunner(offer(ch, 'test1'));
+        await next();
+        expect((await next()).value).toEqual(true);
+        expect(ch[PutBuffer].getElementsArray()).toEqual(['test1']);
     });
 
-    describe('when the channel is closed', () => {
+    describe('when the channel is closed', async () => {
         const ch = makeChannel();
-        ch.isClosed = true;
-        expect(offerFn(ch, 'test1')).toEqual(null);
-        expect(ch.putBuffer.getElementsArray()).toEqual([]);
+        close(ch);
+        const { next } = integrationTestGeneratorRunner(offer(ch, 'test1'));
+        expect((await next()).value).toEqual(null);
+        expect(ch[PutBuffer].getElementsArray()).toEqual([]);
     });
 });

@@ -1,12 +1,13 @@
-import { close } from '@Lib/operators';
+import { close } from '../utils/close';
 import { Channel } from '../entity/channel';
 import { hasKey } from './utils/hasKey';
+import { PutBuffer } from '../entity/privateKeys';
 
 export function closeOnEmptyBuffer<C extends Channel<any>>(ch: C) {
     return new Proxy(ch, {
         get(target, name, receiver) {
             if (name === 'isClosed') {
-                if (target.putBuffer.getSize() === 0) {
+                if (target[PutBuffer].getSize() === 0) {
                     close(target);
                     return true;
                 }

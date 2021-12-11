@@ -1,10 +1,17 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
+import {
+    makeChannel,
+    close,
+    makePutRequest,
+    releasePut,
+    push,
+} from '@Lib/channel';
 import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,
 } from '@Lib/testGeneratorRunner';
-import { put, close, makePut, releasePut } from '@Lib/operators';
+import { put } from '@Lib/operators';
+import { PutBuffer } from '@Lib/channel/entity/privateKeys';
 
 describe('put', () => {
     it('should put a value to channel', async () => {
@@ -13,7 +20,7 @@ describe('put', () => {
         await next();
         await next();
         await next();
-        expect(ch.putBuffer.getElementsArray()).toEqual(['test1']);
+        expect(ch[PutBuffer].getElementsArray()).toEqual(['test1']);
     });
 
     it('should throw error if trying to put null', async () => {
@@ -22,7 +29,7 @@ describe('put', () => {
         expect((await next()).error).toEqual(
             new Error('null values are not allowed'),
         );
-        expect(ch.putBuffer.getElementsArray()).toEqual([]);
+        expect(ch[PutBuffer].getElementsArray()).toEqual([]);
     });
 
     describe('when the channel is closed', () => {
@@ -44,7 +51,7 @@ describe('put', () => {
             await next();
             close(ch);
             expect((await next()).done).toEqual(true);
-            expect(ch.putBuffer.getElementsArray()).toEqual([]);
+            expect(ch[PutBuffer].getElementsArray()).toEqual([]);
         });
     });
 
@@ -64,14 +71,16 @@ describe('put', () => {
                 it('should block put request', async () => {
                     const ch = makeChannel(CreatableBufferType.FIXED, 2);
                     const { next } = unitTestGeneratorRunner(put(ch, 'test1'));
-                    makePut(ch, 'test11');
-                    makePut(ch, 'test12');
+                    makePutRequest(ch);
+                    push(ch, 'test11');
+                    makePutRequest(ch);
+                    push(ch, 'test12');
                     await next();
                     expect((await next()).done).toEqual(false);
                     releasePut(ch);
                     await next();
                     expect((await next()).done).toEqual(true);
-                    expect(ch.putBuffer.getElementsArray()).toEqual([
+                    expect(ch[PutBuffer].getElementsArray()).toEqual([
                         'test12',
                         'test1',
                     ]);

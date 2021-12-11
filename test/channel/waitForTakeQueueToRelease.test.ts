@@ -1,16 +1,16 @@
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
-import { makeChannel } from '@Lib/channel';
 import {
-    makeTake,
+    makeChannel,
+    makeTakeRequest,
     releaseTake,
     waitForTakeQueueToRelease,
-} from '@Lib/operators';
+} from '@Lib/channel';
 
 describe('waitForTakeQueueToRelease', () => {
     describe('when take buffer is blocked', () => {
         it('should complete which resolves only after put buffer becomes unblocked', async () => {
             const ch = makeChannel();
-            makeTake(ch);
+            makeTakeRequest(ch);
             const { next } = integrationTestGeneratorRunner(
                 waitForTakeQueueToRelease(ch),
             );
