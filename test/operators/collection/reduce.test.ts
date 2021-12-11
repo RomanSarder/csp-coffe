@@ -1,6 +1,6 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
-import { close, reduce, putAsync, takeAsync } from '@Lib/operators';
+import { makeChannel, close } from '@Lib/channel';
+import { reduce, putAsync, takeAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('reduce', () => {

@@ -1,8 +1,10 @@
-import { call, fork, spawn, close } from '@Lib/operators';
+import { call, fork, spawn } from '@Lib/operators';
 import { go } from '@Lib/go';
+import { close } from '@Lib/channel';
 import { fakeAsyncFunction } from '@Lib/shared/utils';
 import { CancelError } from '@Lib/cancellablePromise';
 import { delay } from '@Lib/shared/utils/delay';
+import { PutBuffer } from '@Lib/channel/entity/privateKeys';
 
 describe('go', () => {
     it('should execute both sync and async yield statements in a correct order', async () => {
@@ -232,7 +234,7 @@ describe('go', () => {
 
         const { channel, cancellablePromise } = go(testGenerator);
         await cancellablePromise;
-        expect(channel.putBuffer.getElementsArray()).toEqual([10]);
+        expect(channel[PutBuffer].getElementsArray()).toEqual([10]);
         close(channel);
     });
 });

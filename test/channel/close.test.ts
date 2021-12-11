@@ -1,10 +1,9 @@
-import { makeChannel } from '@Lib/channel';
-import { close } from '@Lib/operators';
+import { makeChannel, close, isChannelClosed } from '@Lib/channel';
 
 describe('close', () => {
     it('should close the channel', () => {
         const ch = makeChannel();
         close(ch);
-        expect(ch.isClosed).toEqual(true);
+        expect(isChannelClosed(ch)).toEqual(true);
     });
 });
