@@ -5,13 +5,15 @@ import {
     makePutRequest,
     releasePut,
     push,
+    pop,
 } from '@Lib/channel';
 import {
     integrationTestGeneratorRunner,
     unitTestGeneratorRunner,
 } from '@Lib/testGeneratorRunner';
 import { put } from '@Lib/operators';
-import { PutBuffer } from '@Lib/channel/entity/privateKeys';
+import { PutBuffer, Values } from '@Lib/channel/entity/privateKeys';
+import { putRequest } from '@Lib/channel/config';
 
 describe('put', () => {
     it('should put a value to channel', async () => {
@@ -20,7 +22,8 @@ describe('put', () => {
         await next();
         await next();
         await next();
-        expect(ch[PutBuffer].getElementsArray()).toEqual(['test1']);
+        expect(ch[PutBuffer].getElementsArray()).toEqual([putRequest]);
+        expect(ch[Values]).toEqual(['test1']);
     });
 
     it('should throw error if trying to put null', async () => {
@@ -30,6 +33,7 @@ describe('put', () => {
             new Error('null values are not allowed'),
         );
         expect(ch[PutBuffer].getElementsArray()).toEqual([]);
+        expect(ch[Values]).toEqual([]);
     });
 
     describe('when the channel is closed', () => {
@@ -52,6 +56,7 @@ describe('put', () => {
             close(ch);
             expect((await next()).done).toEqual(true);
             expect(ch[PutBuffer].getElementsArray()).toEqual([]);
+            expect(ch[Values]).toEqual([]);
         });
     });
 
@@ -78,11 +83,13 @@ describe('put', () => {
                     await next();
                     expect((await next()).done).toEqual(false);
                     releasePut(ch);
+                    pop(ch);
                     await next();
                     expect((await next()).done).toEqual(true);
+                    expect(ch[Values]).toEqual(['test12', 'test1']);
                     expect(ch[PutBuffer].getElementsArray()).toEqual([
-                        'test12',
-                        'test1',
+                        putRequest,
+                        putRequest,
                     ]);
                 });
             });

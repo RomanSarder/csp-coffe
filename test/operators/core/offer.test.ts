@@ -8,7 +8,7 @@ describe('offer', () => {
         const ch = makeChannel();
         const { next } = integrationTestGeneratorRunner(offer(ch, 'test1'));
         await next();
-        console.log(await next());
+        await next();
         expect(ch[Values]).toEqual(['test1']);
     });
 

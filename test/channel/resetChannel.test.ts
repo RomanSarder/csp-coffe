@@ -4,7 +4,7 @@ import {
     makeTakeRequest,
     resetChannel,
 } from '@Lib/channel';
-import { PutBuffer, TakeBuffer } from '@Lib/channel/entity/privateKeys';
+import { PutBuffer, TakeBuffer, Values } from '@Lib/channel/entity/privateKeys';
 
 describe('resetChannel', () => {
     it('should close the channel', () => {
@@ -20,5 +20,6 @@ describe('resetChannel', () => {
         makeTakeRequest(ch);
         expect(ch[PutBuffer].getElementsArray()).toEqual([]);
         expect(ch[TakeBuffer].getElementsArray()).toEqual([]);
+        expect(ch[Values]).toEqual([]);
     });
 });
