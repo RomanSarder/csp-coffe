@@ -1,5 +1,5 @@
 import { close, makeChannel, push, makePutRequest } from '@Lib/channel';
-import { PutBuffer, Values } from '@Lib/channel/entity/privateKeys';
+import { PutBuffer, TakeBuffer, Values } from '@Lib/channel/entity/privateKeys';
 import { poll } from '@Lib/operators';
 import { integrationTestGeneratorRunner } from '@Lib/testGeneratorRunner';
 
@@ -13,6 +13,7 @@ describe('poll', () => {
             await next();
             expect((await next()).value).toEqual('test1');
             expect(ch[PutBuffer].getSize()).toEqual(0);
+            expect(ch[TakeBuffer].getSize()).toEqual(0);
             expect(ch[Values].length).toEqual(0);
         });
     });
@@ -22,6 +23,7 @@ describe('poll', () => {
             const ch = makeChannel();
             const { next } = integrationTestGeneratorRunner(poll(ch));
             expect((await next()).value).toEqual(null);
+            expect(ch[PutBuffer].getSize()).toEqual(0);
             expect(ch[PutBuffer].getSize()).toEqual(0);
             expect(ch[Values].length).toEqual(0);
         });
