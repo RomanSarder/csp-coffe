@@ -1,7 +1,8 @@
-import { makeChannel } from '@Lib/channel';
-import { close, map, putAsync, takeAsync } from '@Lib/operators';
+import { makeChannel, close } from '@Lib/channel';
+import { map, putAsync, takeAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
 import { CreatableBufferType } from '@Lib/buffer';
+import { PutBuffer } from '@Lib/channel/entity/privateKeys';
 
 describe('map', () => {
     it('should return channel with mapped values from source channels', async () => {
@@ -32,7 +33,7 @@ describe('map', () => {
             bufferType: CreatableBufferType.SLIDING,
             capacity: 5,
         });
-        expect(ch2.putBuffer.type).toEqual(CreatableBufferType.SLIDING);
+        expect(ch2[PutBuffer].type).toEqual(CreatableBufferType.SLIDING);
         expect(ch2.capacity).toEqual(5);
         close(ch1);
         close(ch2);

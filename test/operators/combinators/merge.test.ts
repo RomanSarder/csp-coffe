@@ -1,7 +1,8 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
+import { makeChannel, close } from '@Lib/channel';
 import { eventLoopQueue } from '@Lib/shared/utils';
-import { close, merge, putAsync, takeAsync } from '@Lib/operators';
+import { merge, putAsync, takeAsync } from '@Lib/operators';
+import { PutBuffer } from '@Lib/channel/entity/privateKeys';
 
 describe('merge', () => {
     it('should return unblocking channel with values from source channels', async () => {
@@ -48,7 +49,7 @@ describe('merge', () => {
             });
 
             expect(resultCh.capacity).toEqual(10);
-            expect(resultCh.putBuffer.type).toEqual(
+            expect(resultCh[PutBuffer].type).toEqual(
                 CreatableBufferType.SLIDING,
             );
 

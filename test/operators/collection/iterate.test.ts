@@ -1,6 +1,11 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel, closeOnAllValuesTaken } from '@Lib/channel';
-import { iterate, makePutRequest } from '@Lib/operators';
+import {
+    makeChannel,
+    closeOnAllValuesTaken,
+    makePutRequest,
+    push,
+} from '@Lib/channel';
+import { iterate } from '@Lib/operators';
 import { runIterator } from '@Lib/runner';
 
 describe('iterate', () => {
@@ -8,8 +13,10 @@ describe('iterate', () => {
         const spy = jest.fn();
         const ch = makeChannel(CreatableBufferType.UNBLOCKING);
         const ch2 = closeOnAllValuesTaken(ch);
-        makePutRequest(ch2, 'test1');
-        makePutRequest(ch2, 'test2');
+        makePutRequest(ch2);
+        push(ch2, 'test1');
+        makePutRequest(ch2);
+        push(ch2, 'test2');
 
         const runner = runIterator(iterate(spy, ch2));
 

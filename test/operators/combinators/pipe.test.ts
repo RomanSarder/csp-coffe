@@ -1,5 +1,5 @@
-import { makeChannel } from '@Lib/channel';
-import { putAsync, pipe, takeAsync, close } from '@Lib/operators';
+import { makeChannel, close } from '@Lib/channel';
+import { putAsync, pipe, takeAsync } from '@Lib/operators';
 import { CreatableBufferType } from '@Lib/buffer';
 
 describe('pipe', () => {

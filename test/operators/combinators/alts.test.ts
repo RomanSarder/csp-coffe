@@ -1,11 +1,11 @@
-import { makeChannel } from '@Lib/channel';
 import {
+    makeChannel,
     makePutRequest,
-    alts,
     releasePut,
-    takeAsync,
     close,
-} from '@Lib/operators';
+    push,
+} from '@Lib/channel';
+import { alts, takeAsync } from '@Lib/operators';
 import { delay } from '@Lib/shared/utils/delay';
 
 describe('alts', () => {
@@ -14,7 +14,8 @@ describe('alts', () => {
             it('should immediately return a data from channel which contains it', async () => {
                 const ch1 = makeChannel();
                 const ch2 = makeChannel();
-                makePutRequest(ch2, 'test2');
+                makePutRequest(ch2);
+                push(ch2, 'test2');
 
                 const result = await alts([ch1, ch2]);
 
@@ -27,8 +28,10 @@ describe('alts', () => {
             it('should immediately return a data from a first channel', async () => {
                 const ch1 = makeChannel();
                 const ch2 = makeChannel();
-                makePutRequest(ch1, 'test1');
-                makePutRequest(ch2, 'test2');
+                makePutRequest(ch1);
+                push(ch1, 'test1');
+                makePutRequest(ch2);
+                push(ch2, 'test2');
 
                 const result = await alts([ch1, ch2]);
 
@@ -45,7 +48,8 @@ describe('alts', () => {
 
                 const altsPromise = alts([ch1, ch2]);
 
-                makePutRequest(ch1, 'test1');
+                makePutRequest(ch1);
+                push(ch1, 'test1');
 
                 const altsResult = await altsPromise;
                 expect(altsResult.ch.is(ch1)).toEqual(true);
@@ -75,8 +79,10 @@ describe('alts', () => {
                 const spy = jest.fn();
                 const ch1 = makeChannel();
                 const ch2 = makeChannel();
-                makePutRequest(ch1, 'filler1');
-                makePutRequest(ch2, 'filler2');
+                makePutRequest(ch1);
+                push(ch1, 'filler1');
+                makePutRequest(ch2);
+                push(ch2, 'filler2');
 
                 const altsPromise = alts([
                     [ch1, 'test1'],
@@ -99,8 +105,10 @@ describe('alts', () => {
                 it('should return the result of first unsuccessful put operation', async () => {
                     const ch1 = makeChannel();
                     const ch2 = makeChannel();
-                    makePutRequest(ch1, 'filler1');
-                    makePutRequest(ch2, 'filler2');
+                    makePutRequest(ch1);
+                    push(ch1, 'filler1');
+                    makePutRequest(ch2);
+                    push(ch2, 'filler2');
 
                     const altsPromise = alts([
                         [ch1, 'test1'],

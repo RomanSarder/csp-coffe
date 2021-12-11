@@ -1,6 +1,7 @@
 import { CreatableBufferType } from '@Lib/buffer';
-import { makeChannel } from '@Lib/channel';
-import { close, filter, putAsync, takeAsync } from '@Lib/operators';
+import { makeChannel, close } from '@Lib/channel';
+import { PutBuffer } from '@Lib/channel/entity/privateKeys';
+import { filter, putAsync, takeAsync } from '@Lib/operators';
 import { eventLoopQueue } from '@Lib/shared/utils';
 
 describe('filter', () => {
@@ -44,7 +45,7 @@ describe('filter', () => {
                 capacity: 5,
             },
         );
-        expect(ch2.putBuffer.type).toEqual(CreatableBufferType.SLIDING);
+        expect(ch2[PutBuffer].type).toEqual(CreatableBufferType.SLIDING);
         expect(ch2.capacity).toEqual(5);
         close(ch1);
         close(ch2);
