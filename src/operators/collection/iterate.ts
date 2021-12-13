@@ -6,7 +6,7 @@ import { call } from '../core/call';
 import { all } from '../combinators/all';
 import { take } from '../core/take';
 
-function* iterateOverSingleChannel<C extends Channel<any>>(
+export function* iterateOverSingleChannel<C extends Channel<any>>(
     callback: (data: FlattenChannel<C>) => void,
     ch: C,
 ) {

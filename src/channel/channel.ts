@@ -19,9 +19,10 @@ function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
 export function makeChannel<T = NonNullable<any>>(
     bufferType = DefaultChannelConfig.bufferType,
     capacity = 1,
+    id = uuid(),
 ): Channel<T> {
     const result: Channel<T> = {
-        id: uuid(),
+        id,
         capacity,
         isBuffered: isChannelBuffered(bufferType, capacity),
         isClosed: false,
