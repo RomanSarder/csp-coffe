@@ -13,15 +13,18 @@ import {
     waitForTakeQueueToRelease,
 } from '@Lib/channel';
 import { poll } from './poll';
+import { isCancelError } from '@Lib/cancellablePromise/utils/isCancelError';
 
 export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
+    let didPutTakeRequest = false;
     try {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
+
         yield waitForTakeQueueToRelease(ch);
         makeTakeRequest(ch);
-
+        didPutTakeRequest = true;
         try {
             if (ch.isClosed) {
                 throw new Error(errorMessages.CHANNEL_CLOSED);
@@ -40,11 +43,17 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
             throw e;
         }
         releaseTake(ch);
+        didPutTakeRequest = false;
         releasePut(ch);
         return pop(ch);
     } catch (e) {
         if (isChannelClosedError(e)) {
             return Events.CHANNEL_CLOSED;
+        }
+        if (isCancelError(e)) {
+            if (didPutTakeRequest) {
+                releaseTake(ch);
+            }
         }
         throw e;
     }
