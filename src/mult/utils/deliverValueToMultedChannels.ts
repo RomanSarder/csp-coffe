@@ -11,7 +11,7 @@ export async function deliverValueToMultedChannels<T = any>(
             if (nextMultedChannelCallback(value)) {
                 await putAsync(nextMultedChannelCallback.ch, value);
             }
-            return await Promise.resolve();
+            return Promise.resolve();
         },
         Promise.resolve(),
     );

@@ -17,11 +17,11 @@ import { isCancelError } from '@Lib/cancellablePromise/utils/isCancelError';
 
 export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
     let didPutTakeRequest = false;
+    let interval;
     try {
         if (ch.isClosed) {
             throw new Error(errorMessages.CHANNEL_CLOSED);
         }
-
         yield waitForTakeQueueToRelease(ch);
         makeTakeRequest(ch);
         didPutTakeRequest = true;
@@ -29,10 +29,13 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
             if (ch.isClosed) {
                 throw new Error(errorMessages.CHANNEL_CLOSED);
             }
+
             const maybeResult: FlattenChannel<C> | null = yield poll(ch);
+
             if (maybeResult !== null) {
                 return maybeResult;
             }
+
             yield waitForIncomingPut(ch);
         } catch (e) {
             // If channel closed, cleanup made take
@@ -47,6 +50,9 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
         releasePut(ch);
         return pop(ch);
     } catch (e) {
+        if (interval) {
+            clearInterval(interval);
+        }
         if (isChannelClosedError(e)) {
             return Events.CHANNEL_CLOSED;
         }

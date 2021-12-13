@@ -44,10 +44,10 @@ export function makeChannel<T = NonNullable<any>>(
         },
     };
 
-    Object.defineProperty(result, 'id', {
-        configurable: false,
-        writable: false,
-    });
+    // Object.defineProperty(result, 'id', {
+    //     configurable: false,
+    //     writable: false,
+    // });
 
     return result;
 }

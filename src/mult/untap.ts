@@ -1,13 +1,16 @@
-import { Channel } from '@Lib/channel';
+import type { Channel } from '@Lib/channel';
 import { Multer as MulterSymbol } from '@Lib/channel/entity/privateKeys';
+import type { Multer } from '@Lib/mult';
 
-export function untap(
-    sourceChannel: Channel<any>,
-    destinationChannel: Channel<any>,
+export async function untap<T = any>(
+    sourceChannel: Channel<T>,
+    destinationChannelId: string,
 ) {
     if (sourceChannel[MulterSymbol]) {
-        sourceChannel[MulterSymbol]?.multedChannelCallbacks.filter(
-            (callback) => callback.ch.id !== destinationChannel.id,
+        (sourceChannel[MulterSymbol] as Multer<T>).multedChannelCallbacks = (
+            sourceChannel[MulterSymbol] as Multer<T>
+        ).multedChannelCallbacks.filter(
+            (callback) => callback.ch.id !== destinationChannelId,
         );
     }
 }

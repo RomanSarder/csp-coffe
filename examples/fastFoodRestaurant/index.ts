@@ -1,17 +1,8 @@
-import { makeChannel } from '../../src/channel';
+import { makeChannel, close } from '../../src/channel';
 import { go } from '../../src/go';
-import { CallInstruction } from '../../src/instruction';
-import { CancellablePromise, cancelAll } from '../../src/cancellablePromise';
-import {
-    take,
-    put,
-    all,
-    putAsync,
-    filter,
-    fork,
-    call,
-    close,
-} from '../../src/operators';
+import { attachMulter, tap, untap } from '../../src/mult';
+import { cancelAll } from '../../src/cancellablePromise';
+import { take, put, all, putAsync, fork, call } from '../../src/operators';
 import { CreatableBufferType } from '../../src/buffer';
 import { cookerWorker, randomIntFromInterval } from './cookerWorker';
 
@@ -19,9 +10,12 @@ import type { KitchenRequest, Order } from './entity';
 import { delay } from '../../src/shared/utils';
 
 const tillsChannel = makeChannel<KitchenRequest>(CreatableBufferType.FIXED, 2);
+
 const kitchenDeliveryChannel = makeChannel<KitchenRequest>(
     CreatableBufferType.UNBLOCKING,
 );
+attachMulter(kitchenDeliveryChannel);
+
 const orderDeliveryChannel = makeChannel<Order>(CreatableBufferType.UNBLOCKING);
 const burgerCookerChannel = makeChannel(CreatableBufferType.FIXED, 2);
 const frenchFriesCookerChannel = makeChannel(CreatableBufferType.FIXED, 2);
@@ -34,64 +28,54 @@ const deliveredOrders: any = {};
 
 function* orderWorkerRoutine(order: Order) {
     console.log(`Order number ${order.id} is preparing...`);
-    const kitchenRequests: CallInstruction[] = [];
-    let orderItemsDeliveredCount = 0;
 
-    order.items.forEach((item) => {
-        const kitchenRequest: KitchenRequest = { item, orderId: order.id };
-        switch (item) {
-            case 'burger': {
-                kitchenRequests.push(
-                    call(put, burgerCookerChannel, kitchenRequest),
-                );
-                break;
-            }
-            case 'french fries': {
-                kitchenRequests.push(
-                    call(put, frenchFriesCookerChannel, kitchenRequest),
-                );
-                break;
-            }
-            case 'cola': {
-                kitchenRequests.push(
-                    call(put, drinksCookerChannel, kitchenRequest),
-                );
-                break;
-            }
-            case 'dessert': {
-                kitchenRequests.push(
-                    call(put, dessertCookerChannel, kitchenRequest),
-                );
-                break;
-            }
-            case 'souce': {
-                kitchenRequests.push(
-                    call(put, soucesCookerChannel, kitchenRequest),
-                );
-                break;
-            }
-            case 'coffee': {
-                kitchenRequests.push(
-                    call(put, coffeeCookerChannel, kitchenRequest),
-                );
-            }
-        }
-    });
-
-    yield all(...kitchenRequests);
-
-    deliveredOrders[order.id] = [];
-    const { ch: currentOrderKitchenDeliveryChannel } = filter(
+    const currentOrderKitchenDeliveryChannel = makeChannel(
+        CreatableBufferType.UNBLOCKING,
+    );
+    tap(
+        kitchenDeliveryChannel,
+        currentOrderKitchenDeliveryChannel,
         (deliveredOrder) => {
             return order.id === deliveredOrder.orderId;
         },
-        [kitchenDeliveryChannel],
     );
 
+    const kitchenRequests = order.items.map((item) => {
+        const kitchenRequest: KitchenRequest = { item, orderId: order.id };
+        switch (item) {
+            case 'burger': {
+                return call(put, burgerCookerChannel, kitchenRequest);
+            }
+            case 'french fries': {
+                return call(put, frenchFriesCookerChannel, kitchenRequest);
+            }
+            case 'cola': {
+                return call(put, drinksCookerChannel, kitchenRequest);
+            }
+            case 'dessert': {
+                return call(put, dessertCookerChannel, kitchenRequest);
+            }
+            case 'souce': {
+                return call(put, soucesCookerChannel, kitchenRequest);
+            }
+            case 'coffee': {
+                return call(put, coffeeCookerChannel, kitchenRequest);
+            }
+        }
+    });
+    yield all(...kitchenRequests);
+
+    let orderItemsDeliveredCount = 0;
+    deliveredOrders[order.id] = [];
     while (orderItemsDeliveredCount < order.items.length) {
         const deliveredItem: KitchenRequest = yield take(
             currentOrderKitchenDeliveryChannel,
         );
+
+        console.log(
+            `Got ${deliveredItem.item} for order ${deliveredItem.orderId}`,
+        );
+
         deliveredOrders[order.id].push(deliveredItem.item);
         orderItemsDeliveredCount += 1;
 
@@ -101,19 +85,16 @@ function* orderWorkerRoutine(order: Order) {
     }
 
     yield put(orderDeliveryChannel, order);
+    untap(kitchenDeliveryChannel, currentOrderKitchenDeliveryChannel.id);
     console.log(`Order number ${order.id} has been delivered!`);
 }
 
 function* watchOrders() {
-    const promises: CancellablePromise<any>[] = [];
     while (tillsChannel.isClosed === false) {
         const order: Order = yield take(tillsChannel);
-        promises.push(yield fork(orderWorkerRoutine, order));
+        yield fork(orderWorkerRoutine, order);
     }
-    yield Promise.all(promises);
 }
-
-// "я смотрю за входящими заказами "
 
 async function generateOrders() {
     const orders: Order[] = [
@@ -210,5 +191,5 @@ cancellablePromise.then(async () => {
         workerPromise5,
         workerPromise6,
     ]);
-    return undefined;
+    console.log('Delivered orders', deliveredOrders);
 });
