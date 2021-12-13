@@ -11,6 +11,7 @@ export function makeNormalMixedChannelData(
     return {
         handler: makeNormalMixedChannelHandler(mixer.destinationCh),
         cancellablePromise: runMixedChannelConsumption(mixer, ch),
-        option: 'normal',
+        mode: 'normal',
+        ch,
     };
 }

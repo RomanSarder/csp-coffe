@@ -140,9 +140,7 @@ describe('mixer', () => {
                 await toggle(mixer, mixedCh1);
                 await toggle(mixer, mixedCh2, 'solo');
 
-                expect(mixer.mixedChannelsMap['mixed-1'].option).toEqual(
-                    'mute',
-                );
+                expect(mixer.mixedChannelsMap['mixed-1'].mode).toEqual('mute');
 
                 await putAsync(mixedCh1, 'test1');
                 const takePromise = takeAsync(destCh).then(spy);
@@ -249,5 +247,46 @@ describe('mixer', () => {
                 close(mixedCh2);
             });
         });
+    });
+
+    it('should toggle channel modes', async () => {
+        const destCh = makeChannel(CreatableBufferType.UNBLOCKING, 0, 'dest');
+
+        const mixedCh1 = makeChannel(
+            CreatableBufferType.UNBLOCKING,
+            1,
+            'mixed-1',
+        );
+        const mixedCh2 = makeChannel(
+            CreatableBufferType.UNBLOCKING,
+            1,
+            'mixed-2',
+        );
+        const mixer = makeMix(destCh);
+        await toggle(mixer, mixedCh1);
+        await toggle(mixer, mixedCh2);
+
+        await toggle(mixer, mixedCh1, 'pause');
+        await putAsync(mixedCh1, 'test1');
+        await delay(300);
+        expect(mixedCh1[Values]).toEqual(['test1']);
+        expect(destCh[Values]).toEqual([]);
+
+        await toggle(mixer, mixedCh1, 'mute');
+        await putAsync(mixedCh1, 'test1');
+        await delay(300);
+        expect(mixedCh1[Values]).toEqual([]);
+        expect(destCh[Values]).toEqual([]);
+
+        await toggle(mixer, mixedCh1, 'solo');
+        await putAsync(mixedCh2, 'test2');
+        await putAsync(mixedCh1, 'test1');
+        expect(await takeAsync(destCh)).toEqual('test1');
+        expect(mixedCh2[Values]).toEqual([]);
+        expect(mixedCh1[Values]).toEqual([]);
+
+        close(destCh);
+        close(mixedCh1);
+        close(mixedCh2);
     });
 });

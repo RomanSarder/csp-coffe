@@ -11,6 +11,7 @@ export function makeMutedMixedChannelData(
     return {
         handler: mutedChannelHandler,
         cancellablePromise: runMixedChannelConsumption(mixer, ch),
-        option: 'mute',
+        mode: 'mute',
+        ch,
     };
 }

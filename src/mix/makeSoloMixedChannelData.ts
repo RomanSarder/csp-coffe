@@ -1,8 +1,9 @@
 import type { Channel } from '@Lib/channel';
 import type { MixedChannelData } from './entity/mixedChannelData';
 import type { Mixer } from './entity/mixer';
-import { mutedChannelHandler } from './handlers';
+import { makeMutedMixedChannelData } from './makeMutedMixedChannelData';
 import { makeNormalMixedChannelData } from './makeNormalMixedChannelData';
+import { makePausedMixedChannelData } from './makePausedMixedChannelData';
 
 export async function makeSoloMixedChannelData(
     mixer: Mixer,
@@ -12,24 +13,26 @@ export async function makeSoloMixedChannelData(
         return (async () => {
             const targetData = mixer.mixedChannelsMap[chId];
 
-            if (targetData.option !== 'solo') {
-                if (mixer.soloMode === 'mute') {
-                    targetData.handler = mutedChannelHandler;
-                    targetData.option = 'mute';
-                } else if (mixer.soloMode === 'pause') {
-                    await targetData.cancellablePromise?.cancel();
-                    targetData.cancellablePromise = undefined;
-                    targetData.handler = mutedChannelHandler;
-                    targetData.option = 'pause';
+            if (targetData.mode !== 'solo') {
+                await targetData.cancellablePromise?.cancel();
+                if (mixer.soloMode === 'mute' && targetData.mode !== 'mute') {
+                    mixer.mixedChannelsMap[chId] = makeMutedMixedChannelData(
+                        mixer,
+                        targetData.ch as Channel<any>,
+                    );
+                } else if (
+                    mixer.soloMode === 'pause' &&
+                    targetData.mode !== 'pause'
+                ) {
+                    mixer.mixedChannelsMap[chId] = makePausedMixedChannelData();
                 }
             }
         })();
     });
 
     await Promise.all(promises);
-
     return {
         ...makeNormalMixedChannelData(mixer, ch),
-        option: 'solo',
+        mode: 'solo',
     };
 }
