@@ -6,7 +6,7 @@ import type { Channel } from './entity/channel';
 import { DefaultChannelConfig } from './config';
 import { Events } from './entity/events';
 import type { PutRequest } from './entity/putRequest';
-import { PutBuffer, TakeBuffer, Values } from './entity/privateKeys';
+import { Multer, PutBuffer, TakeBuffer, Values } from './entity/privateKeys';
 import { close } from './utils/close';
 
 function isChannelBuffered(bufferType: CreatableBufferType, capacity: number) {
@@ -29,6 +29,7 @@ export function makeChannel<T = NonNullable<any>>(
         [Values]: [],
         [PutBuffer]: makeBuffer<PutRequest>(bufferType, capacity),
         [TakeBuffer]: makeBuffer(BufferType.FIXED, 1),
+        [Multer]: undefined,
 
         is(ch: Channel<unknown>) {
             return this.id === ch.id;

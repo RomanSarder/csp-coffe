@@ -1,5 +1,6 @@
 import type { Buffer } from '@Lib/buffer';
-import { PutBuffer, TakeBuffer, Values } from './privateKeys';
+import type { Multer as MulterInterface } from '@Lib/mult';
+import { Multer, PutBuffer, TakeBuffer, Values } from './privateKeys';
 import type { PutRequest } from './putRequest';
 import type { TakeRequest } from './takeRequest';
 
@@ -14,6 +15,7 @@ export type Channel<T = NonNullable<any>> = {
     [Values]: T[];
     [PutBuffer]: Buffer<PutRequest>;
     [TakeBuffer]: Buffer<TakeRequest>;
+    [Multer]: MulterInterface<T> | undefined;
 
     is: (ch: Channel<any>) => boolean;
 
