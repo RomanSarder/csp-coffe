@@ -1,7 +1,7 @@
 import { CreatableBufferType } from '@Lib/buffer';
 import { makeChannel, close, Channel, resetChannel } from '@Lib/channel';
 import { Values } from '@Lib/channel/entity/privateKeys';
-import { makeMix, addToMix, Mixer } from '@Lib/mix';
+import { makeMix, toggle, Mixer } from '@Lib/mix';
 import { putAsync, takeAsync } from '@Lib/operators';
 import { delay } from '@Lib/shared/utils';
 
@@ -27,8 +27,8 @@ describe('mixer', () => {
             );
 
             mixer = makeMix(destCh);
-            await addToMix(mixer, mixedCh1);
-            await addToMix(mixer, mixedCh2);
+            await toggle(mixer, mixedCh1);
+            await toggle(mixer, mixedCh2);
         });
 
         afterEach(() => {
@@ -54,7 +54,7 @@ describe('mixer', () => {
         /* TODO: Seems more like a Toggle test */
         describe('when adding same channel to the mix again', () => {
             it('should stop previous channel consumption and start consuming again', async () => {
-                await addToMix(mixer, mixedCh2);
+                await toggle(mixer, mixedCh2);
                 await putAsync(mixedCh2, 'noop');
                 expect(await takeAsync(destCh)).toEqual('noop');
                 close(destCh);
@@ -79,7 +79,7 @@ describe('mixer', () => {
             );
 
             const mixer = makeMix(destCh);
-            addToMix(mixer, mixedCh1, 'pause');
+            toggle(mixer, mixedCh1, 'pause');
 
             await putAsync(mixedCh1, 'test1');
             await delay(300);
@@ -104,7 +104,7 @@ describe('mixer', () => {
 
             const mixer = makeMix(destCh);
 
-            addToMix(mixer, mixedCh1, 'mute');
+            toggle(mixer, mixedCh1, 'mute');
             await putAsync(mixedCh1, 'test1');
             await delay(500);
             expect(destCh[Values]).toEqual([]);
@@ -137,8 +137,8 @@ describe('mixer', () => {
                 );
 
                 const mixer = makeMix(destCh, 'mute');
-                await addToMix(mixer, mixedCh1);
-                await addToMix(mixer, mixedCh2, 'solo');
+                await toggle(mixer, mixedCh1);
+                await toggle(mixer, mixedCh2, 'solo');
 
                 expect(mixer.mixedChannelsMap['mixed-1'].option).toEqual(
                     'mute',
@@ -175,8 +175,8 @@ describe('mixer', () => {
                     'mixed-2',
                 );
                 const mixer = makeMix(destCh);
-                await addToMix(mixer, mixedCh1, 'solo');
-                await addToMix(mixer, mixedCh2, 'solo');
+                await toggle(mixer, mixedCh1, 'solo');
+                await toggle(mixer, mixedCh2, 'solo');
                 await putAsync(mixedCh1, 'test1');
                 expect(await takeAsync(destCh)).toEqual('test1');
                 await putAsync(mixedCh2, 'test2');
@@ -208,8 +208,8 @@ describe('mixer', () => {
                 );
 
                 const mixer = makeMix(destCh, 'pause');
-                await addToMix(mixer, mixedCh1);
-                await addToMix(mixer, mixedCh2, 'solo');
+                await toggle(mixer, mixedCh1);
+                await toggle(mixer, mixedCh2, 'solo');
                 await putAsync(mixedCh1, 'test1');
                 await putAsync(mixedCh2, 'test2');
                 expect(await takeAsync(destCh)).toEqual('test2');
@@ -238,8 +238,8 @@ describe('mixer', () => {
                     'mixed-2',
                 );
                 const mixer = makeMix(destCh, 'pause');
-                await addToMix(mixer, mixedCh1, 'solo');
-                await addToMix(mixer, mixedCh2, 'solo');
+                await toggle(mixer, mixedCh1, 'solo');
+                await toggle(mixer, mixedCh2, 'solo');
                 await putAsync(mixedCh1, 'test1');
                 expect(await takeAsync(destCh)).toEqual('test1');
                 await putAsync(mixedCh2, 'test2');

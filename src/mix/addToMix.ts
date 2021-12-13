@@ -6,7 +6,7 @@ import { makeMutedMixedChannelData } from './makeMutedMixedChannelData';
 import { makeNormalMixedChannelData } from './makeNormalMixedChannelData';
 import { makeSoloMixedChannelData } from './makeSoloMixedChannelData';
 
-export async function addToMix(
+export async function toggle(
     mixer: Mixer,
     ch: Channel<any>,
     option: MixOptions = 'normal',
