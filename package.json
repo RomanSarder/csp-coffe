@@ -1,6 +1,6 @@
 {
-  "name": "revolver-csp",
-  "version": "1.0.0",
+  "name": "csp-cafe",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "build": "tsc --build",
     "start:examples": "ts-node -r tsconfig-paths/register examples/fastFoodRestaurant/index.ts",
     "lint": "eslint --ext .ts --ignore-path .gitignore  -- .",
-    "prepublish": "npm run build"
+    "prepare": "npm run build"
   },
   "keywords": [],
   "author": "",
