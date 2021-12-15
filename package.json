@@ -9,7 +9,8 @@
     "test:watch": "jest --watchAll",
     "build": "tsc --build",
     "start:examples": "ts-node -r tsconfig-paths/register examples/fastFoodRestaurant/index.ts",
-    "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
+    "lint": "eslint --ext .ts --ignore-path .gitignore  -- .",
+    "prepublish": "npm run build"
   },
   "keywords": [],
   "author": "",
