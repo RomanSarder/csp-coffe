@@ -1,5 +1,5 @@
 import type { Instruction } from '@Lib/instruction';
-import { isEqual } from 'lodash-es';
+import isEqual from 'lodash.isequal';
 
 export function createInstructionAsserter(instructions: Instruction[]) {
     return {

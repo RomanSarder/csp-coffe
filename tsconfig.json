@@ -13,6 +13,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "stripInternal": true,
+    "esModuleInterop": true,
     "allowJs": true,
     "types": ["node"],
     "paths": {
