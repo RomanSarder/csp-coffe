@@ -18,6 +18,8 @@
     "flow control",
     "generator"
   ],
+  "repository": "https://github.com/RomanSarder/revolver-csp",
+  "homepage": "https://github.com/RomanSarder/revolver-csp",
   "author": "Roman Sarder",
   "license": "ISC",
   "devDependencies": {
