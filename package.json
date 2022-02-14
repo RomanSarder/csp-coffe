@@ -1,7 +1,6 @@
 {
-  "name": "revolver-csp",
+  "name": "csp-cafe",
   "version": "1.0.0",
-  "description": "",
   "scripts": {
     "test": "jest",
     "test:clear": "jest --clearCache",
@@ -11,7 +10,14 @@
     "start:examples": "ts-node -r tsconfig-paths/register examples/fastFoodRestaurant/index.ts",
     "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
   },
-  "keywords": [],
+  "description": "TypeScript implementation of Communication Sequential Processes pattern inspired by core.async",
+  "keywords": [
+    "typescript",
+    "javascript",
+    "async",
+    "flow control",
+    "generator"
+  ],
   "author": "Roman Sarder",
   "license": "ISC",
   "devDependencies": {
