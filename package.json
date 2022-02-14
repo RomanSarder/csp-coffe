@@ -12,7 +12,7 @@
     "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Roman Sarder",
   "license": "ISC",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.16.0",
