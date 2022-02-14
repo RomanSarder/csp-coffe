@@ -12,9 +12,6 @@
     "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
   },
   "keywords": [],
-  "files": [
-    "dist/src"
-  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
