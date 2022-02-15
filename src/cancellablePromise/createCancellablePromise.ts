@@ -35,9 +35,11 @@ export function createCancellablePromise<T = any>(
     ) {
         try {
             if (cancelCallback) {
-                await cancelCallback(reason);
+                const cancelCallbackResult = await cancelCallback(reason);
+                onResolve(cancelCallbackResult);
+            } else {
+                onResolve();
             }
-            onResolve();
         } catch (e) {
             onReject(e);
         }

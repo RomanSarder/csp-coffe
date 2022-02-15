@@ -1,6 +1,7 @@
-import { cancelAll } from '@Lib/cancellablePromise';
+import { cancelAll, createCancellablePromise } from '@Lib/cancellablePromise';
 import type { CancellablePromise } from '@Lib/cancellablePromise';
 import type { ChildrenIteratorsRunner } from './entity/childrenIteratorsRunner';
+import { exitStepperMessage } from './entity/exitStepperMessage';
 
 export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
     let cancelHandler: (reason: any) => Promise<void>;
@@ -10,6 +11,8 @@ export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
     const ongointIteratorsPromises: (CancellablePromise<any> | Promise<any>)[] =
         [];
 
+    const { resolve, reject, cancellablePromise } = createCancellablePromise();
+
     return {
         setCancelHandler(handler: (reason: any) => Promise<void>) {
             cancelHandler = handler;
@@ -17,8 +20,8 @@ export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
         fork(runIteratorPromise: CancellablePromise<any>) {
             forkedIteratorsPromises.push(
                 runIteratorPromise.catch((e) => {
-                    cancelHandler?.(e);
-                    throw e;
+                    resolve(exitStepperMessage);
+                    return cancelHandler?.(e);
                 }),
             );
             return runIteratorPromise;
@@ -36,8 +39,9 @@ export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
             return runIteratorPromise.catch(console.error);
         },
 
-        async waitForForks() {
-            await Promise.all(forkedIteratorsPromises);
+        waitForForks() {
+            Promise.all(forkedIteratorsPromises).then(resolve).catch(reject);
+            return cancellablePromise;
         },
 
         cancelForks() {

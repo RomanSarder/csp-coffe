@@ -11,7 +11,7 @@ export type ChildrenIteratorsRunner = {
         runIteratorPromise: CancellablePromise<T>,
     ): CancellablePromise<T>;
 
-    waitForForks(): Promise<void>;
+    waitForForks(): CancellablePromise<any>;
 
     cancelForks(): Promise<void[]>;
     cancelOngoing(): Promise<void[]>;

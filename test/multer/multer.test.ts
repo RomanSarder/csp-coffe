@@ -72,5 +72,7 @@ describe('multer', () => {
         expect(sourceCh[Values]).toEqual([]);
         expect(multedCh1[Values]).toEqual([]);
         expect(multedCh2[Values]).toEqual([]);
+        close(multedCh1);
+        close(sourceCh);
     });
 });

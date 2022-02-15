@@ -2,6 +2,7 @@ import type { CancellablePromise } from '@Lib/cancellablePromise';
 import { createCancellablePromise } from '@Lib/cancellablePromise';
 import type { Instruction } from '@Lib/instruction';
 import { isCancelError } from '../cancellablePromise/utils/isCancelError';
+import { exitStepperMessage } from './entity/exitStepperMessage';
 import { makeChildrenIteratorsRunner } from './makeChildrenIteratorsRunner';
 import { makeIteratorStepper } from './makeIteratorStepper';
 
@@ -29,15 +30,16 @@ export const runIterator = (
                 await childrenIteratorsRunner.cancelForks();
             }
             try {
-                iterator.throw(reason);
+                const tryCatchReturnValue = iterator.throw(reason).value;
+                await stepperPromise;
+                // eslint-disable-next-line no-unsafe-finally
+                return tryCatchReturnValue;
             } catch (e) {
                 // In case generator does not have try/catch block
                 // Swallow error on purpose
                 if (!isCancelError(e)) {
                     throw e;
                 }
-            } finally {
-                await stepperPromise;
             }
         },
     );
@@ -74,11 +76,17 @@ export const runIterator = (
                     }
                 } else {
                     try {
-                        await childrenIteratorsRunner.waitForForks();
+                        const result =
+                            await childrenIteratorsRunner.waitForForks();
+
+                        if (result === exitStepperMessage) {
+                            return;
+                        } else {
+                            resolve(value);
+                        }
                     } catch (e) {
                         reject(e);
                     }
-                    resolve(value);
                 }
             }
         } catch (e) {
