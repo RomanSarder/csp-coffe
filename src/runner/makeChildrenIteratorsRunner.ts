@@ -14,11 +14,11 @@ export function makeChildrenIteratorsRunner(): ChildrenIteratorsRunner {
         setCancelHandler(handler: (reason: any) => Promise<void>) {
             cancelHandler = handler;
         },
-
         fork(runIteratorPromise: CancellablePromise<any>) {
             forkedIteratorsPromises.push(
                 runIteratorPromise.catch((e) => {
-                    return cancelHandler?.(e);
+                    cancelHandler?.(e);
+                    throw e;
                 }),
             );
             return runIteratorPromise;

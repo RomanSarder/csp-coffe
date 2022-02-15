@@ -67,8 +67,17 @@ export const runIterator = (
 
             if (done) {
                 if (error) {
-                    reject(error);
+                    try {
+                        await childrenIteratorsRunner.cancelForks();
+                    } finally {
+                        reject(error);
+                    }
                 } else {
+                    try {
+                        await childrenIteratorsRunner.waitForForks();
+                    } catch (e) {
+                        reject(e);
+                    }
                     resolve(value);
                 }
             }

@@ -107,13 +107,7 @@ export const makeIteratorStepper = ({
             }
 
             if (result.done) {
-                try {
-                    await childrenIteratorsRunner.waitForForks();
-                    return { value, done: true };
-                } catch (e) {
-                    iterator.throw(e);
-                    return { value: undefined, error: e, done: true };
-                }
+                return { value, done: true };
             }
             return { value, done: false };
         },

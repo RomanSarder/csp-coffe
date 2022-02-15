@@ -109,13 +109,20 @@ describe('go', () => {
             function* testGenerator() {
                 try {
                     yield fork(innerGen);
-                    yield delay(1000);
+                } catch (e) {
+                    // spy(e);
+                }
+            }
+
+            function* mainGenerator() {
+                try {
+                    yield call(testGenerator);
                 } catch (e) {
                     spy(e);
                 }
             }
 
-            const { cancellablePromise } = go(testGenerator);
+            const { cancellablePromise } = go(mainGenerator);
             await cancellablePromise;
 
             expect(spy).toHaveBeenCalledWith(new Error('Custom'));
