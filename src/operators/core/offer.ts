@@ -24,8 +24,8 @@ export function* offer<C extends Channel<any>>(ch: C, data: FlattenChannel<C>) {
         yield;
         releasePut(ch);
         didPutRequest = false;
-        push(ch, data);
-        return true;
+
+        return push(ch, data);
     } catch (e) {
         if (isCancelError(e)) {
             if (didPutRequest) {
