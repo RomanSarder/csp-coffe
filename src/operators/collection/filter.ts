@@ -1,11 +1,12 @@
-import type {
+import {
     FlattenChannels,
     Channel,
     ChannelConfiguration,
+    waitUntilBufferIsEmptyAsync,
+    makeChannel,
+    close,
 } from '@Lib/channel';
-import { makeChannel } from '@Lib/channel';
 import { createAsyncWrapper } from '@Lib/runner';
-import { close } from '@Lib/channel';
 import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
@@ -28,7 +29,9 @@ export function filter<Channels extends Channel<any>[]>(
                     yield put(filteredCh, data);
                 }
             }, ...channels);
-        } finally {
+            await waitUntilBufferIsEmptyAsync(filteredCh);
+            close(filteredCh);
+        } catch (e) {
             close(filteredCh);
         }
     })();
