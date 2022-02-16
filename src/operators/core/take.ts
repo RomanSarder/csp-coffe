@@ -31,11 +31,9 @@ export function* take<C extends Channel<NonNullable<any>>>(ch: C) {
             }
 
             const maybeResult: FlattenChannel<C> | null = yield poll(ch);
-
             if (maybeResult !== null) {
                 return maybeResult;
             }
-
             yield waitForIncomingPut(ch);
         } catch (e) {
             // If channel closed, cleanup made take

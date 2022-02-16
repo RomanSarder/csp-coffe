@@ -18,6 +18,7 @@ export { waitForIncomingTake } from './utils/waitForIncomingTake';
 export { waitForPutQueueToRelease } from './utils/waitForPutQueueToRelease';
 export { waitForTakeQueueToRelease } from './utils/waitForTakeQueueToRelease';
 export { waitUntilBufferEmpty } from './utils/waitUntilBufferEmpty';
+export { waitUntilBufferIsEmptyAsync } from './utils/waitUntilBufferEmptyAsync';
 export { pop } from './utils/pop';
 export { push } from './utils/push';
 export { close } from './utils/close';

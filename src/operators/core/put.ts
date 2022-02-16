@@ -22,9 +22,9 @@ export function* put<C extends Channel<NonNullable<any>>>(
 
     try {
         yield waitForPutQueueToRelease(ch);
+        push(ch, data);
         makePutRequest(ch);
         didPutRequest = true;
-        push(ch, data);
 
         if (!ch.isBuffered) {
             yield waitForIncomingTake(ch);

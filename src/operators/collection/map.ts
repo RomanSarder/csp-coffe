@@ -1,11 +1,12 @@
-import type {
+import {
     FlattenChannels,
     Channel,
     ChannelConfiguration,
+    makeChannel,
+    waitUntilBufferIsEmptyAsync,
+    close,
 } from '@Lib/channel';
-import { makeChannel } from '@Lib/channel';
 import { createAsyncWrapper } from '@Lib/runner';
-import { close } from '@Lib/channel';
 import { put } from '../core/put';
 import { DefaultResultChannelConfig } from '../config';
 import { iterate } from './iterate';
@@ -26,7 +27,10 @@ export function map<
             await createAsyncWrapper(iterate)(function* mapValues(data) {
                 yield put(mappedCh, mapFn(data as FlattenChannels<Channels>));
             }, ...channels);
-        } finally {
+
+            await waitUntilBufferIsEmptyAsync(mappedCh);
+            close(mappedCh);
+        } catch (e) {
             close(mappedCh);
         }
     })();
