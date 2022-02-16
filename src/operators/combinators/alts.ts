@@ -28,7 +28,7 @@ type DefinitionType<A extends any[], C = Flatten<A>> = C extends
     ? FlattenChannel<U> | null
     : unknown;
 
-type OperationResponse<C extends any> = {
+export type OperationResponse<C extends any> = {
     value: C | true;
     ch: Channel<NonNullable<C>>;
 };
