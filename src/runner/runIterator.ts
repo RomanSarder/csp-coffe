@@ -31,6 +31,7 @@ export const runIterator = (
             }
             try {
                 const tryCatchReturnValue = iterator.throw(reason).value;
+                await tryCatchReturnValue;
                 await stepperPromise;
                 // eslint-disable-next-line no-unsafe-finally
                 return tryCatchReturnValue;
