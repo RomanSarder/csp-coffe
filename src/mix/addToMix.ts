@@ -6,6 +6,11 @@ import { makeMutedMixedChannelData } from './makeMutedMixedChannelData';
 import { makeNormalMixedChannelData } from './makeNormalMixedChannelData';
 import { makeSoloMixedChannelData } from './makeSoloMixedChannelData';
 
+export async function unmix(mixer: Mixer, ch: Channel<any>) {
+    await mixer.mixedChannelsMap[ch.id].cancellablePromise?.cancel();
+    delete mixer.mixedChannelsMap[ch.id];
+}
+
 export async function toggle(
     mixer: Mixer,
     ch: Channel<any>,
