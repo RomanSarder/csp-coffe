@@ -1,5 +1,5 @@
 {
-  "name": "csp-cafe",
+  "name": "revolver-csp",
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
@@ -19,7 +19,7 @@
     "generator"
   ],
   "repository": "https://github.com/RomanSarder/revolver-csp",
-  "homepage": "https://github.com/RomanSarder/revolver-csp",
+  "homepage": "https://roman-sarder.gitbook.io/revolver-csp",
   "author": "Roman Sarder",
   "license": "ISC",
   "devDependencies": {
