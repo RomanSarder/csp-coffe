@@ -1,6 +1,6 @@
 {
   "name": "csp-coffee",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "test": "jest",
     "test:clear": "jest --clearCache",
@@ -18,8 +18,8 @@
     "flow control",
     "generator"
   ],
-  "repository": "https://github.com/RomanSarder/revolver-csp",
-  "homepage": "https://roman-sarder.gitbook.io/revolver-csp",
+  "repository": "https://github.com/RomanSarder/csp-coffe",
+  "homepage": "https://roman-sarder.gitbook.io/csp-coffee/",
   "author": "Roman Sarder",
   "license": "ISC",
   "devDependencies": {
