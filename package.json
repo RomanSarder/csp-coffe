@@ -1,12 +1,12 @@
 {
   "name": "csp-coffee",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "scripts": {
     "test": "jest",
     "test:clear": "jest --clearCache",
     "test:watch": "jest --watchAll",
     "build": "tsc --build && npm run copy-package-json && tscpaths -p tsconfig.json -s ./src -o ./dist",
-    "copy-package-json": "copyfiles ./package.json ./tsconfig.json dist",
+    "copy-package-json": "copyfiles ./package.json ./tsconfig.json ./README.md dist",
     "start:examples": "ts-node -r tsconfig-paths/register examples/fastFoodRestaurant/index.ts",
     "lint": "eslint --ext .ts --ignore-path .gitignore  -- ."
   },
